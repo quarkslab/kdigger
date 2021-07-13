@@ -317,3 +317,12 @@ You can take a look at `/pkg/plugins/template/template.go` to bootstrap your
 own plugins and propose them to the project to extend the features! You only
 need a name, optionally some aliases, a description and filling the `Run()`
 function with the actual logic.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to
+discuss what you would like to change.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
