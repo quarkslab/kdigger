@@ -1,16 +1,17 @@
-# Kube digger
+# kdigger
 
-![A digger trying to move the evergreen stuck cruise ship](digger.jpg)
+![A small digger trying to move the evergreen stuck cruise ship in the suez
+canal](digger.jpg)
 
-`kdigger` for "Kubernetes digger" is Kubernetes pentest tool. This tool is a
+`kdigger` for "Kubernetes digger" is a Kubernetes pentest tool. This tool is a
 compilation of various plugins called buckets to facilitate pentesting
 Kubernetes from inside a pod.
 
 Some plugins perform really simple actions, that could be performed just by
 calling the `mount` command or listing all devices present in dev with `ls
 /dev` for example, but some others automate scanning processes, such as the
-admission controller scanner and in the end globally speed up the pentesting
-process.
+admission controller scanner. In the end, this tool aims to speed up the
+pentesting process.
 
 ## Installation
 
@@ -51,7 +52,8 @@ Flags:
 Use "kdigger [command] --help" for more information about a command.
 ```
 
-Especially on the dig command:
+Especially on the dig command to browse the available flags:
+
 ```text
 This command, with no arguments, runs all registered buckets. You can find
 information about all buckets with the list command. To run one or more
@@ -74,7 +76,8 @@ Global Flags:
 ```
 
 The current main flags that you can use are:
-- `output` to format the results in a human way or in json.
+- `output` to format the results in a human way or in json to exploit the
+  results.
 - `namespace` to run scans and requests in specific namespace.
 - `color` to enable or disable color in results.
 
@@ -171,8 +174,9 @@ are running inside a privileged container or not.
 ### Devices
 
 Devices show the list of devices available in the container. This one is
-straightforward, it's equivalent to just `ls /dev`. But the number of available
-devices can also be a good hint on running in a privileged container or not.
+straightforward, it's equivalent to just `ls /dev`. Nevertheless, the number of
+available devices can also be a good hint on running in a privileged container
+or not.
 
 ### Environment
 
@@ -181,33 +185,33 @@ shows them. Like always, it's not sufficient, but detecting Kubernetes related
 environment variables can give you a pretty good idea that you are running in a
 Kubernetes cluster. That might be useful if you want to quickly find out where
 you are. Of course, this one is easy to confuse, by just exporting some
-environment variable or removing some, but anyway!
+environment variable or removing some.
 
 ### Mount
 
 Mount show all mounted devices in the container. This is equivalent to use the
-`mount` command but the number of mounted devices and reading path can show you
-mounted volumes, configmap or even secrets inside the pod.
+`mount` command directly but the number of mounted devices and reading path can
+show you mounted volumes, configmap or even secrets inside the pod.
 
 ### Namespaces
 
 Namespaces analyses namespaces of the container in the context of Kubernetes.
 Nevertheless, detecting namespaces, except for the user namespace, is quite
-hard or almost impossible. You always rely on bugs or implementation details
-that can quickly change. This bucket detects the user namespace and expose the
-mappings but try to give some information about the PID namespace just by
-detecting some process present in `/proc`.
+difficult or almost impossible. You always rely on bugs or implementation
+details that can quickly change. This bucket detects the user namespace and
+exposes the mappings but try to give some information about the PID namespace
+just by detecting some process present in `/proc`.
 
-The detection in [amicontained](https://github.com/genuinetools/amicontained)
-is based on the device number of the namespace file, a detail of implementation
-which is no longer reliable and most of the time wrong. This is why I tried a
-different approach.
+Indeed, the detection in
+[amicontained](https://github.com/genuinetools/amicontained) is based on the
+device number of the namespace file, a detail of implementation which is no
+longer reliable and most of the time wrong. This is why I tried a different
+approach.
 
-For example, if you see a process named `pause` in `/proc`, you might be
-sharing the PID namespace between all the containers composing the pod.
-Identically, if you spot a process named `kubelet` you might be sharing the
-host PID namespace. This is not really subtle but this is what this bucket
-scans.
+To explain what this bucket scans for the PID namespace, if you see a process
+named `pause` in `/proc`, you might be sharing the PID namespace between all
+the containers composing the pod. Identically, if you spot a process named
+`kubelet` you might be sharing the host PID namespace.
 
 ### Runtime
 
@@ -257,10 +261,10 @@ confirm that by looking at the number of devices available or the other
 capabilities that you are granted. Indeed it might be necessary to get
 `CAP_SYS_ADMIN` to be privileged but it's not sufficient and if it is your
 goal, you can really easily trick the results by crafting very specific pods
-that might look confusing regarding its results.
+that might look confusing regarding this tool results.
 
 It might not be the most sophisticated tool to pentest a Kubernetes cluster,
-you can see this as a _Kubernetes pentest 101 summer compilation_!
+but you can see this as a _Kubernetes pentest 101 summer compilation_!
 
 ### Why another tool?
 
@@ -269,29 +273,36 @@ the 2021 Europe kubecon security day CTF. I learned a lot by watching various
 security experts conferences and demonstration and this CTF was a really
 beginner-friendly entry point to practice what I learned in theory.
 
-I had the opportunity to see most of my Kubernetes security mentors live trying
-to solve one of the challenges of this CTF and it was awesome to understand
-what was their techniques and thinking were.
+I had the opportunity to see most of my Kubernetes security mentors live,
+trying to solve one of the challenges of this CTF and it was awesome to
+understand what their techniques and thinking were.
 
-During some pentests, you cannot bring your tools with you because you don't
-have any direct internet access so you have to work with what is available.
-Some pentesters build their checklist to have a rigorous process and to not
-forget crucial operations that could give them important information.
+However during some pentests, you cannot bring your tools with you because you
+don't have any direct internet access so you have to work with what is
+available. Some pentesters build their checklist to have a rigorous process
+and to not forget crucial operations that could give them important
+information.
 
 But sometimes, you can fetch your favourite tools from the internet and while
 there are various solutions out there, a lot of experts were using
 [amicontained](https://github.com/genuinetools/amicontained), a famous
-container introspection tool. This tool is truly awesome but it lacks some
-features and it is not specialized on Kubernetes, it's only a container tool
-that can give already give a lot of hints about your situation!
+container introspection tool. This tool is truly awesome but some features are
+outdated, like the PID namespace detection and it is not specialized on
+Kubernetes, it's only a container tool that can give already give a lot of
+hints about your Kubernetes situation!
 
-So I decided to write a tool to include this container information, but also
-much more. And specifically aimed at Kubernetes pentesting. So with kdigger,
-you can try to guess your container runtime, see your capabilities, scan
-namespace activation and the allowed syscalls, like amicontained somehow, but
-you can also automatically retrieve service account token, scan their
-permissions, list interesting environment variables, list devices and even scan
-the admission controller chain!
+So I decided to write a tool that include most of
+[amicontained](https://github.com/genuinetools/amicontained) information, but
+also much more. And specifically aimed at Kubernetes pentesting. So with
+`kdigger`, you can try to guess your container runtime, see your capabilities,
+scan namespace activation and the allowed syscalls, like amicontained, but you
+can also automatically retrieve service account token, scan their permissions,
+list interesting environment variables, list devices and even scan the
+admission controller chain!
+
+It gives you lots of information really fast, like a digest, that you can later
+analyse to understand the situation further and conduct more specialized
+analyses.
 
 ### How this tool is built?
 
@@ -299,8 +310,8 @@ In addition to all the available features, this tool was built with a plugin
 design so that it can be easily extended by anyone that wants to bring some
 expertises.
 
-For example, you are a security researcher on Kubernetes and when you are doing
-CTFs or pentesting real infrastructure, you are often performing specific
+For example, you are a security researcher on Kubernetes, and when you are
+doing CTFs or pentesting real infrastructure, you are often performing specific
 repetitive actions that could be automated or at least compiled with others.
 You can take a look at `/pkg/plugins/template/template.go` to bootstrap your
 own plugins and propose them to the project to extend the features! You only
