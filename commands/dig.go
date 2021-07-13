@@ -32,7 +32,7 @@ specific buckets, just input their names or aliases as arguments.`,
 	// This two lines will not work because buckets.Registered() is empty at
 	// the beginning
 	// ValidArgs: buckets.Registered(),
-	// Args:      cobra.OnlyValidArgs,
+	// Args: cobra.OnlyValidArgs,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if !cmd.Flags().Changed("color") && output == "human" {
 			color = true

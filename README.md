@@ -225,6 +225,18 @@ presence.
 Please note that this is a 3 year old part of that code and that it makes no
 distinction between Docker and containerd.
 
+### Services
+
+Services uses CoreDNS wildcards feature to discover every service available in
+the cluster. In fact, it appears that CoreDNS, that is now widely used in
+Kubernetes cluster proposes a wildcards features. You can learn more about it
+[here in the
+documentation](https://github.com/coredns/coredns/blob/master/plugin/kubernetes/README.md#wildcards).
+
+This bucket is extremely useful to perform discovery really fast in a
+Kubernetes cluster. The DNS will kindly give you every service domain present
+in the cluster.
+
 ### Syscalls
 
 Syscalls scans most of the syscalls to detect which are blocked and allowed.

@@ -13,6 +13,7 @@ import (
 	"github.com/mtardy/kdigger/pkg/plugins/mount"
 	"github.com/mtardy/kdigger/pkg/plugins/namespaces"
 	"github.com/mtardy/kdigger/pkg/plugins/runtime"
+	"github.com/mtardy/kdigger/pkg/plugins/services"
 	"github.com/mtardy/kdigger/pkg/plugins/syscalls"
 	"github.com/mtardy/kdigger/pkg/plugins/token"
 	"github.com/spf13/cobra"
@@ -64,6 +65,7 @@ func registerBuckets() {
 	mount.Register(buckets)
 	devices.Register(buckets)
 	runtime.Register(buckets)
+	services.Register(buckets)
 }
 
 func init() {
