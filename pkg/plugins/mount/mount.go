@@ -27,15 +27,9 @@ func (m MountBucket) Run() (bucket.Results, error) {
 		panic(err)
 	}
 	res := bucket.NewResults(bucketName)
-	err = res.SetHeaders([]string{"Device", "Path", "Filesystem", "Flags"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Device", "Path", "Filesystem", "Flags"})
 	for _, m := range values {
-		err := res.AddContent([]string{m.Device, m.Path, m.Filesystem, m.Flags})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.AddContent([]string{m.Device, m.Path, m.Filesystem, m.Flags})
 	}
 	res.SetComment(fmt.Sprintf("%d devices are mounted.", len(values)))
 	return *res, nil

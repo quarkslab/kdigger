@@ -21,15 +21,9 @@ type EnvironmentBucket struct{}
 
 func (n EnvironmentBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
-	err := res.SetHeaders([]string{"Name", "Value"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Name", "Value"})
 	for name, value := range kubeEnviron() {
-		err := res.AddContent([]string{name, value})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.AddContent([]string{name, value})
 	}
 	if IsTypicalKubernetesEnv() {
 		res.SetComment("Typical Kubernetes API service env var was found, we might be running inside a pod.")

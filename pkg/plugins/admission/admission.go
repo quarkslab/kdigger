@@ -75,21 +75,12 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	}
 
 	res := bucket.NewResults(bucketName)
-	err := res.SetHeaders([]string{"Pod", "Success", "Error"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Pod", "Success", "Error"})
 	for _, r := range results {
 		if r.err != nil {
-			err := res.AddContent([]string{r.pod, fmt.Sprint(r.success), r.err.Error()})
-			if err != nil {
-				return bucket.Results{}, err
-			}
+			res.AddContent([]string{r.pod, fmt.Sprint(r.success), r.err.Error()})
 		} else {
-			err := res.AddContent([]string{r.pod, fmt.Sprint(r.success), ""})
-			if err != nil {
-				return bucket.Results{}, err
-			}
+			res.AddContent([]string{r.pod, fmt.Sprint(r.success), ""})
 		}
 	}
 

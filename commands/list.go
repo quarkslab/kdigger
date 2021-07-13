@@ -1,10 +1,10 @@
-package cmd
+package commands
 
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/spf13/cobra"
 )
 
 // listCmd represents the list command
@@ -25,17 +25,11 @@ and descriptions. You can pass specific buckets as arguments to have their infor
 
 		// leveraging bucket results to print even if it's not a plugin
 		res := bucket.NewResults("List")
-		err := res.SetHeaders([]string{"Name", "Aliases", "Description"})
-		if err != nil {
-			panic(err)
-		}
+		res.SetHeaders([]string{"Name", "Aliases", "Description"})
 		for _, name := range bucketList {
 			fullname, found := buckets.ResolveAlias(name)
 			if found {
-				err := res.AddContent([]string{fullname, fmt.Sprint(buckets.Aliases(name)), buckets.Describe(name)})
-				if err != nil {
-					panic(err)
-				}
+				res.AddContent([]string{fullname, fmt.Sprint(buckets.Aliases(name)), buckets.Describe(name)})
 			}
 		}
 

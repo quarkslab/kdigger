@@ -32,15 +32,9 @@ func (n NamespacesBucket) Run() (bucket.Results, error) {
 	details = append(details, getPIDNamespaceInfo())
 
 	res := bucket.NewResults(bucketName)
-	err := res.SetHeaders([]string{"Namespace", "Active", "Details"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Namespace", "Active", "Details"})
 	for _, d := range details {
-		err := res.AddContent([]string{d.nsType, fmt.Sprint(d.active), d.details})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.AddContent([]string{d.nsType, fmt.Sprint(d.active), d.details})
 	}
 
 	return *res, nil

@@ -1,13 +1,13 @@
-package cmd
+package commands
 
 import (
 	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
 	"github.com/mtardy/kdigger/pkg/automaticontext"
 	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
 )
 
@@ -79,7 +79,10 @@ specific buckets, just input their names or aliases as arguments.`,
 				panic(err)
 			}
 
-			printResults(results, bucket.ResultsOpts{})
+			err = printResults(results, bucket.ResultsOpts{})
+			if err != nil {
+				panic(err)
+			}
 		}
 	},
 }

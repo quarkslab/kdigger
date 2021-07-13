@@ -50,20 +50,14 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	if err != nil {
 		return bucket.Results{}, err
 	}
-	err = res.SetHeaders([]string{"Resources", "Non-Resource-URLs", "Ressource-Names", "Verbs"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Resources", "Non-Resource-URLs", "Ressource-Names", "Verbs"})
 	for _, r := range rules {
-		err := res.AddContent([]string{
+		res.AddContent([]string{
 			describe.CombineResourceGroup(r.Resources, r.APIGroups),
 			fmt.Sprint(r.NonResourceURLs),
 			fmt.Sprint(r.ResourceNames),
 			fmt.Sprint(r.Verbs),
 		})
-		if err != nil {
-			return bucket.Results{}, err
-		}
 	}
 	return *res, nil
 }

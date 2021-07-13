@@ -200,35 +200,19 @@ func NewResults(name string) *Results {
 	}
 }
 
-// TODO add the name of the plugin
-var ErrResultsInvalidWidth = errors.New("the width between the data and the header does not match")
-
-func (r *Results) SetHeaders(headers []string) error {
+func (r *Results) SetHeaders(headers []string) {
 	for i := range headers {
 		headers[i] = strings.ToLower(headers[i])
 	}
 	r.headers = headers
-
-	// TODO maybe we should late check that in JSON since he's the only one affected by this problem
-	if !r.checkWidthsCoherence() {
-		return ErrResultsInvalidWidth
-	}
-
-	return nil
 }
 
 func (r *Results) SetComment(comment string) {
 	r.comments = comment
 }
 
-func (r *Results) AddContent(content []string) error {
+func (r *Results) AddContent(content []string) {
 	r.data = append(r.data, content)
-
-	if !r.checkWidthsCoherence() {
-		return ErrResultsInvalidWidth
-	}
-
-	return nil
 }
 
 // checkWidthsCoherence checks if headers and data are both sets, that the
@@ -307,7 +291,11 @@ func (r Results) Human(opts ResultsOpts) string {
 	return output.String()
 }
 
-func (r Results) JSON(opts ResultsOpts) string {
+func (r Results) JSON(opts ResultsOpts) (string, error) {
+	if !r.checkWidthsCoherence() {
+		return "", fmt.Errorf("cannot output JSON for bucket %q, inconsistence between width of headers and data", r.bucketName)
+	}
+
 	type jsonOutput struct {
 		Bucket  string              `json:"bucket"`
 		Comment string              `json:"comment"`
@@ -326,22 +314,29 @@ func (r Results) JSON(opts ResultsOpts) string {
 		}
 	}
 
-	o := jsonOutput{}
-	// TODO maybe add omitempty
-	if opts.ShowName == nil || *opts.ShowName {
-		o.Bucket = r.bucketName
-	}
-	if opts.ShowComment == nil || *opts.ShowComment {
-		o.Comment = r.comments
-	}
-	if opts.ShowData == nil || *opts.ShowData {
-		o.Data = m
-	}
+	var b []byte
+	var err error
+	// if hide name and comments, directly output an array of results
+	if (opts.ShowName != nil && *opts.ShowName == false) && (opts.ShowComment != nil && *opts.ShowComment == false) {
+		b, err = json.Marshal(m)
+	} else {
+		o := jsonOutput{}
+		// TODO maybe add omitempty
+		if opts.ShowName == nil || *opts.ShowName {
+			o.Bucket = r.bucketName
+		}
+		if opts.ShowComment == nil || *opts.ShowComment {
+			o.Comment = r.comments
+		}
+		if opts.ShowData == nil || *opts.ShowData {
+			o.Data = m
+		}
 
-	b, err := json.Marshal(o)
+		b, err = json.Marshal(o)
+	}
 	if err != nil {
 		panic(err)
 	}
 
-	return string(b)
+	return string(b), nil
 }

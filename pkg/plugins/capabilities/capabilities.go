@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/syndtr/gocapability/capability"
 	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/syndtr/gocapability/capability"
 )
 
 const (
@@ -35,10 +35,7 @@ func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 	capabilities, err := getCapabilities(0)
 
 	res := bucket.NewResults(bucketName)
-	err = res.SetHeaders([]string{"Set", "Capabilities"})
-	if err != nil {
-		return bucket.Results{}, err
-	}
+	res.SetHeaders([]string{"Set", "Capabilities"})
 	var colors text.Colors
 	colors = append(colors, text.FgRed)
 	for set, caps := range capabilities {
@@ -50,10 +47,7 @@ func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 				sCaps = append(sCaps, cap.String())
 			}
 		}
-		err := res.AddContent([]string{set.String(), fmt.Sprint(sCaps)})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.AddContent([]string{set.String(), fmt.Sprint(sCaps)})
 	}
 
 	if isPrivileged(capabilities[capability.BOUNDING]) {

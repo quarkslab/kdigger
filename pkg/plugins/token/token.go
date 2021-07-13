@@ -23,10 +23,7 @@ func (n TokenBucket) Run() (bucket.Results, error) {
 	if tokenFolderExist() {
 		res.SetComment("A service account token is mounted.")
 
-		err := res.SetHeaders([]string{"Namespace", "Token", "CA"})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.SetHeaders([]string{"Namespace", "Token", "CA"})
 
 		ns, err := readMountedData("namespace")
 		if err != nil {
@@ -41,10 +38,7 @@ func (n TokenBucket) Run() (bucket.Results, error) {
 			return bucket.Results{}, err
 		}
 
-		err = res.AddContent([]string{ns, t, ca})
-		if err != nil {
-			return bucket.Results{}, err
-		}
+		res.AddContent([]string{ns, t, ca})
 	} else {
 		res.SetComment("No service account token was found")
 	}

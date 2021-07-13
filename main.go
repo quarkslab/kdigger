@@ -1,7 +1,7 @@
 package main
 
-import cmd "github.com/mtardy/kdigger/commands"
+import "github.com/mtardy/kdigger/commands"
 
 func main() {
-	cmd.Execute()
+	commands.Execute()
 }

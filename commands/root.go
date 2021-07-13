@@ -1,9 +1,9 @@
-package cmd
+package commands
 
 import (
+	"errors"
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/mtardy/kdigger/pkg/bucket"
 	"github.com/mtardy/kdigger/pkg/plugins/admission"
 	"github.com/mtardy/kdigger/pkg/plugins/authorization"
@@ -15,6 +15,7 @@ import (
 	"github.com/mtardy/kdigger/pkg/plugins/runtime"
 	"github.com/mtardy/kdigger/pkg/plugins/syscalls"
 	"github.com/mtardy/kdigger/pkg/plugins/token"
+	"github.com/spf13/cobra"
 )
 
 // buckets contains all the plugins
@@ -72,13 +73,18 @@ func init() {
 }
 
 // printResults prints results with the output format selected by the flags
-func printResults(r bucket.Results, opts bucket.ResultsOpts) {
+func printResults(r bucket.Results, opts bucket.ResultsOpts) error {
 	switch output {
 	case "human":
 		fmt.Println(r.Human(opts))
 	case "json":
-		fmt.Println(r.JSON(opts))
+		p, err := r.JSON(opts)
+		if err != nil {
+			return err
+		}
+		fmt.Println(p)
 	default:
-		panic("internal error, check on output flag must have been done in PersistentPreRunE")
+		return errors.New("internal error, check on output flag must have been done in PersistentPreRunE")
 	}
+	return nil
 }
