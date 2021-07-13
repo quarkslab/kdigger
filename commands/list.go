@@ -29,7 +29,7 @@ and descriptions. You can pass specific buckets as arguments to have their infor
 		for _, name := range bucketList {
 			fullname, found := buckets.ResolveAlias(name)
 			if found {
-				res.AddContent([]string{fullname, fmt.Sprint(buckets.Aliases(name)), buckets.Describe(name)})
+				res.AddContent([]interface{}{fullname, fmt.Sprint(buckets.Aliases(name)), buckets.Describe(name)})
 			}
 		}
 

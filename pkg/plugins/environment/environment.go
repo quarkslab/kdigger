@@ -23,7 +23,7 @@ func (n EnvironmentBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"Name", "Value"})
 	for name, value := range kubeEnviron() {
-		res.AddContent([]string{name, value})
+		res.AddContent([]interface{}{name, value})
 	}
 	if IsTypicalKubernetesEnv() {
 		res.SetComment("Typical Kubernetes API service env var was found, we might be running inside a pod.")

@@ -38,7 +38,7 @@ func (n TokenBucket) Run() (bucket.Results, error) {
 			return bucket.Results{}, err
 		}
 
-		res.AddContent([]string{ns, t, ca})
+		res.AddContent([]interface{}{ns, t, ca})
 	} else {
 		res.SetComment("No service account token was found")
 	}

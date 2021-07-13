@@ -34,7 +34,7 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	}
 
 	res.SetHeaders([]string{"Blocked", "Allowed"})
-	res.AddContent([]string{fmt.Sprint(blocked), fmt.Sprint(allowed)})
+	res.AddContent([]interface{}{blocked, allowed})
 
 	skippedNames := make([]string, 0)
 	for _, s := range skippedSyscalls {

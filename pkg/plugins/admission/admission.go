@@ -2,7 +2,6 @@ package admission
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 	"sync"
 
@@ -78,9 +77,9 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	res.SetHeaders([]string{"Pod", "Success", "Error"})
 	for _, r := range results {
 		if r.err != nil {
-			res.AddContent([]string{r.pod, fmt.Sprint(r.success), r.err.Error()})
+			res.AddContent([]interface{}{r.pod, r.success, r.err})
 		} else {
-			res.AddContent([]string{r.pod, fmt.Sprint(r.success), ""})
+			res.AddContent([]interface{}{r.pod, r.success, ""})
 		}
 	}
 

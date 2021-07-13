@@ -180,7 +180,7 @@ func (bs *Buckets) Aliases(name string) []string {
 type Results struct {
 	bucketName string
 	headers    []string
-	data       [][]string
+	data       [][]interface{}
 	comments   string
 }
 
@@ -196,7 +196,7 @@ func NewResults(name string) *Results {
 	return &Results{
 		bucketName: name,
 		headers:    []string{},
-		data:       [][]string{},
+		data:       [][]interface{}{},
 	}
 }
 
@@ -211,7 +211,7 @@ func (r *Results) SetComment(comment string) {
 	r.comments = comment
 }
 
-func (r *Results) AddContent(content []string) {
+func (r *Results) AddContent(content []interface{}) {
 	r.data = append(r.data, content)
 }
 
@@ -297,16 +297,16 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	}
 
 	type jsonOutput struct {
-		Bucket  string              `json:"bucket"`
-		Comment string              `json:"comment"`
-		Data    []map[string]string `json:"data"`
+		Bucket  string                   `json:"bucket"`
+		Comment string                   `json:"comment"`
+		Data    []map[string]interface{} `json:"data"`
 	}
 
-	m := make([]map[string]string, 0)
+	m := make([]map[string]interface{}, 0)
 
 	if len(r.data) != 0 && len(r.headers) != 0 {
 		for _, row := range r.data {
-			rowMap := make(map[string]string)
+			rowMap := make(map[string]interface{})
 			for headerNr, header := range r.headers {
 				rowMap[header] = row[headerNr]
 			}

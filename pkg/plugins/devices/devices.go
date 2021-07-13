@@ -28,7 +28,7 @@ func (n DevicesBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"Mode", "IsDir", "ModTime", "Name"})
 	for _, dev := range devs {
-		res.AddContent([]string{dev.Mode().String(), fmt.Sprint(dev.IsDir()), dev.ModTime().Format(time.RFC3339), dev.Name()})
+		res.AddContent([]interface{}{dev.Mode().String(), dev.IsDir(), dev.ModTime().Format(time.RFC3339), dev.Name()})
 
 	}
 	res.SetComment(fmt.Sprintf("%d devices are available.", len(devs)))

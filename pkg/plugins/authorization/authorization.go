@@ -52,11 +52,11 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	}
 	res.SetHeaders([]string{"Resources", "Non-Resource-URLs", "Ressource-Names", "Verbs"})
 	for _, r := range rules {
-		res.AddContent([]string{
+		res.AddContent([]interface{}{
 			describe.CombineResourceGroup(r.Resources, r.APIGroups),
-			fmt.Sprint(r.NonResourceURLs),
-			fmt.Sprint(r.ResourceNames),
-			fmt.Sprint(r.Verbs),
+			r.NonResourceURLs,
+			r.ResourceNames,
+			r.Verbs,
 		})
 	}
 	return *res, nil

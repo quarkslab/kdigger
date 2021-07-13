@@ -27,7 +27,7 @@ var versionCmd = &cobra.Command{
 		// leveraging bucket results to print even if it's not a plugin
 		res := bucket.NewResults("Version")
 		res.SetHeaders([]string{"Tag", "GITCommit", "GoVersion", "Architecture"})
-		res.AddContent([]string{VERSION, GITCOMMIT, GOVERSION, ARCH})
+		res.AddContent([]interface{}{VERSION, GITCOMMIT, GOVERSION, ARCH})
 
 		showName := false
 		showComment := false

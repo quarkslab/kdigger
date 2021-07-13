@@ -47,7 +47,7 @@ func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 				sCaps = append(sCaps, cap.String())
 			}
 		}
-		res.AddContent([]string{set.String(), fmt.Sprint(sCaps)})
+		res.AddContent([]interface{}{set.String(), sCaps})
 	}
 
 	if isPrivileged(capabilities[capability.BOUNDING]) {

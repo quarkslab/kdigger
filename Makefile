@@ -1,5 +1,5 @@
-# Injection variables
 CMDPACKAGE=github.com/mtardy/kdigger/commands
+VERSION=$$(git describe --tags 2>/dev/null || echo dev)
 GITCOMMIT=$$(git rev-parse HEAD)
 GOVERSION=$$(go version | awk '{print $$3}')
 ARCH=$$(uname -m)
@@ -13,7 +13,6 @@ LDFLAGS="-s -w                               \
 	-X $(CMDPACKAGE).GITCOMMIT=$(GITCOMMIT)  \
 	-X $(CMDPACKAGE).GOVERSION=$(GOVERSION)  \
 	-X $(CMDPACKAGE).ARCH=$(ARCH)"
-
 
 build:
 	go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)

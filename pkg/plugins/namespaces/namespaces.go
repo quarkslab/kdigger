@@ -34,7 +34,7 @@ func (n NamespacesBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"Namespace", "Active", "Details"})
 	for _, d := range details {
-		res.AddContent([]string{d.nsType, fmt.Sprint(d.active), d.details})
+		res.AddContent([]interface{}{d.nsType, d.active, d.details})
 	}
 
 	return *res, nil
