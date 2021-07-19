@@ -98,12 +98,14 @@ You can list and describe the available buckets (or plugins) with `kdigger ls`:
 | devices       | [device dev]               | Devices shows the list of devices available in the |
 |               |                            | container.                                         |
 | environment   | [environments environ env] | Environment checks the presence of kubernetes      |
-|               |                            | related environment variables and dumps them.      |
+|               |                            | related environment variables and shows them.      |
 | mount         | [mounts mn]                | Mount shows all mounted devices in the container.  |
 | namespaces    | [namespace ns]             | Namespaces analyses namespaces of the container in |
 |               |                            | the context of Kubernetes.                         |
 | runtime       | [runtimes rt]              | Runtime finds clues to identify which container    |
 |               |                            | runtime is running the container.                  |
+| services      | [service svc]              | Services uses CoreDNS wildcards feature to         |
+|               |                            | discover every service available in the cluster.   |
 | syscalls      | [syscall sys]              | Syscalls scans most of the syscalls to detect      |
 |               |                            | which are blocked and allowed.                     |
 | token         | [tokens tk]                | Token checks for the presence of a service account |
