@@ -21,7 +21,7 @@ type EnvironmentBucket struct{}
 
 func (n EnvironmentBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Name", "Value"})
+	res.SetHeaders([]string{"name", "value"})
 	for name, value := range kubeEnviron() {
 		res.AddContent([]interface{}{name, value})
 	}

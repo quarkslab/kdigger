@@ -27,7 +27,7 @@ func (m MountBucket) Run() (bucket.Results, error) {
 		panic(err)
 	}
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Device", "Path", "Filesystem", "Flags"})
+	res.SetHeaders([]string{"device", "path", "filesystem", "flags"})
 	for _, m := range values {
 		res.AddContent([]interface{}{m.Device, m.Path, m.Filesystem, m.Flags})
 	}

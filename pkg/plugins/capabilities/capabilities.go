@@ -35,7 +35,7 @@ func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 	capabilities, err := getCapabilities(0)
 
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Set", "Capabilities"})
+	res.SetHeaders([]string{"set", "capabilities"})
 	var colors text.Colors
 	colors = append(colors, text.FgRed)
 	for set, caps := range capabilities {

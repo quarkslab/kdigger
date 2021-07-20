@@ -23,7 +23,7 @@ func (n ServicesBucket) Run() (bucket.Results, error) {
 		res.SetComment(fmt.Sprintf("error when requesting DNS: %s", err.Error()))
 		return *res, nil
 	}
-	res.SetHeaders([]string{"Service", "Port"})
+	res.SetHeaders([]string{"service", "port"})
 	for _, svc := range hosts {
 		res.AddContent([]interface{}{svc.Target, svc.Port})
 	}

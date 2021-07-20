@@ -18,7 +18,7 @@ const (
 
 var bucketAliases = []string{"admissions", "adm"}
 
-var config bucket.Config
+var currentNamespace string
 
 // AdmissionBucket implements Bucket
 type AdmissionBucket struct {
@@ -74,7 +74,7 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	}
 
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Pod", "Success", "Error"})
+	res.SetHeaders([]string{"pod", "success", "error"})
 	for _, r := range results {
 		if r.err != nil {
 			res.AddContent([]interface{}{r.pod, r.success, r.err})
@@ -128,7 +128,7 @@ func NewAdmissionBucket(cf bucket.Config) (*AdmissionBucket, error) {
 	if cf.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
-	config = cf
+	currentNamespace = cf.Namespace
 	return &AdmissionBucket{
 		client:       cf.Client,
 		cleaningLock: &sync.Mutex{},
@@ -139,7 +139,7 @@ func NewAdmissionBucket(cf bucket.Config) (*AdmissionBucket, error) {
 func getGenericPod() *v1.Pod {
 	return &v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace:    config.Namespace,
+			Namespace:    currentNamespace,
 			GenerateName: "admission-bucket-",
 		},
 		Spec: v1.PodSpec{

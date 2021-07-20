@@ -32,7 +32,7 @@ func (n NamespacesBucket) Run() (bucket.Results, error) {
 	details = append(details, getPIDNamespaceInfo())
 
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Namespace", "Active", "Details"})
+	res.SetHeaders([]string{"namespace", "active", "details"})
 	for _, d := range details {
 		res.AddContent([]interface{}{d.nsType, d.active, d.details})
 	}

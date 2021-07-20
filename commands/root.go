@@ -16,6 +16,7 @@ import (
 	"github.com/mtardy/kdigger/pkg/plugins/services"
 	"github.com/mtardy/kdigger/pkg/plugins/syscalls"
 	"github.com/mtardy/kdigger/pkg/plugins/token"
+	"github.com/mtardy/kdigger/pkg/plugins/version"
 	"github.com/spf13/cobra"
 )
 
@@ -66,6 +67,7 @@ func registerBuckets() {
 	devices.Register(buckets)
 	runtime.Register(buckets)
 	services.Register(buckets)
+	version.Register(buckets)
 }
 
 func init() {

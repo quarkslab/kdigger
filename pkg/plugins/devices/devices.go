@@ -26,7 +26,7 @@ func (n DevicesBucket) Run() (bucket.Results, error) {
 	}
 
 	res := bucket.NewResults(bucketName)
-	res.SetHeaders([]string{"Mode", "IsDir", "ModTime", "Name"})
+	res.SetHeaders([]string{"mode", "isDir", "modTime", "name"})
 	for _, dev := range devs {
 		res.AddContent([]interface{}{dev.Mode().String(), dev.IsDir(), dev.ModTime().Format(time.RFC3339), dev.Name()})
 

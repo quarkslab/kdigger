@@ -201,9 +201,6 @@ func NewResults(name string) *Results {
 }
 
 func (r *Results) SetHeaders(headers []string) {
-	for i := range headers {
-		headers[i] = strings.ToLower(headers[i])
-	}
 	r.headers = headers
 }
 

@@ -33,7 +33,7 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 		}
 	}
 
-	res.SetHeaders([]string{"Blocked", "Allowed"})
+	res.SetHeaders([]string{"blocked", "allowed"})
 	res.AddContent([]interface{}{blocked, allowed})
 
 	skippedNames := make([]string, 0)

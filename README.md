@@ -110,6 +110,7 @@ You can list and describe the available buckets (or plugins) with `kdigger ls`:
 |               |                            | which are blocked and allowed.                     |
 | token         | [tokens tk]                | Token checks for the presence of a service account |
 |               |                            | token in the filesystem.                           |
+| version       | [versions]                 | Version dumps the API server version informations. |
 +---------------+----------------------------+----------------------------------------------------+
 ```
 
@@ -259,6 +260,31 @@ certificate of the kube API server.
 
 You might want to use the `-o json` flag here and use `jq` to get that token
 fast!
+
+### Version
+
+Version dumps the API server version informations. It access the `/version`
+path that is accessible even by unauthenticated users. So even without a
+service account token you can request this information. You can get more
+information on what you can access as an `system:unauthenticated` user with
+`kubectl describe clusterrolebinding | grep unauthenticated -B 9` for example.
+You may encounter the `system:public-info-viewer` cluster role, you can
+describe it with `kubectl describe clusterrole system:public-info-viewer` and
+display:
+
+```text
+Name:         system:public-info-viewer
+Labels:       kubernetes.io/bootstrapping=rbac-defaults
+Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+PolicyRule:
+  Resources  Non-Resource URLs  Resource Names  Verbs
+  ---------  -----------------  --------------  -----
+             [/healthz]         []              [get]
+             [/livez]           []              [get]
+             [/readyz]          []              [get]
+             [/version/]        []              [get]
+             [/version]         []              [get]
+```
 
 ## Details
 

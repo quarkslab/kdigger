@@ -19,9 +19,10 @@ const (
 )
 
 var bucketAliases = []string{"authorizations", "auth"}
-var config bucket.Config
 
-type AuthorizationBucket struct{}
+type AuthorizationBucket struct {
+	config bucket.Config
+}
 
 func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
@@ -29,14 +30,14 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	// create the self subject rules review object
 	obj := &v1.SelfSubjectRulesReview{
 		Spec: v1.SelfSubjectRulesReviewSpec{
-			Namespace: config.Namespace,
+			Namespace: n.config.Namespace,
 		},
 	}
 
-	res.SetComment(fmt.Sprintf("Checking current context/token permissions in the %q namespace.", config.Namespace))
+	res.SetComment(fmt.Sprintf("Checking current context/token permissions in the %q namespace.", n.config.Namespace))
 
 	// do the actual request
-	response, err := config.Client.AuthorizationV1().SelfSubjectRulesReviews().Create(
+	response, err := n.config.Client.AuthorizationV1().SelfSubjectRulesReviews().Create(
 		context.TODO(),
 		obj,
 		metav1.CreateOptions{},
@@ -50,7 +51,7 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	if err != nil {
 		return bucket.Results{}, err
 	}
-	res.SetHeaders([]string{"Resources", "Non-Resource-URLs", "Ressource-Names", "Verbs"})
+	res.SetHeaders([]string{"resources", "nonResourceURLs", "ressourceNames", "verbs"})
 	for _, r := range rules {
 		res.AddContent([]interface{}{
 			describe.CombineResourceGroup(r.Resources, r.APIGroups),
@@ -72,8 +73,9 @@ func NewAuthorizationBucket(c bucket.Config) (*AuthorizationBucket, error) {
 	if c.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
-	config = c
-	return &AuthorizationBucket{}, nil
+	return &AuthorizationBucket{
+		config: c,
+	}, nil
 }
 
 // partial copy of https://github.com/kubernetes/kubectl/blob/0f88fc6b598b7e883a391a477215afb080ec7733/pkg/cmd/auth/cani.go#L323
