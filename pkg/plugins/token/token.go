@@ -14,7 +14,6 @@ const (
 )
 
 var bucketAliases = []string{"tokens", "tk"}
-var config bucket.Config
 
 type TokenBucket struct{}
 
@@ -52,10 +51,6 @@ func Register(b *bucket.Buckets) {
 }
 
 func NewTokenBucket(c bucket.Config) (*TokenBucket, error) {
-	if c.Client == nil {
-		return nil, bucket.ErrMissingClient
-	}
-	config = c
 	return &TokenBucket{}, nil
 }
 

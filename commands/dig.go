@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
@@ -22,24 +21,23 @@ var color bool
 
 // digCmd represents the dig command
 var digCmd = &cobra.Command{
-	Use:     "dig",
+	Use:     "dig [buckets]",
 	Aliases: []string{"d"},
 	Short:   "Use all buckets or specific ones",
 	Long: `This command, with no arguments, runs all registered buckets. You can find
 information about all buckets with the list command. To run one or more
 specific buckets, just input their names or aliases as arguments.`,
-	// TODO you can create a validation function for args with cobra
-	// This two lines will not work because buckets.Registered() is empty at
-	// the beginning
+	// This two lines will not work because buckets.Registered() because
+	// buckets will be nil at evaluation
 	// ValidArgs: buckets.Registered(),
-	// Args: cobra.OnlyValidArgs,
-	PreRunE: func(cmd *cobra.Command, args []string) error {
+	// Args:      cobra.OnlyValidArgs,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		// apply default colored human only if the color flag was not set
 		if !cmd.Flags().Changed("color") && output == "human" {
 			color = true
 		}
-		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// create the config that will be passed to every plugins
 		config := bucket.NewConfig()
 		config.Color = color
@@ -49,6 +47,7 @@ specific buckets, just input their names or aliases as arguments.`,
 			args = buckets.Registered()
 		}
 
+		// iterate through all the specified buckets
 		for _, name := range args {
 		retry:
 			b, err := buckets.InitBucket(name, *config)
@@ -56,22 +55,18 @@ specific buckets, just input their names or aliases as arguments.`,
 			if err != nil {
 				// config was incomplete for requested bucket
 				if err == bucket.ErrMissingClient {
-					// lazy load the client
-					// that might seems overkill but it is really strange
-					// to load kubeconfig for buckets that do not need it
+					// lazy load the client, that might seems overkill but it
+					// is also really strange to load kubeconfig for buckets
+					// that do not need it
 					err = loadContext(config)
 					if err != nil {
 						panic(err)
 					}
-					// this is bullshit because we have a potential infinite
-					// loop if the plugin return ErrMissingClient forever
-					// TODO!!!!
+					// we have a potential infinite loop if the plugin return
+					// ErrMissingClient forever... not a great design
 					goto retry
 				}
-				if _, ok := err.(bucket.ErrUnknownBucket); ok {
-					log.Fatal(err)
-				}
-				panic(err)
+				return err
 			}
 
 			results, err := b.Run()
@@ -84,6 +79,7 @@ specific buckets, just input their names or aliases as arguments.`,
 				panic(err)
 			}
 		}
+		return nil
 	},
 }
 
@@ -108,11 +104,6 @@ func loadContext(config *bucket.Config) error {
 	config.Client = cf
 
 	return nil
-}
-
-func fileExist(path string) bool {
-	_, err := os.Stat(path)
-	return !os.IsNotExist(err)
 }
 
 func init() {

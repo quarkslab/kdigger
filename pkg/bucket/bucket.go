@@ -314,7 +314,7 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	var b []byte
 	var err error
 	// if hide name and comments, directly output an array of results
-	if (opts.ShowName != nil && *opts.ShowName == false) && (opts.ShowComment != nil && *opts.ShowComment == false) {
+	if (opts.ShowName != nil && !*opts.ShowName) && (opts.ShowComment != nil && !*opts.ShowComment) {
 		b, err = json.Marshal(m)
 	} else {
 		o := jsonOutput{}

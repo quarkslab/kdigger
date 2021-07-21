@@ -3,6 +3,7 @@ package commands
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/mtardy/kdigger/pkg/bucket"
 	"github.com/mtardy/kdigger/pkg/plugins/admission"
@@ -20,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// buckets contains all the plugins
+// buckets stores all the plugins
 var buckets *bucket.Buckets
 
 // var for the output flag
@@ -34,9 +35,6 @@ var rootCmd = &cobra.Command{
 cluster. For that you can use multiples buckets. Buckets are plugins that can
 scan specific aspects of a cluster or bring expertise to automate the Kubernetes
 pentest process.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if output != "human" && output != "json" {
 			return fmt.Errorf("ouput flag must be one of human|json, got %q", output)
@@ -45,14 +43,22 @@ pentest process.`,
 	},
 }
 
+func init() {
+	cobra.OnInitialize(registerBuckets)
+
+	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "human", "Output format. One of: human|json.")
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
 
-// registerBuckets registers all the plugin into the buckets, newly created
-// buckets should be registered hers
+// registerBuckets registers all the modules into the buckets, newly created
+// module should be registered here.
 func registerBuckets() {
 	buckets = bucket.NewBuckets()
 
@@ -68,12 +74,6 @@ func registerBuckets() {
 	runtime.Register(buckets)
 	services.Register(buckets)
 	version.Register(buckets)
-}
-
-func init() {
-	cobra.OnInitialize(registerBuckets)
-
-	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "human", "Output format. One of: human|json.")
 }
 
 // printResults prints results with the output format selected by the flags
