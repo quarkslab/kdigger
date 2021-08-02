@@ -20,5 +20,11 @@ LDFLAGS="-s -w                               \
 	-X $(CMDPACKAGE).GOVERSION=$(GOVERSION)  \
 	-X $(CMDPACKAGE).ARCH=$(ARCH)"
 
+# if CGO_ENABLED=1, the binary will be dynamically linked, and surprisingly,
+# bigger! It seems that it is because of the net package that Go is dynamically
+# linking the libraries.
 build:
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+
+clean:
+	rm kdigger
