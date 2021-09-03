@@ -3,6 +3,7 @@ package commands
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mtardy/kdigger/pkg/automaticontext"
 	"github.com/mtardy/kdigger/pkg/bucket"
@@ -24,9 +25,10 @@ var digCmd = &cobra.Command{
 	Use:     "dig [buckets]",
 	Aliases: []string{"d"},
 	Short:   "Use all buckets or specific ones",
-	Long: `This command, with no arguments, runs all registered buckets. You can find
-information about all buckets with the list command. To run one or more
-specific buckets, just input their names or aliases as arguments.`,
+	Long: `This command runs buckets, special keyword "all" or "a" runs all registered
+buckets. You can find information about all buckets with the list command. To
+run one or more specific buckets, just input their names or aliases as
+arguments.`,
 	// This two lines will not work because buckets.Registered() because
 	// buckets will be nil at evaluation
 	// ValidArgs: buckets.Registered(),
@@ -36,15 +38,25 @@ specific buckets, just input their names or aliases as arguments.`,
 		if !cmd.Flags().Changed("color") && output == "human" {
 			color = true
 		}
+
+		if len(args) == 0 {
+			cmd.Help()
+		}
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// create the config that will be passed to every plugins
 		config := bucket.NewConfig()
 		config.Color = color
 
-		// if no args provided, use all buckets
-		if len(args) == 0 {
-			args = buckets.Registered()
+		// PreRun guarantee that len(args) != 0 but ...
+		if len(args) != 0 {
+			// if "all" or "a" just erase all the args with the bucket list
+			switch strings.ToLower(args[0]) {
+			case "all":
+				fallthrough
+			case "a":
+				args = buckets.Registered()
+			}
 		}
 
 		// iterate through all the specified buckets

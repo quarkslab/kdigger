@@ -13,6 +13,9 @@ calling the `mount` command or listing all devices present in dev with `ls
 admission controller scanner. In the end, this tool aims to speed up the
 pentesting process.
 
+
+WHAT ITS NOT (not kubehunter etc...)
+
 ## Installation
 
 ### Via Go
