@@ -49,9 +49,10 @@ type Buckets struct {
 }
 
 type Config struct {
-	Client    kubernetes.Interface
-	Namespace string
-	Color     bool
+	Client      kubernetes.Interface
+	Namespace   string
+	Color       bool
+	OutputWidth int
 }
 
 func NewBuckets() *Buckets {
@@ -190,6 +191,7 @@ type ResultsOpts struct {
 	ShowName    *bool
 	ShowComment *bool
 	ShowData    *bool
+	OutputWidth int
 }
 
 func NewResults(name string) *Results {
@@ -237,7 +239,11 @@ func (r Results) checkWidthsCoherence() bool {
 
 }
 
-func (r Results) formatTable() string {
+func nrColumnsToMaxWidth(termWidth int, n int) int {
+	return (termWidth - 4 - ((n - 1) * 3)) / n
+}
+
+func (r Results) formatTable(outputWidth int) string {
 	if len(r.data) == 0 || len(r.headers) == 0 {
 		return ""
 	}
@@ -246,7 +252,7 @@ func (r Results) formatTable() string {
 	// Unfortunately this library does not propose to enfore a width on the
 	// global table and I haven't found if you can specify of a tunning for
 	// every column so I'm overshooting here.
-	const maxWidth = 50
+	maxWidth := nrColumnsToMaxWidth(outputWidth, len(r.headers))
 	t.SetColumnConfigs([]table.ColumnConfig{
 		{Number: 1, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
 		{Number: 2, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
@@ -266,6 +272,7 @@ func (r Results) formatTable() string {
 		}
 		t.AppendRow(row)
 	}
+
 	return t.Render()
 }
 
@@ -283,7 +290,7 @@ func (r Results) Human(opts ResultsOpts) string {
 	if opts.ShowData == nil || *opts.ShowData {
 		// the table will be written only if the headers and the data has been
 		// filled
-		output.WriteString(r.formatTable())
+		output.WriteString(r.formatTable(opts.OutputWidth))
 	}
 	return output.String()
 }

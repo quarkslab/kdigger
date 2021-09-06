@@ -31,7 +31,13 @@ var versionCmd = &cobra.Command{
 
 		showName := false
 		showComment := false
-		err := printResults(*res, bucket.ResultsOpts{ShowName: &showName, ShowComment: &showComment})
+		err := printResults(
+			*res,
+			bucket.ResultsOpts{
+				ShowName:    &showName,
+				ShowComment: &showComment,
+				OutputWidth: outputWidth,
+			})
 		return err
 	},
 }

@@ -27,6 +27,9 @@ var buckets *bucket.Buckets
 // var for the output flag
 var output string
 
+// var for the output width
+var outputWidth int
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "kdigger",
@@ -47,6 +50,7 @@ func init() {
 	cobra.OnInitialize(registerBuckets)
 
 	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "human", "Output format. One of: human|json.")
+	rootCmd.PersistentFlags().IntVarP(&outputWidth, "width", "w", 140, "Width for the human output")
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

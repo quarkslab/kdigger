@@ -47,6 +47,7 @@ arguments.`,
 		// create the config that will be passed to every plugins
 		config := bucket.NewConfig()
 		config.Color = color
+		config.OutputWidth = outputWidth
 
 		// PreRun guarantee that len(args) != 0 but ...
 		if len(args) != 0 {
@@ -86,7 +87,7 @@ arguments.`,
 				panic(err)
 			}
 
-			err = printResults(results, bucket.ResultsOpts{})
+			err = printResults(results, bucket.ResultsOpts{OutputWidth: outputWidth})
 			if err != nil {
 				panic(err)
 			}

@@ -33,7 +33,13 @@ and descriptions. You can pass specific buckets as arguments to have their infor
 
 		showName := false
 		showComment := false
-		err := printResults(*res, bucket.ResultsOpts{ShowName: &showName, ShowComment: &showComment})
+		err := printResults(
+			*res,
+			bucket.ResultsOpts{
+				ShowName:    &showName,
+				ShowComment: &showComment,
+				OutputWidth: outputWidth,
+			})
 		return err
 	},
 }
