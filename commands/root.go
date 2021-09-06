@@ -17,6 +17,7 @@ import (
 	"github.com/mtardy/kdigger/pkg/plugins/services"
 	"github.com/mtardy/kdigger/pkg/plugins/syscalls"
 	"github.com/mtardy/kdigger/pkg/plugins/token"
+	"github.com/mtardy/kdigger/pkg/plugins/userid"
 	"github.com/mtardy/kdigger/pkg/plugins/version"
 	"github.com/spf13/cobra"
 )
@@ -78,6 +79,7 @@ func registerBuckets() {
 	runtime.Register(buckets)
 	services.Register(buckets)
 	version.Register(buckets)
+	userid.Register(buckets)
 }
 
 // printResults prints results with the output format selected by the flags
