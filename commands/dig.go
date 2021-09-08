@@ -12,17 +12,20 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
-// var for the kubeconfig flag
+// flag for the kubeconfig
 var kubeconfig string
 
-// var for the namespace flag
+// flag for the namespace
 var namespace string
 
-// var for the color flag
+// flag for the color
 var color bool
 
-// var to activate active buckets
+// flag to activate active buckets
 var active bool
+
+// flag to force admission creation
+var admForce bool
 
 // digCmd represents the dig command
 var digCmd = &cobra.Command{
@@ -49,6 +52,13 @@ arguments.`,
 
 		for _, name := range args {
 			if buckets.IsActive(name) && !active {
+				// this little check is just to facilitate that:
+				// "kdigger dig adm -a --adm-force" == "kdigger dig adm --adm-force"
+				canonicalName, _ := buckets.ResolveAlias(name)
+				if canonicalName == "admission" && admForce {
+					continue
+				}
+
 				return fmt.Errorf("trying to run %q active bucket without the %q or %q flag", name, "--active", "-a")
 			}
 		}
@@ -57,10 +67,11 @@ arguments.`,
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// create the config that will be passed to every plugins
-		config := bucket.NewConfig()
-		config.Color = color
-		config.OutputWidth = outputWidth
-
+		config := &bucket.Config{
+			Color:       color,
+			OutputWidth: outputWidth,
+			AdmForce:    admForce,
+		}
 		// PreRun guarantee that len(args) != 0 but ...
 		if len(args) != 0 {
 			// if "all" or "a" just erase all the args with the bucket list
@@ -152,4 +163,5 @@ func init() {
 	digCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace to use. (default to the namespace in the context)")
 	digCmd.Flags().BoolVarP(&color, "color", "c", false, "Enable color in output. (default true if output is human)")
 	digCmd.Flags().BoolVarP(&active, "active", "a", false, "Enable all buckets that might have side effect on environment.")
+	digCmd.Flags().BoolVarP(&admForce, "admission-force", "", false, "Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)")
 }

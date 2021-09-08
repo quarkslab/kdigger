@@ -55,6 +55,8 @@ type Config struct {
 	Namespace   string
 	Color       bool
 	OutputWidth int
+	// This options is specific to the admission plugin, is it to force creation even if we can't cleanup the mess with delete
+	AdmForce bool
 }
 
 func NewBuckets() *Buckets {
