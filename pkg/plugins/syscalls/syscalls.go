@@ -47,7 +47,7 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 
 // Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, func(config bucket.Config) (bucket.Interface, error) {
+	b.Register(bucketName, bucketAliases, bucketDescription, true, func(config bucket.Config) (bucket.Interface, error) {
 		return NewSyscallsBucket(config)
 	})
 }
@@ -92,6 +92,7 @@ var skippedSyscalls = []int{
 	unix.SYS_VFORK,
 	unix.SYS_SECCOMP,
 	unix.SYS_PTRACE,
+	unix.SYS_VHANGUP,
 }
 
 func scanSyscall(id int, c chan (scanResult)) {
@@ -118,6 +119,11 @@ func scanSyscall(id int, c chan (scanResult)) {
 
 	// ptrace causes a weird race condition that can make the process hang
 	if id == unix.SYS_PTRACE {
+		return
+	}
+
+	// skip vhangup, it exits a container terminal and there is no interest to test it
+	if id == unix.SYS_VHANGUP {
 		return
 	}
 

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,6 +21,9 @@ var namespace string
 // var for the color flag
 var color bool
 
+// var to activate active buckets
+var active bool
+
 // digCmd represents the dig command
 var digCmd = &cobra.Command{
 	Use:     "dig [buckets]",
@@ -33,7 +37,7 @@ arguments.`,
 	// buckets will be nil at evaluation
 	// ValidArgs: buckets.Registered(),
 	// Args:      cobra.OnlyValidArgs,
-	PreRun: func(cmd *cobra.Command, args []string) {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// apply default colored human only if the color flag was not set
 		if !cmd.Flags().Changed("color") && output == "human" {
 			color = true
@@ -42,6 +46,14 @@ arguments.`,
 		if len(args) == 0 {
 			cmd.Help()
 		}
+
+		for _, name := range args {
+			if buckets.IsActive(name) && !active {
+				return fmt.Errorf("trying to run %q active bucket without the %q or %q flag", name, "--active", "-a")
+			}
+		}
+
+		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// create the config that will be passed to every plugins
@@ -56,7 +68,11 @@ arguments.`,
 			case "all":
 				fallthrough
 			case "a":
-				args = buckets.Registered()
+				if active {
+					args = buckets.Registered()
+				} else {
+					args = buckets.RegisteredPassive()
+				}
 			}
 		}
 
@@ -73,7 +89,7 @@ arguments.`,
 					// that do not need it
 					err = loadContext(config)
 					if err != nil {
-						panic(err)
+						return err
 					}
 					// we have a potential infinite loop if the plugin return
 					// ErrMissingClient forever... not a great design
@@ -84,12 +100,12 @@ arguments.`,
 
 			results, err := b.Run()
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			err = printResults(results, bucket.ResultsOpts{OutputWidth: outputWidth})
 			if err != nil {
-				panic(err)
+				return err
 			}
 		}
 		return nil
@@ -135,4 +151,5 @@ func init() {
 
 	digCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace to use. (default to the namespace in the context)")
 	digCmd.Flags().BoolVarP(&color, "color", "c", false, "Enable color in output. (default true if output is human)")
+	digCmd.Flags().BoolVarP(&active, "active", "a", false, "Enable all buckets that might have side effect on environment.")
 }

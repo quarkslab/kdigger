@@ -26,7 +26,7 @@ var versionCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// leveraging bucket results to print even if it's not a plugin
 		res := bucket.NewResults("Version")
-		res.SetHeaders([]string{"Tag", "GITCommit", "GoVersion", "Architecture"})
+		res.SetHeaders([]string{"tag", "gitCommit", "goVersion", "architecture"})
 		res.AddContent([]interface{}{VERSION, GITCOMMIT, GOVERSION, ARCH})
 
 		showName := false

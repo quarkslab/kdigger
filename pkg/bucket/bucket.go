@@ -39,6 +39,8 @@ type entry struct {
 	description string
 	aliases     []string
 	factory     Factory
+	// True if the bucket has side-effects on its environment and False if it's a readonly bucket
+	active bool
 }
 
 type Buckets struct {
@@ -75,9 +77,23 @@ func (bs *Buckets) Registered() []string {
 	return keys
 }
 
+// Registered enumerates the names of all passive registered plugins.
+func (bs *Buckets) RegisteredPassive() []string {
+	bs.lock.RLock()
+	defer bs.lock.RUnlock()
+	keys := []string{}
+	for k, b := range bs.registry {
+		if !b.active {
+			keys = append(keys, k)
+		}
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // Register registers a plugin Factory by name. This is expected to happen
 // during app startup.
-func (bs *Buckets) Register(name string, aliases []string, description string, factory Factory) {
+func (bs *Buckets) Register(name string, aliases []string, description string, active bool, factory Factory) {
 	bs.lock.Lock()
 	defer bs.lock.Unlock()
 
@@ -95,6 +111,7 @@ func (bs *Buckets) Register(name string, aliases []string, description string, f
 		description: description,
 		aliases:     aliases,
 		factory:     factory,
+		active:      active,
 	}
 
 	if bs.aliases == nil {
@@ -176,6 +193,14 @@ func (bs *Buckets) Aliases(name string) []string {
 		return []string{""}
 	}
 	return e.aliases
+}
+
+func (bs *Buckets) IsActive(name string) bool {
+	e, found := bs.findEntryFromAlias(name)
+	if !found {
+		return false
+	}
+	return e.active
 }
 
 type Results struct {

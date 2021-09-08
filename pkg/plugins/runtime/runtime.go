@@ -25,7 +25,7 @@ func (n RuntimeBucket) Run() (bucket.Results, error) {
 
 // Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, runtimeAliases, bucketDescription, func(config bucket.Config) (bucket.Interface, error) {
+	b.Register(bucketName, runtimeAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
 		return NewRuntimeBucket(config)
 	})
 }

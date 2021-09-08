@@ -45,7 +45,7 @@ func (n TokenBucket) Run() (bucket.Results, error) {
 }
 
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, func(config bucket.Config) (bucket.Interface, error) {
+	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
 		return NewTokenBucket(config)
 	})
 }

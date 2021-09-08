@@ -23,11 +23,11 @@ and descriptions. You can pass specific buckets as arguments to have their infor
 
 		// leveraging bucket results to print even if it's not a plugin
 		res := bucket.NewResults("List")
-		res.SetHeaders([]string{"Name", "Aliases", "Description"})
+		res.SetHeaders([]string{"name", "aliases", "description", "active"})
 		for _, name := range bucketList {
 			fullname, found := buckets.ResolveAlias(name)
 			if found {
-				res.AddContent([]interface{}{fullname, buckets.Aliases(name), buckets.Describe(name)})
+				res.AddContent([]interface{}{fullname, buckets.Aliases(name), buckets.Describe(name), buckets.IsActive(name)})
 			}
 		}
 

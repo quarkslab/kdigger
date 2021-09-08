@@ -42,7 +42,7 @@ func (n NamespacesBucket) Run() (bucket.Results, error) {
 
 // Register registers a bucket
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, func(config bucket.Config) (bucket.Interface, error) {
+	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
 		return NewNamespacesBucket(config)
 	})
 }
