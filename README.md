@@ -88,33 +88,33 @@ The current main flags that you can use are:
 
 You can list and describe the available buckets (or plugins) with `kdigger ls`:
 ```text
-+---------------+----------------------------+----------------------------------------------------+
-|      NAME     |           ALIASES          |                     DESCRIPTION                    |
-+---------------+----------------------------+----------------------------------------------------+
-| admission     | [admissions adm]           | Admission scans the admission controller chain by  |
-|               |                            | creating specific pods to find what is prevented   |
-|               |                            | or not.                                            |
-| authorization | [authorizations auth]      | Authorization checks your API permissions with the |
-|               |                            | current context or the available token.            |
-| capabilities  | [capability cap]           | Capabilities list all capabilities in all sets and |
-|               |                            | displays dangerous capabilities in red.            |
-| devices       | [device dev]               | Devices shows the list of devices available in the |
-|               |                            | container.                                         |
-| environment   | [environments environ env] | Environment checks the presence of kubernetes      |
-|               |                            | related environment variables and shows them.      |
-| mount         | [mounts mn]                | Mount shows all mounted devices in the container.  |
-| namespaces    | [namespace ns]             | Namespaces analyses namespaces of the container in |
-|               |                            | the context of Kubernetes.                         |
-| runtime       | [runtimes rt]              | Runtime finds clues to identify which container    |
-|               |                            | runtime is running the container.                  |
-| services      | [service svc]              | Services uses CoreDNS wildcards feature to         |
-|               |                            | discover every service available in the cluster.   |
-| syscalls      | [syscall sys]              | Syscalls scans most of the syscalls to detect      |
-|               |                            | which are blocked and allowed.                     |
-| token         | [tokens tk]                | Token checks for the presence of a service account |
-|               |                            | token in the filesystem.                           |
-| version       | [versions]                 | Version dumps the API server version informations. |
-+---------------+----------------------------+----------------------------------------------------+
++---------------+----------------------------+----------------------------------------------------------+
+|      NAME     |           ALIASES          |                        DESCRIPTION                       |
++---------------+----------------------------+----------------------------------------------------------+
+| admission     | [admissions adm]           | Admission scans the admission controller chain by        |
+|               |                            | creating specific pods to find what is prevented or not. |
+| authorization | [authorizations auth]      | Authorization checks your API permissions with the       |
+|               |                            | current context or the available token.                  |
+| capabilities  | [capability cap]           | Capabilities list all capabilities in all sets and       |
+|               |                            | displays dangerous capabilities in red.                  |
+| devices       | [device dev]               | Devices shows the list of devices available in the       |
+|               |                            | container.                                               |
+| environment   | [environments environ env] | Environment checks the presence of kubernetes related    |
+|               |                            | environment variables and shows them.                    |
+| mount         | [mounts mn]                | Mount shows all mounted devices in the container.        |
+| namespaces    | [namespace ns]             | Namespaces analyses namespaces of the container in the   |
+|               |                            | context of Kubernetes.                                   |
+| runtime       | [runtimes rt]              | Runtime finds clues to identify which container runtime  |
+|               |                            | is running the container.                                |
+| services      | [service svc]              | Services uses CoreDNS wildcards feature to discover      |
+|               |                            | every service available in the cluster.                  |
+| syscalls      | [syscall sys]              | Syscalls scans most of the syscalls to detect which are  |
+|               |                            | blocked and allowed.                                     |
+| token         | [tokens tk]                | Token checks for the presence of a service account token |
+|               |                            | in the filesystem.                                       |
+| userid        | [userids id]               | UserID retrieves UID, GID and their corresponding names. |
+| version       | [versions]                 | Version dumps the API server version informations.       |
++---------------+----------------------------+----------------------------------------------------------+
 ```
 
 ### Admission
@@ -263,6 +263,13 @@ certificate of the kube API server.
 
 You might want to use the `-o json` flag here and use `jq` to get that token
 fast!
+
+### UserID
+
+UserID retrieves UID, GID and their corresponding names. It also gives
+`homeDir` as a bonus! Unfortunately, we can list all group IDs without CGO
+enabled. This is almost (because `id` is better) equivalent to run the `id`
+command directly.
 
 ### Version
 
