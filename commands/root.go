@@ -12,12 +12,13 @@ import (
 	"github.com/mtardy/kdigger/pkg/plugins/devices"
 	"github.com/mtardy/kdigger/pkg/plugins/environment"
 	"github.com/mtardy/kdigger/pkg/plugins/mount"
-	"github.com/mtardy/kdigger/pkg/plugins/namespaces"
+	"github.com/mtardy/kdigger/pkg/plugins/pidnamespace"
 	"github.com/mtardy/kdigger/pkg/plugins/runtime"
 	"github.com/mtardy/kdigger/pkg/plugins/services"
 	"github.com/mtardy/kdigger/pkg/plugins/syscalls"
 	"github.com/mtardy/kdigger/pkg/plugins/token"
 	"github.com/mtardy/kdigger/pkg/plugins/userid"
+	"github.com/mtardy/kdigger/pkg/plugins/usernamespace"
 	"github.com/mtardy/kdigger/pkg/plugins/version"
 	"github.com/spf13/cobra"
 )
@@ -68,7 +69,8 @@ func registerBuckets() {
 	buckets = bucket.NewBuckets()
 
 	admission.Register(buckets)
-	namespaces.Register(buckets)
+	pidnamespace.Register(buckets)
+	usernamespace.Register(buckets)
 	capabilities.Register(buckets)
 	environment.Register(buckets)
 	token.Register(buckets)

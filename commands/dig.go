@@ -52,12 +52,13 @@ arguments.`,
 
 		for _, name := range args {
 			if buckets.IsActive(name) && !active {
+				// Not a good idea finally!
 				// this little check is just to facilitate that:
 				// "kdigger dig adm -a --adm-force" == "kdigger dig adm --adm-force"
-				canonicalName, _ := buckets.ResolveAlias(name)
-				if canonicalName == "admission" && admForce {
-					continue
-				}
+				// canonicalName, _ := buckets.ResolveAlias(name)
+				// if canonicalName == "admission" && admForce {
+				//     continue
+				// }
 
 				return fmt.Errorf("trying to run %q active bucket without the %q or %q flag", name, "--active", "-a")
 			}

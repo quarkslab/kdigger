@@ -9,7 +9,7 @@ const (
 	bucketDescription = "Version dumps the API server version informations."
 )
 
-var bucketAliases = []string{"versions"}
+var bucketAliases = []string{"versions", "v"}
 
 type VersionBucket struct {
 	config bucket.Config

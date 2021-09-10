@@ -2,7 +2,6 @@ package admission
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 	"sync"
 
@@ -48,8 +47,10 @@ func Register(b *bucket.Buckets) {
 
 // Run runs the admission test.
 func (a *AdmissionBucket) Run() (bucket.Results, error) {
+	res := bucket.NewResults(bucketName)
 	if !a.config.AdmForce && !a.CanIDelete() {
-		return bucket.Results{}, fmt.Errorf("cannot delete pod, will not be able to clean the scan artifacts, force creation with --adm-force")
+		res.SetComment("cannot delete pod, will not be able to clean the scan artifacts, force creation with --admission-force")
+		return *res, nil
 	}
 	a.initialize()
 	c := make(chan admissionResult, len(a.podFactoryChain))
@@ -80,7 +81,6 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 		results = append(results, <-c)
 	}
 
-	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"pod", "success", "error"})
 	for _, r := range results {
 		if r.err != nil {
