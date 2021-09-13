@@ -17,6 +17,8 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 ## Table of content
 
 * [Installation](#installation)
+    * [Via releases](#via-releases)
+    * [Build from source](#build-from-source)
     * [Via Go](#via-go)
 * [Usage](#usage)
 * [Details](#details)
@@ -44,10 +46,28 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 
 ## Installation
 
+### Via releases
+
+For installation instructions from binaries please visit the [Releases
+Page](https://github.com/quarkslab/kdigger/releases).
+
+### Build from source
+
+```bash
+$ git clone https://github.com/quarkslab/kdigger
+$ make
+```
+
+Then you can move the binary somewhere included in your PATH, for example:
+
+```bash
+$ sudo install kdigger /usr/local/bin
+```
+
 ### Via Go
 
-```console
-$ go get github.com/mtardy/kdigger
+```bash
+$ go get github.com/quarkslab/kdigger
 ```
 
 ## Usage
