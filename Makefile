@@ -1,4 +1,4 @@
-CMDPACKAGE=github.com/mtardy/kdigger/commands
+CMDPACKAGE=github.com/quarkslab/kdigger/commands
 VERSION=$$(git describe --tags 2>/dev/null || echo dev)
 GITCOMMIT=$$(git rev-parse HEAD)
 GOVERSION=$$(go version | awk '{print $$3}')
