@@ -36,7 +36,7 @@ func (n PIDNamespaceBucket) Run() (bucket.Results, error) {
 		comment += "the kubelet process was found, pod might have hostPID to true"
 	}
 	res.SetComment(comment)
-	res.AddContent([]interface{}{deviceNumber, kubeletFound, pauseFound})
+	res.AddContent([]interface{}{deviceNumber, pauseFound, kubeletFound})
 
 	return *res, nil
 }
