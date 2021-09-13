@@ -87,7 +87,7 @@ Use "kdigger [command] --help" for more information about a command.
 
 Especially on the dig command to browse the available flags:
 
-```text
+```console
 $ kdigger dig
 This command runs buckets, special keyword "all" or "a" runs all registered
 buckets. You can find information about all buckets with the list command. To
