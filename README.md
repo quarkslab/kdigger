@@ -4,11 +4,12 @@
 penetration testing. This tool is a compilation of various plugins called
 buckets to facilitate pentesting Kubernetes from inside a pod.
 
-Some plugins perform really simple actions, that could be performed just by
-calling the `mount` command or listing all devices present in dev with `ls
-/dev` for example, but some others automate scanning processes, such as the
-admission controller scanner. In the end, this tool aims to speed up the
-pentesting process.
+Please note that this is not an ultimate pentest tool on Kubernetes, Some
+plugins perform really simple actions, that could be performed just by calling
+the `mount` command or listing all devices present in dev with `ls /dev` for
+example, but some others automate scanning processes, such as the admission
+controller scanner. In the end, this tool aims to speed up the pentesting
+process.
 
 ![A small digger trying to move the evergreen stuck cruise ship in the suez
 canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
@@ -245,6 +246,8 @@ $ kdigger ls
 | pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID   | false  |
 |               |                            | namespace of the container in   |        |
 |               |                            | the context of Kubernetes.      |        |
+| processes     | [process ps]               | Processes analyses the running  | false  |
+|               |                            | processes in your PID namespace |        |
 | runtime       | [runtimes rt]              | Runtime finds clues to identify | false  |
 |               |                            | which container runtime is      |        |
 |               |                            | running the container.          |        |
@@ -365,6 +368,13 @@ By the way, the detection in
 device number of the namespace file, a detail of implementation which is no
 longer reliable and most of the time wrong. This is why I tried a different
 approach.
+
+### Processes
+
+Processes analyses the running processes in your PID namespace. It is similar
+to any `ps` command that list all processes like `ps -e` or `ps -A`. It gives
+you the information of the number of running processes and if the first one is
+systemd.
 
 ### Runtime
 
