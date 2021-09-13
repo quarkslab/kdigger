@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mtardy/kdigger/pkg/automaticontext"
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/automaticontext"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
 )

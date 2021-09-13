@@ -3,7 +3,7 @@ package userid
 import (
 	"os/user"
 
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
 const (

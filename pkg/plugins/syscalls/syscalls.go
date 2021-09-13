@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 	"golang.org/x/sys/unix"
 )
 

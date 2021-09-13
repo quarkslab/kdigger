@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/genuinetools/bpfd/proc"
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
 const (

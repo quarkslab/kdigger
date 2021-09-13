@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jedib0t/go-pretty/v6/text"
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 	"github.com/syndtr/gocapability/capability"
 )
 

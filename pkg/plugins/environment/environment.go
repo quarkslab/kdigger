@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
 const (

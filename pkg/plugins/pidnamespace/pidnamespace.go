@@ -4,7 +4,7 @@ import (
 	"syscall"
 
 	"github.com/mitchellh/go-ps"
-	"github.com/mtardy/kdigger/pkg/bucket"
+	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
 const (

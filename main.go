@@ -1,6 +1,6 @@
 package main
 
-import "github.com/mtardy/kdigger/commands"
+import "github.com/quarkslab/kdigger/commands"
 
 func main() {
 	commands.Execute()
