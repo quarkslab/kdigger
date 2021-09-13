@@ -2,12 +2,13 @@ package admission
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"sync"
 
 	"github.com/mtardy/kdigger/pkg/bucket"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -49,8 +50,7 @@ func Register(b *bucket.Buckets) {
 func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if !a.config.AdmForce && !a.CanIDelete() {
-		res.SetComment("cannot delete pod, will not be able to clean the scan artifacts, force creation with --admission-force")
-		return *res, nil
+		return *res, errors.New("cannot delete pod, will not be able to clean the scan artifacts, force creation --admission-force")
 	}
 	a.initialize()
 	c := make(chan admissionResult, len(a.podFactoryChain))
@@ -125,7 +125,7 @@ func (a *AdmissionBucket) initialize() {
 
 func (a AdmissionBucket) CanIDelete() bool {
 	err := a.client.CoreV1().Pods(currentNamespace).Delete(context.TODO(), "delete-test", metav1.DeleteOptions{})
-	return !errors.IsForbidden(err)
+	return !kerrors.IsForbidden(err)
 }
 
 // Cleanup deletes side effects pods that were successfuly created during the scan.

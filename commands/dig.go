@@ -112,13 +112,17 @@ arguments.`,
 
 			results, err := b.Run()
 			if err != nil {
-				return err
+				err := printError(err, name)
+				if err != nil {
+					return err
+				}
+			} else {
+				err = printResults(results, bucket.ResultsOpts{OutputWidth: outputWidth})
+				if err != nil {
+					return err
+				}
 			}
 
-			err = printResults(results, bucket.ResultsOpts{OutputWidth: outputWidth})
-			if err != nil {
-				return err
-			}
 		}
 		return nil
 	},

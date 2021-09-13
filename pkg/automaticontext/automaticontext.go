@@ -1,8 +1,10 @@
 package automaticontext
 
-// TODO should merge this package into the main
+// TODO should merge this package into the main or use the default Kubernetes
+// stuff with the warning log
 
 import (
+	"errors"
 	"os"
 	"strings"
 
@@ -53,6 +55,9 @@ func CurrentNamespace() (string, error) {
 	clientCfg, err := clientcmd.NewDefaultClientConfigLoadingRules().Load()
 	if err != nil {
 		return "", err
+	}
+	if clientCfg.CurrentContext == "" {
+		return "", errors.New("seems to be out cluster and no current context selected, use \"kubectl config use-context <context>\" to select one")
 	}
 	return clientCfg.Contexts[clientCfg.CurrentContext].Namespace, nil
 }

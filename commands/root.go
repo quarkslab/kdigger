@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/mtardy/kdigger/pkg/bucket"
 	"github.com/mtardy/kdigger/pkg/plugins/admission"
@@ -95,6 +97,33 @@ func printResults(r bucket.Results, opts bucket.ResultsOpts) error {
 			return err
 		}
 		fmt.Println(p)
+	default:
+		return errors.New("internal error, check on output flag must have been done in PersistentPreRunE")
+	}
+	return nil
+}
+
+// printError prints error, maybe it would make more sense to return a Results
+// struct that can contains the error directly?
+func printError(err error, name string) error {
+	switch output {
+	case "human":
+		fmt.Printf("### %s ###\n", strings.ToUpper(name))
+		fmt.Printf("Error: %s\n", err.Error())
+	case "json":
+		jsonErr := struct {
+			Bucket string `json:"bucket"`
+			Error  string `json:"error"`
+		}{
+			Bucket: name,
+			Error:  err.Error(),
+		}
+
+		bJSONErr, err := json.Marshal(jsonErr)
+		if err != nil {
+			return err
+		}
+		fmt.Println(string(bJSONErr))
 	default:
 		return errors.New("internal error, check on output flag must have been done in PersistentPreRunE")
 	}
