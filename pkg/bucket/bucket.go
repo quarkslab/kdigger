@@ -317,7 +317,11 @@ func (r Results) Human(opts ResultsOpts) string {
 	if opts.ShowData == nil || *opts.ShowData {
 		// the table will be written only if the headers and the data has been
 		// filled
-		output.WriteString(r.formatTable(opts.OutputWidth))
+		table := r.formatTable(opts.OutputWidth)
+		if table != "" {
+			output.WriteString(table)
+			output.WriteString("\n")
+		}
 	}
 	return output.String()
 }

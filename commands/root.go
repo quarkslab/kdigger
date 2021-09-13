@@ -90,7 +90,7 @@ func registerBuckets() {
 func printResults(r bucket.Results, opts bucket.ResultsOpts) error {
 	switch output {
 	case "human":
-		fmt.Println(r.Human(opts))
+		fmt.Print(r.Human(opts))
 	case "json":
 		p, err := r.JSON(opts)
 		if err != nil {

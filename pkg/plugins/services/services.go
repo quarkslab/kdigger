@@ -20,8 +20,7 @@ func (n ServicesBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	_, hosts, err := net.LookupSRV("", "", "any.any.svc.cluster.local")
 	if err != nil {
-		res.SetComment(fmt.Sprintf("error when requesting DNS: %s", err.Error()))
-		return *res, nil
+		return *res, fmt.Errorf("error when requesting coreDNS: %s", err.Error())
 	}
 	res.SetHeaders([]string{"service", "port"})
 	for _, svc := range hosts {

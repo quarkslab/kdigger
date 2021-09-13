@@ -41,15 +41,17 @@ arguments.`,
 	// ValidArgs: buckets.Registered(),
 	// Args:      cobra.OnlyValidArgs,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
+		// display help by default
+		if len(args) == 0 {
+			cmd.Help()
+		}
+
 		// apply default colored human only if the color flag was not set
 		if !cmd.Flags().Changed("color") && output == "human" {
 			color = true
 		}
 
-		if len(args) == 0 {
-			cmd.Help()
-		}
-
+		// check if any called buckets are active without the -a flag
 		for _, name := range args {
 			if buckets.IsActive(name) && !active {
 				// Not a good idea finally!
@@ -88,11 +90,29 @@ arguments.`,
 			}
 		}
 
+		// remove duplicates in the args
+		alreadyAskBuckets := make(map[string]bool)
+		argsWithoutDupl := []string{}
+		for _, item := range args {
+			if _, found := alreadyAskBuckets[item]; !found {
+				alreadyAskBuckets[item] = true
+				argsWithoutDupl = append(argsWithoutDupl, item)
+			}
+		}
+		args = argsWithoutDupl
+
 		// iterate through all the specified buckets
 		for _, name := range args {
-		retry:
+			// all this retry machinery is done to lazy load the client and the
+			// checks are in case the plugin return ErrMissingClient forever
+			// and we are stuck in an infinite loop. Not the best design...
+			retryAttempt := 0
+		retryInit:
+			if retryAttempt > 1 {
+				panic("plugin returns ErrMissingClient after lazy loading the client into the config")
+			}
+			// intialize the bucket
 			b, err := buckets.InitBucket(name, *config)
-
 			if err != nil {
 				// config was incomplete for requested bucket
 				if err == bucket.ErrMissingClient {
@@ -103,13 +123,13 @@ arguments.`,
 					if err != nil {
 						return err
 					}
-					// we have a potential infinite loop if the plugin return
-					// ErrMissingClient forever... not a great design
-					goto retry
+					retryAttempt++
+					goto retryInit
 				}
 				return err
 			}
 
+			// run the bucket
 			results, err := b.Run()
 			if err != nil {
 				err := printError(err, name)
@@ -122,7 +142,6 @@ arguments.`,
 					return err
 				}
 			}
-
 		}
 		return nil
 	},
