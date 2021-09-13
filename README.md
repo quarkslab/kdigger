@@ -1,11 +1,8 @@
 # kdigger
 
-![A small digger trying to move the evergreen stuck cruise ship in the suez
-canal](digger.jpg)
-
-`kdigger` for "Kubernetes digger" is a Kubernetes pentest tool. This tool is a
-compilation of various plugins called buckets to facilitate pentesting
-Kubernetes from inside a pod.
+`kdigger` for "Kubernetes digger" is a context discovery tool for Kubernetes
+penetration testing. This tool is a compilation of various plugins called
+buckets to facilitate pentesting Kubernetes from inside a pod.
 
 Some plugins perform really simple actions, that could be performed just by
 calling the `mount` command or listing all devices present in dev with `ls
@@ -13,28 +10,59 @@ calling the `mount` command or listing all devices present in dev with `ls
 admission controller scanner. In the end, this tool aims to speed up the
 pentesting process.
 
+![A small digger trying to move the evergreen stuck cruise ship in the suez
+canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 
-WHAT ITS NOT (not kubehunter etc...)
+
+## Table of content
+
+* [Installation](#installation)
+    * [Via Go](#via-go)
+* [Usage](#usage)
+* [Details](#details)
+    * [Usage warning](#usage-warning)
+    * [Results warning](#results-warning)
+    * [Why another tool?](#why-another-tool)
+    * [How this tool is built?](#how-this-tool-is-built)
+* [Buckets](#buckets)
+    * [Admission](#admission)
+    * [Authorization](#authorization)
+    * [Capabilities](#capabilities)
+    * [Devices](#devices)
+    * [Environment](#environment)
+    * [Mount](#mount)
+    * [PIDNamespace](#pidnamespace)
+    * [Runtime](#runtime)
+    * [Services](#services)
+    * [Syscalls](#syscalls)
+    * [Token](#token)
+    * [UserID](#userid)
+    * [UserNamespace](#usernamespace)
+    * [Version](#version)
+* [Contributing](#contributing)
+* [License](#license)
 
 ## Installation
 
 ### Via Go
 
-```bash
+```console
 $ go get github.com/mtardy/kdigger
 ```
 
 ## Usage
 
 
-What you generally want to do is running all the buckets with `dig` or just `d`:
+What you generally want to do is running all the buckets with `dig all` or just
+`d a`:
 ```bash
-$ kdigger dig
+$ kdigger dig all
 ```
 
 Help is provided by the CLI itself, just type `kdigger` to see the options:
 
-```text
+```console
+$ kdigger
 kdigger is an extensible CLI tool to dig around when you are in a Kubernetes
 cluster. For that you can use multiples buckets. Buckets are plugins that can
 scan specific aspects of a cluster or bring expertise to automate the Kubernetes
@@ -47,10 +75,12 @@ Available Commands:
   dig         Use all buckets or specific ones
   help        Help about any command
   ls          List available buckets or describe specific ones
+  version     Print the version information
 
 Flags:
   -h, --help            help for kdigger
   -o, --output string   Output format. One of: human|json. (default "human")
+  -w, --width int       Width for the human output (default 140)
 
 Use "kdigger [command] --help" for more information about a command.
 ```
@@ -58,17 +88,21 @@ Use "kdigger [command] --help" for more information about a command.
 Especially on the dig command to browse the available flags:
 
 ```text
-This command, with no arguments, runs all registered buckets. You can find
-information about all buckets with the list command. To run one or more
-specific buckets, just input their names or aliases as arguments.
+$ kdigger dig
+This command runs buckets, special keyword "all" or "a" runs all registered
+buckets. You can find information about all buckets with the list command. To
+run one or more specific buckets, just input their names or aliases as
+arguments.
 
 Usage:
-  kdigger dig [flags]
+  kdigger dig [buckets] [flags]
 
 Aliases:
   dig, d
 
 Flags:
+  -a, --active              Enable all buckets that might have side effect on environment.
+      --admission-force     Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)
   -c, --color               Enable color in output. (default true if output is human)
   -h, --help                help for dig
       --kubeconfig string   (optional) absolute path to the kubeconfig file (default "/home/mahe/.kube/config")
@@ -76,45 +110,141 @@ Flags:
 
 Global Flags:
   -o, --output string   Output format. One of: human|json. (default "human")
+  -w, --width int       Width for the human output (default 140)
 ```
 
-The current main flags that you can use are:
-- `output` to format the results in a human way or in json to exploit the
-  results.
-- `namespace` to run scans and requests in specific namespace.
-- `color` to enable or disable color in results.
+## Details
+
+### Usage warning
+
+Be careful when running this tool, some checks have side effects like scanning
+your available syscalls or trying to create pods to scan the admission control.
+By default these checks will **not** run without the `--active` or `-a` flag.
+
+For example, syscalls scans may succeed to perform some syscalls with empty
+arguments and it can alter your environment or configuration (for example, if
+the hostname syscall is successful, it will replace hostname with the empty
+string). So never run with sufficient permissions (as root for example)
+directly on your machine.
+
+### Results warning
+
+Some tests are based on details of implementation or side effects on the
+environment that might be subject to changes in the future. So be careful with
+the results.
+
+On top of that, some results might need some experience to be understood and
+analyzed. To take a specific example, if you are granted the `CAP_SYS_ADMIN`
+capability inside a Kubernetes container, there is a good chance that it is
+because you are running in a privileged container. But you should definitely
+confirm that by looking at the number of devices available or the other
+capabilities that you are granted. Indeed it might be necessary to get
+`CAP_SYS_ADMIN` to be privileged but it's not sufficient and if it is your
+goal, you can really easily trick the results by crafting very specific pods
+that might look confusing regarding this tool results.
+
+It might not be the most sophisticated tool to pentest a Kubernetes cluster,
+but you can see this as a _Kubernetes pentest 101 compilation_!
+
+### Why another tool?
+
+I started researching Kubernetes security a few months ago and participated to
+the 2021 Europe kubecon security day CTF. I learned a lot by watching various
+security experts conferences and demonstration and this CTF was a really
+beginner-friendly entry point to practice what I learned in theory. During a
+live solving sessions, I had the opportunity to see how Kubernetes security
+experts were trying to solve the challenge, how they were thinking, what they
+were looking for.
+
+So I decided to create a tool that compiles most of the checks we usually do as
+pentester when in a Kubernetes pod to acquire information very quickly. There
+already are various tools out there. For example, a lot of experts were using
+`amicontained`, a famous container introspection tool by Jessie Frazelle. This
+tool is truly awesome but some features are outdated, like the PID namespace
+detection and it is not specialized on Kubernetes, it's only a container tool
+that can give already give a lot of hints about your Kubernetes situation.
+
+That's why I included most of amicontained features, but also much more that
+are Kubernetes specific. So with `kdigger`, you can try to guess your container
+runtime, see your capabilities, scan namespace activation and the allowed
+syscalls, like with `amicontained`, but you can also automatically retrieve
+service account token, scan their permissions, list interesting environment
+variables, list devices, retrieve all available services in a cluster and even
+scan the admission controller chain!
+
+Anyway, this tool is obviously not a "automatically hack your Kubernetes
+cluster" applications, it's mostly just a compilation of tedious tasks that can
+be performed automatically very quickly. You still need a lot of expertise to
+interpret the digest and understand what the various outputs mean. And also,
+during pentest and challenges, you don't always have an Internet access to pull
+your favorites tools, so you can also see this tool as a checklist that you can
+somehow perform manually with basic tools and a shell.
+
+### How this tool is built?
+
+In addition to all the available features, this tool was built with a plugin
+design so that it can be easily extended by anyone that wants to bring some
+expertises.
+
+For example, you are a security researcher on Kubernetes, and when you are
+doing CTFs or pentesting real infrastructure, you are often performing specific
+repetitive actions that could be automated or at least compiled with others.
+You can take a look at `/pkg/plugins/template/template.go` to bootstrap your
+own plugins and propose them to the project to extend the features! You only
+need a name, optionally some aliases, a description and filling the `Run()`
+function with the actual logic.
 
 ## Buckets
 
 You can list and describe the available buckets (or plugins) with `kdigger ls`:
-```text
-+---------------+----------------------------+----------------------------------------------------------+
-|      NAME     |           ALIASES          |                        DESCRIPTION                       |
-+---------------+----------------------------+----------------------------------------------------------+
-| admission     | [admissions adm]           | Admission scans the admission controller chain by        |
-|               |                            | creating specific pods to find what is prevented or not. |
-| authorization | [authorizations auth]      | Authorization checks your API permissions with the       |
-|               |                            | current context or the available token.                  |
-| capabilities  | [capability cap]           | Capabilities list all capabilities in all sets and       |
-|               |                            | displays dangerous capabilities in red.                  |
-| devices       | [device dev]               | Devices shows the list of devices available in the       |
-|               |                            | container.                                               |
-| environment   | [environments environ env] | Environment checks the presence of kubernetes related    |
-|               |                            | environment variables and shows them.                    |
-| mount         | [mounts mn]                | Mount shows all mounted devices in the container.        |
-| namespaces    | [namespace ns]             | Namespaces analyses namespaces of the container in the   |
-|               |                            | context of Kubernetes.                                   |
-| runtime       | [runtimes rt]              | Runtime finds clues to identify which container runtime  |
-|               |                            | is running the container.                                |
-| services      | [service svc]              | Services uses CoreDNS wildcards feature to discover      |
-|               |                            | every service available in the cluster.                  |
-| syscalls      | [syscall sys]              | Syscalls scans most of the syscalls to detect which are  |
-|               |                            | blocked and allowed.                                     |
-| token         | [tokens tk]                | Token checks for the presence of a service account token |
-|               |                            | in the filesystem.                                       |
-| userid        | [userids id]               | UserID retrieves UID, GID and their corresponding names. |
-| version       | [versions]                 | Version dumps the API server version informations.       |
-+---------------+----------------------------+----------------------------------------------------------+
+```console
+$ kdigger ls
++---------------+----------------------------+---------------------------------+--------+
+|      NAME     |           ALIASES          |           DESCRIPTION           | ACTIVE |
++---------------+----------------------------+---------------------------------+--------+
+| admission     | [admissions adm]           | Admission scans the admission   | true   |
+|               |                            | controller chain by creating    |        |
+|               |                            | specific pods to find what is   |        |
+|               |                            | prevented or not.               |        |
+| authorization | [authorizations auth]      | Authorization checks your API   | false  |
+|               |                            | permissions with the current    |        |
+|               |                            | context or the available token. |        |
+| capabilities  | [capability cap]           | Capabilities list all           | false  |
+|               |                            | capabilities in all sets and    |        |
+|               |                            | displays dangerous capabilities |        |
+|               |                            | in red.                         |        |
+| devices       | [device dev]               | Devices shows the list of       | false  |
+|               |                            | devices available in the        |        |
+|               |                            | container.                      |        |
+| environment   | [environments environ env] | Environment checks the presence | false  |
+|               |                            | of kubernetes related           |        |
+|               |                            | environment variables and shows |        |
+|               |                            | them.                           |        |
+| mount         | [mounts mn]                | Mount shows all mounted devices | false  |
+|               |                            | in the container.               |        |
+| pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID   | false  |
+|               |                            | namespace of the container in   |        |
+|               |                            | the context of Kubernetes.      |        |
+| runtime       | [runtimes rt]              | Runtime finds clues to identify | false  |
+|               |                            | which container runtime is      |        |
+|               |                            | running the container.          |        |
+| services      | [service svc]              | Services uses CoreDNS wildcards | false  |
+|               |                            | feature to discover every       |        |
+|               |                            | service available in the        |        |
+|               |                            | cluster.                        |        |
+| syscalls      | [syscall sys]              | Syscalls scans most of the      | true   |
+|               |                            | syscalls to detect which are    |        |
+|               |                            | blocked and allowed.            |        |
+| token         | [tokens tk]                | Token checks for the presence   | false  |
+|               |                            | of a service account token in   |        |
+|               |                            | the filesystem.                 |        |
+| userid        | [userids id]               | UserID retrieves UID, GID and   | false  |
+|               |                            | their corresponding names.      |        |
+| usernamespace | [usernamespaces userns]    | UserNamespace analyses the user | false  |
+|               |                            | namespace configuration.        |        |
+| version       | [versions v]               | Version dumps the API server    | false  |
+|               |                            | version informations.           |        |
++---------------+----------------------------+---------------------------------+--------+
 ```
 
 ### Admission
@@ -199,25 +329,22 @@ Mount show all mounted devices in the container. This is equivalent to use the
 `mount` command directly but the number of mounted devices and reading path can
 show you mounted volumes, configmap or even secrets inside the pod.
 
-### Namespaces
+### PIDNamespace
 
-Namespaces analyses namespaces of the container in the context of Kubernetes.
-Nevertheless, detecting namespaces, except for the user namespace, is quite
-difficult or almost impossible. You always rely on bugs or implementation
-details that can quickly change. This bucket detects the user namespace and
-exposes the mappings but try to give some information about the PID namespace
-just by detecting some process present in `/proc`.
+PIDNamespace analyses the PID namespace of the container in the context of
+Kubernetes. Detecting the PID namespace is almost impossible so the idea of
+this bucket is to scan the `/proc` folder to search for specific processes
+like:
+* `pause`: it might signify that you are sharing the PID namespace between all
+  the containers composing the pod.
+* `kubelet`: it might signify that you are sharing the PID namespace with the
+  host.
 
-Indeed, the detection in
+By the way, the detection in
 [amicontained](https://github.com/genuinetools/amicontained) is based on the
 device number of the namespace file, a detail of implementation which is no
 longer reliable and most of the time wrong. This is why I tried a different
 approach.
-
-To explain what this bucket scans for the PID namespace, if you see a process
-named `pause` in `/proc`, you might be sharing the PID namespace between all
-the containers composing the pod. Identically, if you spot a process named
-`kubelet` you might be sharing the host PID namespace.
 
 ### Runtime
 
@@ -271,6 +398,13 @@ UserID retrieves UID, GID and their corresponding names. It also gives
 enabled. This is almost (because `id` is better) equivalent to run the `id`
 command directly.
 
+### UserNamespace
+
+UserNamespace analyses the user namespace configuration. The user namespace is
+transparent and can be easily detected. It is even possible to read the mapping
+between the current user namespace and the outer namespace. Unfortunately for
+now, user namespace cannot be used with Kubernetes.
+
 ### Version
 
 Version dumps the API server version informations. It access the `/version`
@@ -296,78 +430,6 @@ PolicyRule:
              [/version]         []              [get]
 ```
 
-## Details
-
-### Warnings
-
-Some tests are based on details of implementation or side effects that
-might be subject to changes in the future. So be careful with the results.
-
-On top of that, some results might need some experience to be understood and
-analyzed. To take a specific example, if you are granted the `CAP_SYS_ADMIN`
-capability inside a Kubernetes container, there is a good chance that it is
-because you are running in a privileged container. But you should definitely
-confirm that by looking at the number of devices available or the other
-capabilities that you are granted. Indeed it might be necessary to get
-`CAP_SYS_ADMIN` to be privileged but it's not sufficient and if it is your
-goal, you can really easily trick the results by crafting very specific pods
-that might look confusing regarding this tool results.
-
-It might not be the most sophisticated tool to pentest a Kubernetes cluster,
-but you can see this as a _Kubernetes pentest 101 summer compilation_!
-
-### Why another tool?
-
-I started researching Kubernetes security a few months ago and participated to
-the 2021 Europe kubecon security day CTF. I learned a lot by watching various
-security experts conferences and demonstration and this CTF was a really
-beginner-friendly entry point to practice what I learned in theory.
-
-I had the opportunity to see most of my Kubernetes security mentors live,
-trying to solve one of the challenges of this CTF and it was awesome to
-understand what their techniques and thinking were.
-
-However during some pentests, you cannot bring your tools with you because you
-don't have any direct internet access so you have to work with what is
-available. Some pentesters build their checklist to have a rigorous process
-and to not forget crucial operations that could give them important
-information.
-
-But sometimes, you can fetch your favourite tools from the internet and while
-there are various solutions out there, a lot of experts were using
-[amicontained](https://github.com/genuinetools/amicontained), a famous
-container introspection tool. This tool is truly awesome but some features are
-outdated, like the PID namespace detection and it is not specialized on
-Kubernetes, it's only a container tool that can give already give a lot of
-hints about your Kubernetes situation!
-
-So I decided to write a tool that include most of
-[amicontained](https://github.com/genuinetools/amicontained) information, but
-also much more. And specifically aimed at Kubernetes pentesting. So with
-`kdigger`, you can try to guess your container runtime, see your capabilities,
-scan namespace activation and the allowed syscalls, like amicontained, but you
-can also automatically retrieve service account token, scan their permissions,
-list interesting environment variables, list devices and even scan the
-admission controller chain!
-
-It gives you lots of information really fast, like a digest, that you can later
-analyse to understand the situation further and conduct more specialized
-analyses.
-
-### How this tool is built?
-
-In addition to all the available features, this tool was built with a plugin
-design so that it can be easily extended by anyone that wants to bring some
-expertises.
-
-For example, you are a security researcher on Kubernetes, and when you are
-doing CTFs or pentesting real infrastructure, you are often performing specific
-repetitive actions that could be automated or at least compiled with others.
-You can take a look at `/pkg/plugins/template/template.go` to bootstrap your
-own plugins and propose them to the project to extend the features! You only
-need a name, optionally some aliases, a description and filling the `Run()`
-function with the actual logic.
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to
@@ -375,4 +437,4 @@ discuss what you would like to change.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[Apache License 2.0](./LICENSE)
