@@ -233,8 +233,10 @@ type runAsRootPod struct{}
 func (p runAsRootPod) NewPod() *v1.Pod {
 	pod := getGenericPod()
 	runAsNonRoot := false // this is the default value
+	runAsUser := int64(0)
 	pod.Spec.Containers[0].SecurityContext = &v1.SecurityContext{
 		RunAsNonRoot: &runAsNonRoot,
+		RunAsUser:    &runAsUser,
 	}
 	return pod
 }
