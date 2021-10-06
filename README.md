@@ -1,19 +1,18 @@
 # kdigger
 
-`kdigger` for "Kubernetes digger" is a context discovery tool for Kubernetes
-penetration testing. This tool is a compilation of various plugins called
-buckets to facilitate pentesting Kubernetes from inside a pod.
+`kdigger`, short for "Kubernetes digger", is a context discovery tool for
+Kubernetes penetration testing. This tool is a compilation of various plugins
+called buckets to facilitate pentesting Kubernetes from inside a pod.
 
-Please note that this is not an ultimate pentest tool on Kubernetes, Some
-plugins perform really simple actions, that could be performed just by calling
-the `mount` command or listing all devices present in dev with `ls /dev` for
-example, but some others automate scanning processes, such as the admission
-controller scanner. In the end, this tool aims to speed up the pentesting
-process.
+Please note that this is not an ultimate pentest tool on Kubernetes. Some
+plugins perform really simple actions, that could be performed manually by
+calling the `mount` command or listing all devices present in dev with `ls
+/dev` for example. But some others automate scanning processes, such as the
+admission controller scanner. In the end, this tool aims to humbly speed up the
+pentesting process.
 
 ![A small digger trying to move the evergreen stuck cruise ship in the suez
 canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
-
 
 ## Table of content
 
@@ -27,6 +26,8 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
     * [Results warning](#results-warning)
     * [Why another tool?](#why-another-tool)
     * [How this tool is built?](#how-this-tool-is-built)
+    * [Areas for improvement](#areas-for-improvement)
+    * [How can I experience with this tool?](#how-can-i-experience-with-this-tool)
 * [Buckets](#buckets)
     * [Admission](#admission)
     * [Authorization](#authorization)
@@ -35,6 +36,7 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
     * [Environment](#environment)
     * [Mount](#mount)
     * [PIDNamespace](#pidnamespace)
+    * [Processes](#processes)
     * [Runtime](#runtime)
     * [Services](#services)
     * [Syscalls](#syscalls)
@@ -73,7 +75,6 @@ $ go get github.com/quarkslab/kdigger
 
 ## Usage
 
-
 What you generally want to do is running all the buckets with `dig all` or just
 `d a`:
 ```bash
@@ -106,7 +107,8 @@ Flags:
 Use "kdigger [command] --help" for more information about a command.
 ```
 
-Especially on the dig command to browse the available flags:
+Make sure to check out the help on the ``dig`` command to see all the available
+flags:
 
 ```console
 $ kdigger dig
@@ -138,68 +140,79 @@ Global Flags:
 
 ### Usage warning
 
-Be careful when running this tool, some checks have side effects like scanning
-your available syscalls or trying to create pods to scan the admission control.
-By default these checks will **not** run without the `--active` or `-a` flag.
+Be careful when running this tool, some checks have side effects, like
+scanning your available syscalls or trying to create pods to scan the
+admission control. By default these checks will **not** run without the
+`--active` or `-a` flag.
 
-For example, syscalls scans may succeed to perform some syscalls with empty
-arguments and it can alter your environment or configuration (for example, if
-the hostname syscall is successful, it will replace hostname with the empty
-string). So never run with sufficient permissions (as root for example)
-directly on your machine.
+For example, syscalls scans may succeed to perform some syscalls with
+empty arguments, and it can alter your environment or configuration. For
+instance, if the `hostname` syscall is successful, it will replace the
+hostname with the empty string. So please, **NEVER** run with
+sufficient permissions (as root for example) directly on your machine.
 
 ### Results warning
 
 Some tests are based on details of implementation or side effects on the
-environment that might be subject to changes in the future. So be careful with
+environment that might be subject to changes in the future. So be cautious with
 the results.
 
 On top of that, some results might need some experience to be understood and
-analyzed. To take a specific example, if you are granted the `CAP_SYS_ADMIN`
+analyzed. To take a specific example, if you are granted the ``CAP_SYS_ADMIN``
 capability inside a Kubernetes container, there is a good chance that it is
 because you are running in a privileged container. But you should definitely
 confirm that by looking at the number of devices available or the other
-capabilities that you are granted. Indeed it might be necessary to get
-`CAP_SYS_ADMIN` to be privileged but it's not sufficient and if it is your
-goal, you can really easily trick the results by crafting very specific pods
-that might look confusing regarding this tool results.
+capabilities that you are granted. Indeed, it might be necessary to get
+``CAP_SYS_ADMIN`` to be privileged but it’s not sufficient and if it is your
+goal, you can easily trick the results by crafting very specific pods that
+might look confusing regarding this tool results.
 
 It might not be the most sophisticated tool to pentest a Kubernetes cluster,
-but you can see this as a _Kubernetes pentest 101 compilation_!
+but you can see this as a *Kubernetes pentest 101 compilation*!
 
 ### Why another tool?
 
-I started researching Kubernetes security a few months ago and participated to
-the 2021 Europe kubecon security day CTF. I learned a lot by watching various
-security experts conferences and demonstration and this CTF was a really
-beginner-friendly entry point to practice what I learned in theory. During a
-live solving sessions, I had the opportunity to see how Kubernetes security
-experts were trying to solve the challenge, how they were thinking, what they
-were looking for.
+I started researching Kubernetes security a few months ago and participated in
+the [2021 Europe KubeCon Cloud-Native Security Day
+CTF](https://controlplaneio.github.io/kubecon-2021-sig-security-day-ctf/). I
+learned a lot by watching various security experts conferences and
+demonstrations and this CTF was a really beginner-friendly entry point to
+practice what I learned in theory. During a live solving session, I had the
+opportunity to see how Kubernetes security experts were trying to solve the
+challenge, how they were thinking, what they were looking for.
 
 So I decided to create a tool that compiles most of the checks we usually do as
-pentester when in a Kubernetes pod to acquire information very quickly. There
+pentesters when in a Kubernetes pod to acquire information very quickly. There
 already are various tools out there. For example, a lot of experts were using
-`amicontained`, a famous container introspection tool by Jessie Frazelle. This
-tool is truly awesome but some features are outdated, like the PID namespace
-detection and it is not specialized on Kubernetes, it's only a container tool
-that can give already give a lot of hints about your Kubernetes situation.
+[amicontained](https://github.com/genuinetools/amicontained), a famous
+container introspection tool by Jessie Frazelle. This tool is truly awesome,
+but some features are outdated, like the PID namespace detection, and it is not
+specialized in Kubernetes, it is only a container tool that can already give a
+lot of hints about your Kubernetes situation.
 
-That's why I included most of amicontained features, but also much more that
-are Kubernetes specific. So with `kdigger`, you can try to guess your container
-runtime, see your capabilities, scan namespace activation and the allowed
-syscalls, like with `amicontained`, but you can also automatically retrieve
-service account token, scan their permissions, list interesting environment
-variables, list devices, retrieve all available services in a cluster and even
-scan the admission controller chain!
+That is why, in kdigger, I included most of amicontained features. You can:
 
-Anyway, this tool is obviously not a "automatically hack your Kubernetes
-cluster" applications, it's mostly just a compilation of tedious tasks that can
+- Try to guess your container runtime.
+- See your capabilities.
+- Scan for namespace activation and configuration.
+- Scan for the allowed syscalls.
+
+But you can also do more Kubernetes specific operations:
+
+- Retrieve service account token.
+- Scan token permissions.
+- List interesting environment variables.
+- List available devices.
+- Retrieve all available services in a cluster.
+- Scan the admission controller chain!
+
+Anyway, this tool is obviously not an *automatically hack your Kubernetes
+cluster* application, it is mostly just a compilation of tedious tasks that can
 be performed automatically very quickly. You still need a lot of expertise to
 interpret the digest and understand what the various outputs mean. And also,
-during pentest and challenges, you don't always have an Internet access to pull
-your favorites tools, so you can also see this tool as a checklist that you can
-somehow perform manually with basic tools and a shell.
+during pentest and challenges, you do not always have Internet access to pull
+your favorite toolchain, so you can also see this compilation as a checklist
+that you can somehow perform manually with a basic installation and a shell.
 
 ### How this tool is built?
 
@@ -215,9 +228,27 @@ own plugins and propose them to the project to extend the features! You only
 need a name, optionally some aliases, a description and filling the `Run()`
 function with the actual logic.
 
+### Areas for improvement
+
+The expertize proposed by the tool could be refined and more precise. For now
+it's mostly dumping raw data for most of the buckets and rely on the user to
+understand what it implies.
+
+Generally the output format is not the best and could be reworked. The human
+format via array lines does not fit all the use cases. The tool also proposes a
+JSON output format, it has the advantage to exist but is really quirky and uses
+arrays so extracting information might be a bit unpredictable.
+
+### How can I experience with this tool?
+
+Good news! We created a mini Kubernetes CTF with basic steps to experience with
+the tool and resolve quick challenges. For more information go to the
+[minik8s-ctf repository](https://github.com/quarkslab/minik8s-ctf).
+
 ## Buckets
 
-You can list and describe the available buckets (or plugins) with `kdigger ls`:
+You can list and describe the available buckets (or plugins) with `kdigger
+list` or `kdigger ls`:
 ```console
 $ kdigger ls
 +---------------+----------------------------+---------------------------------+--------+
