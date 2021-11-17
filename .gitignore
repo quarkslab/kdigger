@@ -1,1 +1,6 @@
 kdigger
+
+.vagrant
+vm_ssh_config
+
+.vscode
