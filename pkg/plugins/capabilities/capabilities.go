@@ -98,7 +98,11 @@ func isPrivileged(caps []capability.Cap) bool {
 func getCapabilities(pid int) (map[capability.CapType][]capability.Cap, error) {
 	allCaps := capability.List()
 
-	caps, err := capability.NewPid(pid)
+	caps, err := capability.NewPid2(pid)
+	if err != nil {
+		return nil, err
+	}
+	err = caps.Load()
 	if err != nil {
 		return nil, err
 	}

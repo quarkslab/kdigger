@@ -47,7 +47,7 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 	}
 
 	// format the response
-	rules, err := getCompactRules(response.Status)
+	rules, comment, err := getCompactRules(response.Status)
 	if err != nil {
 		return bucket.Results{}, err
 	}
@@ -60,6 +60,7 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 			r.Verbs,
 		})
 	}
+	res.SetComment(comment)
 	return *res, nil
 }
 
@@ -79,10 +80,9 @@ func NewAuthorizationBucket(c bucket.Config) (*AuthorizationBucket, error) {
 }
 
 // partial copy of https://github.com/kubernetes/kubectl/blob/0f88fc6b598b7e883a391a477215afb080ec7733/pkg/cmd/auth/cani.go#L323
-func getCompactRules(status v1.SubjectRulesReviewStatus) ([]rbacv1.PolicyRule, error) {
+func getCompactRules(status v1.SubjectRulesReviewStatus) ([]rbacv1.PolicyRule, string, error) {
 	if status.Incomplete {
-		// TODO
-		// fmt.Fprintf(o.ErrOut, "warning: the list may be incomplete: %v\n", status.EvaluationError)
+		return nil, "warning: the list may be incomplete: " + status.EvaluationError, nil
 	}
 
 	breakdownRules := []rbacv1.PolicyRule{}
@@ -92,11 +92,11 @@ func getCompactRules(status v1.SubjectRulesReviewStatus) ([]rbacv1.PolicyRule, e
 
 	compactRules, err := rbacutil.CompactRules(breakdownRules)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	sort.Stable(rbacutil.SortableRuleSlice(compactRules))
 
-	return compactRules, nil
+	return compactRules, "", nil
 }
 
 // copy of https://github.com/kubernetes/kubectl/blob/0f88fc6b598b7e883a391a477215afb080ec7733/pkg/cmd/auth/cani.go#L355

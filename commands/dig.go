@@ -43,7 +43,10 @@ arguments.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// display help by default
 		if len(args) == 0 {
-			cmd.Help()
+			err := cmd.Help()
+			if err != nil {
+				return err
+			}
 		}
 
 		// apply default colored human only if the color flag was not set
