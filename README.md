@@ -155,7 +155,8 @@ sufficient permissions (as root for example) directly on your machine.
 
 Some tests are based on details of implementation or side effects on the
 environment that might be subject to changes in the future. So be cautious with
-the results.
+the results. For example, CoreDNS is considering removing the wildcard feature,
+see [CoreDNS issue 4984]( https://github.com/coredns/coredns/issues/4984).
 
 On top of that, some results might need some experience to be understood and
 analyzed. To take a specific example, if you are granted the ``CAP_SYS_ADMIN``
@@ -493,8 +494,15 @@ PolicyRule:
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to
-discuss what you would like to change.
+As kdigger is a security checklist when pentesting from inside a pod's
+container, please consider adding a plugin if you have some checks that are not
+covered by the tool. To do that, you can use the
+[template](https://github.com/quarkslab/kdigger/blob/master/pkg/plugins/template/template.go)
+and load your plugin into the project
+[here](https://github.com/quarkslab/kdigger/blob/master/commands/root.go#L71).
+I will be happy to see your PR!
+
+If you have any other ideas or advices, consider opening an issue.
 
 ## License
 
