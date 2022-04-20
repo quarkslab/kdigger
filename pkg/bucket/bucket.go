@@ -286,6 +286,7 @@ func (r Results) formatTable(outputWidth int) string {
 		{Number: 3, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
 		{Number: 4, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
 		{Number: 5, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
+		{Number: 6, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
 	})
 	headers := make(table.Row, len(r.headers))
 	for i := range r.headers {
@@ -294,9 +295,7 @@ func (r Results) formatTable(outputWidth int) string {
 	t.AppendHeader(headers)
 	for _, content := range r.data {
 		row := make(table.Row, len(content))
-		for i := range content {
-			row[i] = content[i]
-		}
+		copy(row, content)
 		t.AppendRow(row)
 	}
 

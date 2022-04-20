@@ -15,6 +15,7 @@ import (
 	"github.com/quarkslab/kdigger/pkg/plugins/devices"
 	"github.com/quarkslab/kdigger/pkg/plugins/environment"
 	"github.com/quarkslab/kdigger/pkg/plugins/mount"
+	"github.com/quarkslab/kdigger/pkg/plugins/node"
 	"github.com/quarkslab/kdigger/pkg/plugins/pidnamespace"
 	"github.com/quarkslab/kdigger/pkg/plugins/processes"
 	"github.com/quarkslab/kdigger/pkg/plugins/runtime"
@@ -88,6 +89,7 @@ func registerBuckets() {
 	userid.Register(buckets)
 	processes.Register(buckets)
 	cgroups.Register(buckets)
+	node.Register(buckets)
 }
 
 // printResults prints results with the output format selected by the flags
