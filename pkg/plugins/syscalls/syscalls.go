@@ -152,675 +152,675 @@ func scanSyscall(id int, c chan (scanResult)) {
 func syscallName(e int) string {
 	switch e {
 	case unix.SYS_READ:
-		return "READ"
+		return "read"
 	case unix.SYS_WRITE:
-		return "WRITE"
+		return "write"
 	case unix.SYS_OPEN:
-		return "OPEN"
+		return "open"
 	case unix.SYS_CLOSE:
-		return "CLOSE"
+		return "close"
 	case unix.SYS_STAT:
-		return "STAT"
+		return "stat"
 	case unix.SYS_FSTAT:
-		return "FSTAT"
+		return "fstat"
 	case unix.SYS_LSTAT:
-		return "LSTAT"
+		return "lstat"
 	case unix.SYS_POLL:
-		return "POLL"
+		return "poll"
 	case unix.SYS_LSEEK:
-		return "LSEEK"
+		return "lseek"
 	case unix.SYS_MMAP:
-		return "MMAP"
+		return "mmap"
 	case unix.SYS_MPROTECT:
-		return "MPROTECT"
+		return "mprotect"
 	case unix.SYS_MUNMAP:
-		return "MUNMAP"
+		return "munmap"
 	case unix.SYS_BRK:
-		return "BRK"
+		return "brk"
 	case unix.SYS_RT_SIGACTION:
-		return "RT_SIGACTION"
+		return "rt_sigaction"
 	case unix.SYS_RT_SIGPROCMASK:
-		return "RT_SIGPROCMASK"
+		return "rt_sigprocmask"
 	case unix.SYS_RT_SIGRETURN:
-		return "RT_SIGRETURN"
+		return "rt_sigreturn"
 	case unix.SYS_IOCTL:
-		return "IOCTL"
+		return "ioctl"
 	case unix.SYS_PREAD64:
-		return "PREAD64"
+		return "pread64"
 	case unix.SYS_PWRITE64:
-		return "PWRITE64"
+		return "pwrite64"
 	case unix.SYS_READV:
-		return "READV"
+		return "readv"
 	case unix.SYS_WRITEV:
-		return "WRITEV"
+		return "writev"
 	case unix.SYS_ACCESS:
-		return "ACCESS"
+		return "access"
 	case unix.SYS_PIPE:
-		return "PIPE"
+		return "pipe"
 	case unix.SYS_SELECT:
-		return "SELECT"
+		return "select"
 	case unix.SYS_SCHED_YIELD:
-		return "SCHED_YIELD"
+		return "sched_yield"
 	case unix.SYS_MREMAP:
-		return "MREMAP"
+		return "mremap"
 	case unix.SYS_MSYNC:
-		return "MSYNC"
+		return "msync"
 	case unix.SYS_MINCORE:
-		return "MINCORE"
+		return "mincore"
 	case unix.SYS_MADVISE:
-		return "MADVISE"
+		return "madvise"
 	case unix.SYS_SHMGET:
-		return "SHMGET"
+		return "shmget"
 	case unix.SYS_SHMAT:
-		return "SHMAT"
+		return "shmat"
 	case unix.SYS_SHMCTL:
-		return "SHMCTL"
+		return "shmctl"
 	case unix.SYS_DUP:
-		return "DUP"
+		return "dup"
 	case unix.SYS_DUP2:
-		return "DUP2"
+		return "dup2"
 	case unix.SYS_PAUSE:
-		return "PAUSE"
+		return "pause"
 	case unix.SYS_NANOSLEEP:
-		return "NANOSLEEP"
+		return "nanosleep"
 	case unix.SYS_GETITIMER:
-		return "GETITIMER"
+		return "getitimer"
 	case unix.SYS_ALARM:
-		return "ALARM"
+		return "alarm"
 	case unix.SYS_SETITIMER:
-		return "SETITIMER"
+		return "setitimer"
 	case unix.SYS_GETPID:
-		return "GETPID"
+		return "getpid"
 	case unix.SYS_SENDFILE:
-		return "SENDFILE"
+		return "sendfile"
 	case unix.SYS_SOCKET:
-		return "SOCKET"
+		return "socket"
 	case unix.SYS_CONNECT:
-		return "CONNECT"
+		return "connect"
 	case unix.SYS_ACCEPT:
-		return "ACCEPT"
+		return "accept"
 	case unix.SYS_SENDTO:
-		return "SENDTO"
+		return "sendto"
 	case unix.SYS_RECVFROM:
-		return "RECVFROM"
+		return "recvfrom"
 	case unix.SYS_SENDMSG:
-		return "SENDMSG"
+		return "sendmsg"
 	case unix.SYS_RECVMSG:
-		return "RECVMSG"
+		return "recvmsg"
 	case unix.SYS_SHUTDOWN:
-		return "SHUTDOWN"
+		return "shutdown"
 	case unix.SYS_BIND:
-		return "BIND"
+		return "bind"
 	case unix.SYS_LISTEN:
-		return "LISTEN"
+		return "listen"
 	case unix.SYS_GETSOCKNAME:
-		return "GETSOCKNAME"
+		return "getsockname"
 	case unix.SYS_GETPEERNAME:
-		return "GETPEERNAME"
+		return "getpeername"
 	case unix.SYS_SOCKETPAIR:
-		return "SOCKETPAIR"
+		return "socketpair"
 	case unix.SYS_SETSOCKOPT:
-		return "SETSOCKOPT"
+		return "setsockopt"
 	case unix.SYS_GETSOCKOPT:
-		return "GETSOCKOPT"
+		return "getsockopt"
 	case unix.SYS_CLONE:
-		return "CLONE"
+		return "clone"
 	case unix.SYS_FORK:
-		return "FORK"
+		return "fork"
 	case unix.SYS_VFORK:
-		return "VFORK"
+		return "vfork"
 	case unix.SYS_EXECVE:
-		return "EXECVE"
+		return "execve"
 	case unix.SYS_EXIT:
-		return "EXIT"
+		return "exit"
 	case unix.SYS_WAIT4:
-		return "WAIT4"
+		return "wait4"
 	case unix.SYS_KILL:
-		return "KILL"
+		return "kill"
 	case unix.SYS_UNAME:
-		return "UNAME"
+		return "uname"
 	case unix.SYS_SEMGET:
-		return "SEMGET"
+		return "semget"
 	case unix.SYS_SEMOP:
-		return "SEMOP"
+		return "semop"
 	case unix.SYS_SEMCTL:
-		return "SEMCTL"
+		return "semctl"
 	case unix.SYS_SHMDT:
-		return "SHMDT"
+		return "shmdt"
 	case unix.SYS_MSGGET:
-		return "MSGGET"
+		return "msgget"
 	case unix.SYS_MSGSND:
-		return "MSGSND"
+		return "msgsnd"
 	case unix.SYS_MSGRCV:
-		return "MSGRCV"
+		return "msgrcv"
 	case unix.SYS_MSGCTL:
-		return "MSGCTL"
+		return "msgctl"
 	case unix.SYS_FCNTL:
-		return "FCNTL"
+		return "fcntl"
 	case unix.SYS_FLOCK:
-		return "FLOCK"
+		return "flock"
 	case unix.SYS_FSYNC:
-		return "FSYNC"
+		return "fsync"
 	case unix.SYS_FDATASYNC:
-		return "FDATASYNC"
+		return "fdatasync"
 	case unix.SYS_TRUNCATE:
-		return "TRUNCATE"
+		return "truncate"
 	case unix.SYS_FTRUNCATE:
-		return "FTRUNCATE"
+		return "ftruncate"
 	case unix.SYS_GETDENTS:
-		return "GETDENTS"
+		return "getdents"
 	case unix.SYS_GETCWD:
-		return "GETCWD"
+		return "getcwd"
 	case unix.SYS_CHDIR:
-		return "CHDIR"
+		return "chdir"
 	case unix.SYS_FCHDIR:
-		return "FCHDIR"
+		return "fchdir"
 	case unix.SYS_RENAME:
-		return "RENAME"
+		return "rename"
 	case unix.SYS_MKDIR:
-		return "MKDIR"
+		return "mkdir"
 	case unix.SYS_RMDIR:
-		return "RMDIR"
+		return "rmdir"
 	case unix.SYS_CREAT:
-		return "CREAT"
+		return "creat"
 	case unix.SYS_LINK:
-		return "LINK"
+		return "link"
 	case unix.SYS_UNLINK:
-		return "UNLINK"
+		return "unlink"
 	case unix.SYS_SYMLINK:
-		return "SYMLINK"
+		return "symlink"
 	case unix.SYS_READLINK:
-		return "READLINK"
+		return "readlink"
 	case unix.SYS_CHMOD:
-		return "CHMOD"
+		return "chmod"
 	case unix.SYS_FCHMOD:
-		return "FCHMOD"
+		return "fchmod"
 	case unix.SYS_CHOWN:
-		return "CHOWN"
+		return "chown"
 	case unix.SYS_FCHOWN:
-		return "FCHOWN"
+		return "fchown"
 	case unix.SYS_LCHOWN:
-		return "LCHOWN"
+		return "lchown"
 	case unix.SYS_UMASK:
-		return "UMASK"
+		return "umask"
 	case unix.SYS_GETTIMEOFDAY:
-		return "GETTIMEOFDAY"
+		return "gettimeofday"
 	case unix.SYS_GETRLIMIT:
-		return "GETRLIMIT"
+		return "getrlimit"
 	case unix.SYS_GETRUSAGE:
-		return "GETRUSAGE"
+		return "getrusage"
 	case unix.SYS_SYSINFO:
-		return "SYSINFO"
+		return "sysinfo"
 	case unix.SYS_TIMES:
-		return "TIMES"
+		return "times"
 	case unix.SYS_PTRACE:
-		return "PTRACE"
+		return "ptrace"
 	case unix.SYS_GETUID:
-		return "GETUID"
+		return "getuid"
 	case unix.SYS_SYSLOG:
-		return "SYSLOG"
+		return "syslog"
 	case unix.SYS_GETGID:
-		return "GETGID"
+		return "getgid"
 	case unix.SYS_SETUID:
-		return "SETUID"
+		return "setuid"
 	case unix.SYS_SETGID:
-		return "SETGID"
+		return "setgid"
 	case unix.SYS_GETEUID:
-		return "GETEUID"
+		return "geteuid"
 	case unix.SYS_GETEGID:
-		return "GETEGID"
+		return "getegid"
 	case unix.SYS_SETPGID:
-		return "SETPGID"
+		return "setpgid"
 	case unix.SYS_GETPPID:
-		return "GETPPID"
+		return "getppid"
 	case unix.SYS_GETPGRP:
-		return "GETPGRP"
+		return "getpgrp"
 	case unix.SYS_SETSID:
-		return "SETSID"
+		return "setsid"
 	case unix.SYS_SETREUID:
-		return "SETREUID"
+		return "setreuid"
 	case unix.SYS_SETREGID:
-		return "SETREGID"
+		return "setregid"
 	case unix.SYS_GETGROUPS:
-		return "GETGROUPS"
+		return "getgroups"
 	case unix.SYS_SETGROUPS:
-		return "SETGROUPS"
+		return "setgroups"
 	case unix.SYS_SETRESUID:
-		return "SETRESUID"
+		return "setresuid"
 	case unix.SYS_GETRESUID:
-		return "GETRESUID"
+		return "getresuid"
 	case unix.SYS_SETRESGID:
-		return "SETRESGID"
+		return "setresgid"
 	case unix.SYS_GETRESGID:
-		return "GETRESGID"
+		return "getresgid"
 	case unix.SYS_GETPGID:
-		return "GETPGID"
+		return "getpgid"
 	case unix.SYS_SETFSUID:
-		return "SETFSUID"
+		return "setfsuid"
 	case unix.SYS_SETFSGID:
-		return "SETFSGID"
+		return "setfsgid"
 	case unix.SYS_GETSID:
-		return "GETSID"
+		return "getsid"
 	case unix.SYS_CAPGET:
-		return "CAPGET"
+		return "capget"
 	case unix.SYS_CAPSET:
-		return "CAPSET"
+		return "capset"
 	case unix.SYS_RT_SIGPENDING:
-		return "RT_SIGPENDING"
+		return "rt_sigpending"
 	case unix.SYS_RT_SIGTIMEDWAIT:
-		return "RT_SIGTIMEDWAIT"
+		return "rt_sigtimedwait"
 	case unix.SYS_RT_SIGQUEUEINFO:
-		return "RT_SIGQUEUEINFO"
+		return "rt_sigqueueinfo"
 	case unix.SYS_RT_SIGSUSPEND:
-		return "RT_SIGSUSPEND"
+		return "rt_sigsuspend"
 	case unix.SYS_SIGALTSTACK:
-		return "SIGALTSTACK"
+		return "sigaltstack"
 	case unix.SYS_UTIME:
-		return "UTIME"
+		return "utime"
 	case unix.SYS_MKNOD:
-		return "MKNOD"
+		return "mknod"
 	case unix.SYS_USELIB:
-		return "USELIB"
+		return "uselib"
 	case unix.SYS_PERSONALITY:
-		return "PERSONALITY"
+		return "personality"
 	case unix.SYS_USTAT:
-		return "USTAT"
+		return "ustat"
 	case unix.SYS_STATFS:
-		return "STATFS"
+		return "statfs"
 	case unix.SYS_FSTATFS:
-		return "FSTATFS"
+		return "fstatfs"
 	case unix.SYS_SYSFS:
-		return "SYSFS"
+		return "sysfs"
 	case unix.SYS_GETPRIORITY:
-		return "GETPRIORITY"
+		return "getpriority"
 	case unix.SYS_SETPRIORITY:
-		return "SETPRIORITY"
+		return "setpriority"
 	case unix.SYS_SCHED_SETPARAM:
-		return "SCHED_SETPARAM"
+		return "sched_setparam"
 	case unix.SYS_SCHED_GETPARAM:
-		return "SCHED_GETPARAM"
+		return "sched_getparam"
 	case unix.SYS_SCHED_SETSCHEDULER:
-		return "SCHED_SETSCHEDULER"
+		return "sched_setscheduler"
 	case unix.SYS_SCHED_GETSCHEDULER:
-		return "SCHED_GETSCHEDULER"
+		return "sched_getscheduler"
 	case unix.SYS_SCHED_GET_PRIORITY_MAX:
-		return "SCHED_GET_PRIORITY_MAX"
+		return "sched_get_priority_max"
 	case unix.SYS_SCHED_GET_PRIORITY_MIN:
-		return "SCHED_GET_PRIORITY_MIN"
+		return "sched_get_priority_min"
 	case unix.SYS_SCHED_RR_GET_INTERVAL:
-		return "SCHED_RR_GET_INTERVAL"
+		return "sched_rr_get_interval"
 	case unix.SYS_MLOCK:
-		return "MLOCK"
+		return "mlock"
 	case unix.SYS_MUNLOCK:
-		return "MUNLOCK"
+		return "munlock"
 	case unix.SYS_MLOCKALL:
-		return "MLOCKALL"
+		return "mlockall"
 	case unix.SYS_MUNLOCKALL:
-		return "MUNLOCKALL"
+		return "munlockall"
 	case unix.SYS_VHANGUP:
-		return "VHANGUP"
+		return "vhangup"
 	case unix.SYS_MODIFY_LDT:
-		return "MODIFY_LDT"
+		return "modify_ldt"
 	case unix.SYS_PIVOT_ROOT:
-		return "PIVOT_ROOT"
+		return "pivot_root"
 	case unix.SYS__SYSCTL:
-		return "_SYSCTL"
+		return "_sysctl"
 	case unix.SYS_PRCTL:
-		return "PRCTL"
+		return "prctl"
 	case unix.SYS_ARCH_PRCTL:
-		return "ARCH_PRCTL"
+		return "arch_prctl"
 	case unix.SYS_ADJTIMEX:
-		return "ADJTIMEX"
+		return "adjtimex"
 	case unix.SYS_SETRLIMIT:
-		return "SETRLIMIT"
+		return "setrlimit"
 	case unix.SYS_CHROOT:
-		return "CHROOT"
+		return "chroot"
 	case unix.SYS_SYNC:
-		return "SYNC"
+		return "sync"
 	case unix.SYS_ACCT:
-		return "ACCT"
+		return "acct"
 	case unix.SYS_SETTIMEOFDAY:
-		return "SETTIMEOFDAY"
+		return "settimeofday"
 	case unix.SYS_MOUNT:
-		return "MOUNT"
+		return "mount"
 	case unix.SYS_UMOUNT2:
-		return "UMOUNT2"
+		return "umount2"
 	case unix.SYS_SWAPON:
-		return "SWAPON"
+		return "swapon"
 	case unix.SYS_SWAPOFF:
-		return "SWAPOFF"
+		return "swapoff"
 	case unix.SYS_REBOOT:
-		return "REBOOT"
+		return "reboot"
 	case unix.SYS_SETHOSTNAME:
-		return "SETHOSTNAME"
+		return "sethostname"
 	case unix.SYS_SETDOMAINNAME:
-		return "SETDOMAINNAME"
+		return "setdomainname"
 	case unix.SYS_IOPL:
-		return "IOPL"
+		return "iopl"
 	case unix.SYS_IOPERM:
-		return "IOPERM"
+		return "ioperm"
 	case unix.SYS_CREATE_MODULE:
-		return "CREATE_MODULE"
+		return "create_module"
 	case unix.SYS_INIT_MODULE:
-		return "INIT_MODULE"
+		return "init_module"
 	case unix.SYS_DELETE_MODULE:
-		return "DELETE_MODULE"
+		return "delete_module"
 	case unix.SYS_GET_KERNEL_SYMS:
-		return "GET_KERNEL_SYMS"
+		return "get_kernel_syms"
 	case unix.SYS_QUERY_MODULE:
-		return "QUERY_MODULE"
+		return "query_module"
 	case unix.SYS_QUOTACTL:
-		return "QUOTACTL"
+		return "quotactl"
 	case unix.SYS_NFSSERVCTL:
-		return "NFSSERVCTL"
+		return "nfsservctl"
 	case unix.SYS_GETPMSG:
-		return "GETPMSG"
+		return "getpmsg"
 	case unix.SYS_PUTPMSG:
-		return "PUTPMSG"
+		return "putpmsg"
 	case unix.SYS_AFS_SYSCALL:
-		return "AFS_SYSCALL"
+		return "afs_syscall"
 	case unix.SYS_TUXCALL:
-		return "TUXCALL"
+		return "tuxcall"
 	case unix.SYS_SECURITY:
-		return "SECURITY"
+		return "security"
 	case unix.SYS_GETTID:
-		return "GETTID"
+		return "gettid"
 	case unix.SYS_READAHEAD:
-		return "READAHEAD"
+		return "readahead"
 	case unix.SYS_SETXATTR:
-		return "SETXATTR"
+		return "setxattr"
 	case unix.SYS_LSETXATTR:
-		return "LSETXATTR"
+		return "lsetxattr"
 	case unix.SYS_FSETXATTR:
-		return "FSETXATTR"
+		return "fsetxattr"
 	case unix.SYS_GETXATTR:
-		return "GETXATTR"
+		return "getxattr"
 	case unix.SYS_LGETXATTR:
-		return "LGETXATTR"
+		return "lgetxattr"
 	case unix.SYS_FGETXATTR:
-		return "FGETXATTR"
+		return "fgetxattr"
 	case unix.SYS_LISTXATTR:
-		return "LISTXATTR"
+		return "listxattr"
 	case unix.SYS_LLISTXATTR:
-		return "LLISTXATTR"
+		return "llistxattr"
 	case unix.SYS_FLISTXATTR:
-		return "FLISTXATTR"
+		return "flistxattr"
 	case unix.SYS_REMOVEXATTR:
-		return "REMOVEXATTR"
+		return "removexattr"
 	case unix.SYS_LREMOVEXATTR:
-		return "LREMOVEXATTR"
+		return "lremovexattr"
 	case unix.SYS_FREMOVEXATTR:
-		return "FREMOVEXATTR"
+		return "fremovexattr"
 	case unix.SYS_TKILL:
-		return "TKILL"
+		return "tkill"
 	case unix.SYS_TIME:
-		return "TIME"
+		return "time"
 	case unix.SYS_FUTEX:
-		return "FUTEX"
+		return "futex"
 	case unix.SYS_SCHED_SETAFFINITY:
-		return "SCHED_SETAFFINITY"
+		return "sched_setaffinity"
 	case unix.SYS_SCHED_GETAFFINITY:
-		return "SCHED_GETAFFINITY"
+		return "sched_getaffinity"
 	case unix.SYS_SET_THREAD_AREA:
-		return "SET_THREAD_AREA"
+		return "set_thread_area"
 	case unix.SYS_IO_SETUP:
-		return "IO_SETUP"
+		return "io_setup"
 	case unix.SYS_IO_DESTROY:
-		return "IO_DESTROY"
+		return "io_destroy"
 	case unix.SYS_IO_GETEVENTS:
-		return "IO_GETEVENTS"
+		return "io_getevents"
 	case unix.SYS_IO_SUBMIT:
-		return "IO_SUBMIT"
+		return "io_submit"
 	case unix.SYS_IO_CANCEL:
-		return "IO_CANCEL"
+		return "io_cancel"
 	case unix.SYS_GET_THREAD_AREA:
-		return "GET_THREAD_AREA"
+		return "get_thread_area"
 	case unix.SYS_LOOKUP_DCOOKIE:
-		return "LOOKUP_DCOOKIE"
+		return "lookup_dcookie"
 	case unix.SYS_EPOLL_CREATE:
-		return "EPOLL_CREATE"
+		return "epoll_create"
 	case unix.SYS_EPOLL_CTL_OLD:
-		return "EPOLL_CTL_OLD"
+		return "epoll_ctl_old"
 	case unix.SYS_EPOLL_WAIT_OLD:
-		return "EPOLL_WAIT_OLD"
+		return "epoll_wait_old"
 	case unix.SYS_REMAP_FILE_PAGES:
-		return "REMAP_FILE_PAGES"
+		return "remap_file_pages"
 	case unix.SYS_GETDENTS64:
-		return "GETDENTS64"
+		return "getdents64"
 	case unix.SYS_SET_TID_ADDRESS:
-		return "SET_TID_ADDRESS"
+		return "set_tid_address"
 	case unix.SYS_RESTART_SYSCALL:
-		return "RESTART_SYSCALL"
+		return "restart_syscall"
 	case unix.SYS_SEMTIMEDOP:
-		return "SEMTIMEDOP"
+		return "semtimedop"
 	case unix.SYS_FADVISE64:
-		return "FADVISE64"
+		return "fadvise64"
 	case unix.SYS_TIMER_CREATE:
-		return "TIMER_CREATE"
+		return "timer_create"
 	case unix.SYS_TIMER_SETTIME:
-		return "TIMER_SETTIME"
+		return "timer_settime"
 	case unix.SYS_TIMER_GETTIME:
-		return "TIMER_GETTIME"
+		return "timer_gettime"
 	case unix.SYS_TIMER_GETOVERRUN:
-		return "TIMER_GETOVERRUN"
+		return "timer_getoverrun"
 	case unix.SYS_TIMER_DELETE:
-		return "TIMER_DELETE"
+		return "timer_delete"
 	case unix.SYS_CLOCK_SETTIME:
-		return "CLOCK_SETTIME"
+		return "clock_settime"
 	case unix.SYS_CLOCK_GETTIME:
-		return "CLOCK_GETTIME"
+		return "clock_gettime"
 	case unix.SYS_CLOCK_GETRES:
-		return "CLOCK_GETRES"
+		return "clock_getres"
 	case unix.SYS_CLOCK_NANOSLEEP:
-		return "CLOCK_NANOSLEEP"
+		return "clock_nanosleep"
 	case unix.SYS_EXIT_GROUP:
-		return "EXIT_GROUP"
+		return "exit_group"
 	case unix.SYS_EPOLL_WAIT:
-		return "EPOLL_WAIT"
+		return "epoll_wait"
 	case unix.SYS_EPOLL_CTL:
-		return "EPOLL_CTL"
+		return "epoll_ctl"
 	case unix.SYS_TGKILL:
-		return "TGKILL"
+		return "tgkill"
 	case unix.SYS_UTIMES:
-		return "UTIMES"
+		return "utimes"
 	case unix.SYS_VSERVER:
-		return "VSERVER"
+		return "vserver"
 	case unix.SYS_MBIND:
-		return "MBIND"
+		return "mbind"
 	case unix.SYS_SET_MEMPOLICY:
-		return "SET_MEMPOLICY"
+		return "set_mempolicy"
 	case unix.SYS_GET_MEMPOLICY:
-		return "GET_MEMPOLICY"
+		return "get_mempolicy"
 	case unix.SYS_MQ_OPEN:
-		return "MQ_OPEN"
+		return "mq_open"
 	case unix.SYS_MQ_UNLINK:
-		return "MQ_UNLINK"
+		return "mq_unlink"
 	case unix.SYS_MQ_TIMEDSEND:
-		return "MQ_TIMEDSEND"
+		return "mq_timedsend"
 	case unix.SYS_MQ_TIMEDRECEIVE:
-		return "MQ_TIMEDRECEIVE"
+		return "mq_timedreceive"
 	case unix.SYS_MQ_NOTIFY:
-		return "MQ_NOTIFY"
+		return "mq_notify"
 	case unix.SYS_MQ_GETSETATTR:
-		return "MQ_GETSETATTR"
+		return "mq_getsetattr"
 	case unix.SYS_KEXEC_LOAD:
-		return "KEXEC_LOAD"
+		return "kexec_load"
 	case unix.SYS_WAITID:
-		return "WAITID"
+		return "waitid"
 	case unix.SYS_ADD_KEY:
-		return "ADD_KEY"
+		return "add_key"
 	case unix.SYS_REQUEST_KEY:
-		return "REQUEST_KEY"
+		return "request_key"
 	case unix.SYS_KEYCTL:
-		return "KEYCTL"
+		return "keyctl"
 	case unix.SYS_IOPRIO_SET:
-		return "IOPRIO_SET"
+		return "ioprio_set"
 	case unix.SYS_IOPRIO_GET:
-		return "IOPRIO_GET"
+		return "ioprio_get"
 	case unix.SYS_INOTIFY_INIT:
-		return "INOTIFY_INIT"
+		return "inotify_init"
 	case unix.SYS_INOTIFY_ADD_WATCH:
-		return "INOTIFY_ADD_WATCH"
+		return "inotify_add_watch"
 	case unix.SYS_INOTIFY_RM_WATCH:
-		return "INOTIFY_RM_WATCH"
+		return "inotify_rm_watch"
 	case unix.SYS_MIGRATE_PAGES:
-		return "MIGRATE_PAGES"
+		return "migrate_pages"
 	case unix.SYS_OPENAT:
-		return "OPENAT"
+		return "openat"
 	case unix.SYS_MKDIRAT:
-		return "MKDIRAT"
+		return "mkdirat"
 	case unix.SYS_MKNODAT:
-		return "MKNODAT"
+		return "mknodat"
 	case unix.SYS_FCHOWNAT:
-		return "FCHOWNAT"
+		return "fchownat"
 	case unix.SYS_FUTIMESAT:
-		return "FUTIMESAT"
+		return "futimesat"
 	case unix.SYS_NEWFSTATAT:
-		return "NEWFSTATAT"
+		return "newfstatat"
 	case unix.SYS_UNLINKAT:
-		return "UNLINKAT"
+		return "unlinkat"
 	case unix.SYS_RENAMEAT:
-		return "RENAMEAT"
+		return "renameat"
 	case unix.SYS_LINKAT:
-		return "LINKAT"
+		return "linkat"
 	case unix.SYS_SYMLINKAT:
-		return "SYMLINKAT"
+		return "symlinkat"
 	case unix.SYS_READLINKAT:
-		return "READLINKAT"
+		return "readlinkat"
 	case unix.SYS_FCHMODAT:
-		return "FCHMODAT"
+		return "fchmodat"
 	case unix.SYS_FACCESSAT:
-		return "FACCESSAT"
+		return "faccessat"
 	case unix.SYS_PSELECT6:
-		return "PSELECT6"
+		return "pselect6"
 	case unix.SYS_PPOLL:
-		return "PPOLL"
+		return "ppoll"
 	case unix.SYS_UNSHARE:
-		return "UNSHARE"
+		return "unshare"
 	case unix.SYS_SET_ROBUST_LIST:
-		return "SET_ROBUST_LIST"
+		return "set_robust_list"
 	case unix.SYS_GET_ROBUST_LIST:
-		return "GET_ROBUST_LIST"
+		return "get_robust_list"
 	case unix.SYS_SPLICE:
-		return "SPLICE"
+		return "splice"
 	case unix.SYS_TEE:
-		return "TEE"
+		return "tee"
 	case unix.SYS_SYNC_FILE_RANGE:
-		return "SYNC_FILE_RANGE"
+		return "sync_file_range"
 	case unix.SYS_VMSPLICE:
-		return "VMSPLICE"
+		return "vmsplice"
 	case unix.SYS_MOVE_PAGES:
-		return "MOVE_PAGES"
+		return "move_pages"
 	case unix.SYS_UTIMENSAT:
-		return "UTIMENSAT"
+		return "utimensat"
 	case unix.SYS_EPOLL_PWAIT:
-		return "EPOLL_PWAIT"
+		return "epoll_pwait"
 	case unix.SYS_SIGNALFD:
-		return "SIGNALFD"
+		return "signalfd"
 	case unix.SYS_TIMERFD_CREATE:
-		return "TIMERFD_CREATE"
+		return "timerfd_create"
 	case unix.SYS_EVENTFD:
-		return "EVENTFD"
+		return "eventfd"
 	case unix.SYS_FALLOCATE:
-		return "FALLOCATE"
+		return "fallocate"
 	case unix.SYS_TIMERFD_SETTIME:
-		return "TIMERFD_SETTIME"
+		return "timerfd_settime"
 	case unix.SYS_TIMERFD_GETTIME:
-		return "TIMERFD_GETTIME"
+		return "timerfd_gettime"
 	case unix.SYS_ACCEPT4:
-		return "ACCEPT4"
+		return "accept4"
 	case unix.SYS_SIGNALFD4:
-		return "SIGNALFD4"
+		return "signalfd4"
 	case unix.SYS_EVENTFD2:
-		return "EVENTFD2"
+		return "eventfd2"
 	case unix.SYS_EPOLL_CREATE1:
-		return "EPOLL_CREATE1"
+		return "epoll_create1"
 	case unix.SYS_DUP3:
-		return "DUP3"
+		return "dup3"
 	case unix.SYS_PIPE2:
-		return "PIPE2"
+		return "pipe2"
 	case unix.SYS_INOTIFY_INIT1:
-		return "INOTIFY_INIT1"
+		return "inotify_init1"
 	case unix.SYS_PREADV:
-		return "PREADV"
+		return "preadv"
 	case unix.SYS_PWRITEV:
-		return "PWRITEV"
+		return "pwritev"
 	case unix.SYS_RT_TGSIGQUEUEINFO:
-		return "RT_TGSIGQUEUEINFO"
+		return "rt_tgsigqueueinfo"
 	case unix.SYS_PERF_EVENT_OPEN:
-		return "PERF_EVENT_OPEN"
+		return "perf_event_open"
 	case unix.SYS_RECVMMSG:
-		return "RECVMMSG"
+		return "recvmmsg"
 	case unix.SYS_FANOTIFY_INIT:
-		return "FANOTIFY_INIT"
+		return "fanotify_init"
 	case unix.SYS_FANOTIFY_MARK:
-		return "FANOTIFY_MARK"
+		return "fanotify_mark"
 	case unix.SYS_PRLIMIT64:
-		return "PRLIMIT64"
+		return "prlimit64"
 	case unix.SYS_NAME_TO_HANDLE_AT:
-		return "NAME_TO_HANDLE_AT"
+		return "name_to_handle_at"
 	case unix.SYS_OPEN_BY_HANDLE_AT:
-		return "OPEN_BY_HANDLE_AT"
+		return "open_by_handle_at"
 	case unix.SYS_CLOCK_ADJTIME:
-		return "CLOCK_ADJTIME"
+		return "clock_adjtime"
 	case unix.SYS_SYNCFS:
-		return "SYNCFS"
+		return "syncfs"
 	case unix.SYS_SENDMMSG:
-		return "SENDMMSG"
+		return "sendmmsg"
 	case unix.SYS_SETNS:
-		return "SETNS"
+		return "setns"
 	case unix.SYS_GETCPU:
-		return "GETCPU"
+		return "getcpu"
 	case unix.SYS_PROCESS_VM_READV:
-		return "PROCESS_VM_READV"
+		return "process_vm_readv"
 	case unix.SYS_PROCESS_VM_WRITEV:
-		return "PROCESS_VM_WRITEV"
+		return "process_vm_writev"
 	case unix.SYS_KCMP:
-		return "KCMP"
+		return "kcmp"
 	case unix.SYS_FINIT_MODULE:
-		return "FINIT_MODULE"
+		return "finit_module"
 	case unix.SYS_SCHED_SETATTR:
-		return "SCHED_SETATTR"
+		return "sched_setattr"
 	case unix.SYS_SCHED_GETATTR:
-		return "SCHED_GETATTR"
+		return "sched_getattr"
 	case unix.SYS_RENAMEAT2:
-		return "RENAMEAT2"
+		return "renameat2"
 	case unix.SYS_SECCOMP:
-		return "SECCOMP"
+		return "seccomp"
 	case unix.SYS_GETRANDOM:
-		return "GETRANDOM"
+		return "getrandom"
 	case unix.SYS_MEMFD_CREATE:
-		return "MEMFD_CREATE"
+		return "memfd_create"
 	case unix.SYS_KEXEC_FILE_LOAD:
-		return "KEXEC_FILE_LOAD"
+		return "kexec_file_load"
 	case unix.SYS_BPF:
-		return "BPF"
+		return "bpf"
 	case unix.SYS_EXECVEAT:
-		return "EXECVEAT"
+		return "execveat"
 	case unix.SYS_USERFAULTFD:
-		return "USERFAULTFD"
+		return "userfaultfd"
 	case unix.SYS_MEMBARRIER:
-		return "MEMBARRIER"
+		return "membarrier"
 	case unix.SYS_MLOCK2:
-		return "MLOCK2"
+		return "mlock2"
 	case unix.SYS_COPY_FILE_RANGE:
-		return "COPY_FILE_RANGE"
+		return "copy_file_range"
 	case unix.SYS_PREADV2:
-		return "PREADV2"
+		return "preadv2"
 	case unix.SYS_PWRITEV2:
-		return "PWRITEV2"
+		return "pwritev2"
 	case unix.SYS_PKEY_MPROTECT:
-		return "PKEY_MPROTECT"
+		return "pkey_mprotect"
 	case unix.SYS_PKEY_ALLOC:
-		return "PKEY_ALLOC"
+		return "pkey_alloc"
 	case unix.SYS_PKEY_FREE:
-		return "PKEY_FREE"
+		return "pkey_free"
 	case unix.SYS_STATX:
-		return "STATX"
+		return "statx"
 	case unix.SYS_IO_PGETEVENTS:
-		return "IO_PGETEVENTS"
+		return "io_pgetevents"
 	case unix.SYS_RSEQ:
-		return "RSEQ"
+		return "rseq"
 	}
 	return fmt.Sprintf("%d - ERR_UNKNOWN_SYSCALL", e)
 }
