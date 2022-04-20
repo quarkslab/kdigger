@@ -384,15 +384,20 @@ these kind of paths:
 ```
 
 These strings can give you information about the kind of container used, here
-the "kubelet/kubepods" can confirm we are in a Kubernetes pod's container. Also
-the container runtime used, here docker with containerd, the container ID, the
-pod UID, the snapshot key, etc.
+the `kubelet/kubepods` part can confirm we are in a Kubernetes pod's container.
+Also you can learn about the container runtime used, here docker with
+containerd, also the container ID, the pod UID, the snapshot key, etc.
 
-Knowing the container ID and the container runtime can be useful to determine
-where on the host will be stored the files written to the container filesystem.
-For example, when exploiting hooks that will be called in the context of the
-host to escape container, see these [kinds of
-escapes](http://blog.bofh.it/debian/id_413).
+Knowing the container ID and the container runtime can be interesting to
+determine where on the host will be stored the files written to the container
+filesystem. This is for example useful when exploiting hooks that will be called
+in the context of the host, and thus escape the container, see these [kinds of
+escapes](http://blog.bofh.it/debian/id_413) for more information.
+
+For kernels using cgroups v2, `/proc/self/mountinfo` can stil leak information
+about the container ID. See [this Stackoverflow
+thread](https://stackoverflow.com/a/69005753) and its related threads for more
+information.
 
 ### Devices
 
@@ -468,12 +473,17 @@ distinction between Docker and containerd.
 Services uses CoreDNS wildcards feature to discover every service available in
 the cluster. In fact, it appears that CoreDNS, that is now widely used in
 Kubernetes cluster proposes a wildcards features. You can learn more about it
-[here in the
-documentation](https://github.com/coredns/coredns/blob/master/plugin/kubernetes/README.md#wildcards).
+[~~here in the
+documentation~~](https://github.com/coredns/coredns/blob/master/plugin/kubernetes/README.md#wildcards).
 
 This bucket is extremely useful to perform discovery really fast in a
 Kubernetes cluster. The DNS will kindly give you every service domain present
 in the cluster.
+
+EDIT: [This feature was removed](https://github.com/coredns/coredns/pull/5019)
+starting as of CoreDNS v1.9.0 because it was mostly used by bad actors (like
+this tool). See the associated discussion on [the corresponding Github
+issue](https://github.com/coredns/coredns/issues/4984).
 
 ### Syscalls
 
