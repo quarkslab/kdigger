@@ -215,7 +215,7 @@ during pentest and challenges, you do not always have Internet access to pull
 your favorite toolchain, so you can also see this compilation as a checklist
 that you can somehow perform manually with a basic installation and a shell.
 
-### How this tool is built?
+### How is this tool built?
 
 In addition to all the available features, this tool was built with a plugin
 design so that it can be easily extended by anyone that wants to bring some
@@ -266,6 +266,10 @@ $ kdigger ls
 |               |                            | capabilities in all sets and    |        |
 |               |                            | displays dangerous capabilities |        |
 |               |                            | in red.                         |        |
+| cgroups       | [cgroup cg]                | Cgroups reads the               | false  |
+|               |                            | /proc/self/cgroup files that    |        |
+|               |                            | can leak information under      |        |
+|               |                            | cgroups v1.                     |        |
 | devices       | [device dev]               | Devices shows the list of       | false  |
 |               |                            | devices available in the        |        |
 |               |                            | container.                      |        |
@@ -275,6 +279,9 @@ $ kdigger ls
 |               |                            | them.                           |        |
 | mount         | [mounts mn]                | Mount shows all mounted devices | false  |
 |               |                            | in the container.               |        |
+| node          | [nodes n]                  | Node retrieves various          | false  |
+|               |                            | information in /proc about the  |        |
+|               |                            | current host.                   |        |
 | pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID   | false  |
 |               |                            | namespace of the container in   |        |
 |               |                            | the context of Kubernetes.      |        |
@@ -332,7 +339,7 @@ can-i --list` and display the result.
 
 ### Capabilities
 
-Capabilities list all capabilities in all sets and displays dangerous
+Capabilities lists all capabilities in all sets and displays dangerous
 capabilities in red.
 
 Basically, in a non-privileged container, the result might look like that:
@@ -362,6 +369,29 @@ This bucket might be especially useful to spot critical capabilities that can
 help you to escalate your privileges. This can be a good hint on whether you
 are running inside a privileged container or not.
 
+### Cgroups
+
+Cgroups reads the /proc/self/cgroup files that can leak information under
+cgroups v1. The CgroupPath can leak many information, for example, you can see
+these kind of paths:
+
+```text
+/docker/744ba5524431986481406cfd13382cbeb7e59a4739dec5ff8b458bc821969662/kubelet/kubepods/besteffort/pod3716cd27-4591-40fc-9dae-3851142b1d51/e06769b086acea415152f733574033db4dc5e81c9a8f6563648fd5f3b60227af
+...
+/docker/744ba5524431986481406cfd13382cbeb7e59a4739dec5ff8b458bc821969662/system.slice/containerd.service
+```
+
+These strings can give you information about the kind of container used, here
+the "kubelet/kubepods" can confirm we are in a Kubernetes pod's container. Also
+the container runtime used, here docker with containerd, the container ID, the
+pod UID, the snapshot key, etc.
+
+Knowing the container ID and the container runtime can be useful to determine
+where on the host will be stored the files written to the container filesystem.
+For example, when exploiting hooks that will be called in the context of the
+host to escape container, see these [kinds of
+escapes](http://blog.bofh.it/debian/id_413).
+
 ### Devices
 
 Devices show the list of devices available in the container. This one is
@@ -383,6 +413,17 @@ environment variable or removing some.
 Mount show all mounted devices in the container. This is equivalent to use the
 `mount` command directly but the number of mounted devices and reading path can
 show you mounted volumes, configmap or even secrets inside the pod.
+
+### Node
+
+Node retrieves various information in /proc about the current host. It seeks
+information in `/proc/cpuinfo`, `/proc/meminfo` and `/proc/version` to
+understand the context of execution of the containers. These files are not
+namespaced and thus leak information about the reality of the underlying node.
+
+It lists information about the CPU model, the number of cores, the total memory
+available, the part that is used, the kernel version and some compilation
+details about it.
 
 ### PIDNamespace
 

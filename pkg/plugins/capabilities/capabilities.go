@@ -10,7 +10,7 @@ import (
 
 const (
 	bucketName        = "capabilities"
-	bucketDescription = "Capabilities list all capabilities in all sets and displays dangerous capabilities in red."
+	bucketDescription = "Capabilities lists all capabilities in all sets and displays dangerous capabilities in red."
 )
 
 var bucketAliases = []string{"capability", "cap"}
