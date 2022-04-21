@@ -34,7 +34,7 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 		},
 	}
 
-	res.SetComment(fmt.Sprintf("Checking current context/token permissions in the %q namespace.", n.config.Namespace))
+	res.AddComment(fmt.Sprintf("Checking current context/token permissions in the %q namespace.", n.config.Namespace))
 
 	// do the actual request
 	response, err := n.config.Client.AuthorizationV1().SelfSubjectRulesReviews().Create(
@@ -60,7 +60,10 @@ func (n AuthorizationBucket) Run() (bucket.Results, error) {
 			r.Verbs,
 		})
 	}
-	res.SetComment(comment)
+	if comment != "" {
+		res.AddComment(comment)
+	}
+
 	return *res, nil
 }
 

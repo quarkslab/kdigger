@@ -23,9 +23,9 @@ func (n UserNamespaceBucket) Run() (bucket.Results, error) {
 		res.AddContent([]interface{}{m.ContainerID, m.HostID, m.Range})
 	}
 	if userNS {
-		res.SetComment("user namespace is active")
+		res.AddComment("User namespace is active.")
 	} else {
-		res.SetComment("user namespace is not active")
+		res.AddComment("User namespace is not active.")
 	}
 
 	return *res, nil

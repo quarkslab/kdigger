@@ -1,7 +1,11 @@
 package capabilities
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/quarkslab/kdigger/pkg/bucket"
@@ -34,6 +38,10 @@ type CapabilitiesBucket struct{}
 func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 	capabilities, err := getCapabilities(0)
 
+	if err != nil {
+		return bucket.Results{}, err
+	}
+
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"set", "capabilities"})
 	var colors text.Colors
@@ -51,12 +59,20 @@ func (n CapabilitiesBucket) Run() (bucket.Results, error) {
 	}
 
 	if isPrivileged(capabilities[capability.BOUNDING]) {
-		res.SetComment(fmt.Sprintf("The bounding set contains %d caps and you have CAP_SYS_ADMIN, you might be running a privileged container, check the number of devices available.", len(capabilities[capability.BOUNDING])))
+		res.AddComment(fmt.Sprintf("The bounding set contains %d caps and you have CAP_SYS_ADMIN, you might be running a privileged container, check the number of devices available.", len(capabilities[capability.BOUNDING])))
 	} else {
-		res.SetComment(fmt.Sprintf("The bounding set contains %d caps, it seems that you are running a non-privileged container.", len(capabilities[capability.BOUNDING])))
+		res.AddComment(fmt.Sprintf("The bounding set contains %d caps, it seems that you are running a non-privileged container.", len(capabilities[capability.BOUNDING])))
 	}
 
-	return *res, err
+	noNewPrivs, err := readNoNewPrivsFlag()
+	if err != nil {
+		// this is an additional feature, do not "error" on this
+		res.AddComment(fmt.Sprintf("error reading the NoNewPrivs flag: %s", err.Error()))
+	} else {
+		res.AddComment(fmt.Sprintf("NoNewPrivs flag is set to %t.", noNewPrivs))
+	}
+
+	return *res, nil
 }
 
 // Register registers a bucket
@@ -133,4 +149,30 @@ func getCapabilities(pid int) (map[capability.CapType][]capability.Cap, error) {
 	}
 
 	return allowedCaps, nil
+}
+
+func readNoNewPrivsFlag() (bool, error) {
+	file, err := os.Open("/proc/self/status")
+	if err != nil {
+		return false, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "NoNewPrivs") {
+			line := strings.Split(scanner.Text(), ":")
+			if len(line) < 2 {
+				return false, errors.New("error in /proc/self/status format, missing colons")
+			}
+			return strings.TrimSpace(line[1]) == "1", nil
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return false, err
+	}
+
+	return false, errors.New("flag NoNewPrivs was not found in /proc/self/status")
 }

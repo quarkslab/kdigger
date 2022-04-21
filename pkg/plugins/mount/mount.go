@@ -31,7 +31,7 @@ func (m MountBucket) Run() (bucket.Results, error) {
 	for _, m := range values {
 		res.AddContent([]interface{}{m.Device, m.Path, m.Filesystem, m.Flags})
 	}
-	res.SetComment(fmt.Sprintf("%d devices are mounted.", len(values)))
+	res.AddComment(fmt.Sprintf("%d devices are mounted.", len(values)))
 	return *res, nil
 }
 

@@ -20,7 +20,7 @@ type TokenBucket struct{}
 func (n TokenBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if tokenFolderExist() {
-		res.SetComment("A service account token is mounted.")
+		res.AddComment("A service account token is mounted.")
 
 		res.SetHeaders([]string{"namespace", "token", "CA"})
 
@@ -39,7 +39,7 @@ func (n TokenBucket) Run() (bucket.Results, error) {
 
 		res.AddContent([]interface{}{ns, t, ca})
 	} else {
-		res.SetComment("No service account token was found in the local file system")
+		res.AddComment("No service account token was found in the local filesystem")
 	}
 	return *res, nil
 }

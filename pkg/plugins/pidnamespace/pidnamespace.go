@@ -25,17 +25,12 @@ func (n PIDNamespaceBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"deviceNumber", "pauseFound", "kubeletFound"})
 
-	var comment string
 	if pauseFound {
-		comment += "the pause process was found, pod might have shareProcessNamespace to true"
+		res.AddComment("The pause process was found, pod might have shareProcessNamespace to true.")
 	}
 	if kubeletFound {
-		if comment != "" {
-			comment += "; "
-		}
-		comment += "the kubelet process was found, pod might have hostPID to true"
+		res.AddComment("The kubelet process was found, pod might have hostPID to true.")
 	}
-	res.SetComment(comment)
 	res.AddContent([]interface{}{deviceNumber, pauseFound, kubeletFound})
 
 	return *res, nil

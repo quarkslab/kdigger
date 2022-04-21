@@ -209,16 +209,16 @@ type Results struct {
 	bucketName string
 	headers    []string
 	data       [][]interface{}
-	comments   string
+	comments   []string
 }
 
 // ResultsOpts uses pointers to have a default nil value that will be evaluated
 // as true instead of bool defaut that is false.
 type ResultsOpts struct {
-	ShowName    *bool
-	ShowComment *bool
-	ShowData    *bool
-	OutputWidth int
+	ShowName     *bool
+	ShowComments *bool
+	ShowData     *bool
+	OutputWidth  int
 }
 
 func NewResults(name string) *Results {
@@ -233,8 +233,8 @@ func (r *Results) SetHeaders(headers []string) {
 	r.headers = headers
 }
 
-func (r *Results) SetComment(comment string) {
-	r.comments = comment
+func (r *Results) AddComment(comment string) {
+	r.comments = append(r.comments, comment)
 }
 
 func (r *Results) AddContent(content []interface{}) {
@@ -308,9 +308,12 @@ func (r Results) Human(opts ResultsOpts) string {
 	if opts.ShowName == nil || *opts.ShowName {
 		output.WriteString(fmt.Sprintf("### %s ###\n", strings.ToUpper(r.bucketName)))
 	}
-	if r.comments != "" {
-		if opts.ShowComment == nil || *opts.ShowComment {
-			output.WriteString(fmt.Sprintf("Comment: %s\n", r.comments))
+	if len(r.comments) != 0 {
+		if opts.ShowComments == nil || *opts.ShowComments {
+			output.WriteString("Comments:\n")
+			for _, comment := range r.comments {
+				output.WriteString(fmt.Sprintf("- %s\n", comment))
+			}
 		}
 	}
 	if opts.ShowData == nil || *opts.ShowData {
@@ -331,9 +334,9 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	}
 
 	type jsonOutput struct {
-		Bucket  string                   `json:"bucket"`
-		Comment string                   `json:"comment"`
-		Data    []map[string]interface{} `json:"data"`
+		Bucket   string                   `json:"bucket"`
+		Comments []string                 `json:"comments,omitempty"`
+		Data     []map[string]interface{} `json:"data"`
 	}
 
 	m := make([]map[string]interface{}, 0)
@@ -351,7 +354,7 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	var b []byte
 	var err error
 	// if hide name and comments, directly output an array of results
-	if (opts.ShowName != nil && !*opts.ShowName) && (opts.ShowComment != nil && !*opts.ShowComment) {
+	if (opts.ShowName != nil && !*opts.ShowName) && (opts.ShowComments != nil && !*opts.ShowComments) {
 		b, err = json.Marshal(m)
 	} else {
 		o := jsonOutput{}
@@ -359,8 +362,8 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 		if opts.ShowName == nil || *opts.ShowName {
 			o.Bucket = r.bucketName
 		}
-		if opts.ShowComment == nil || *opts.ShowComment {
-			o.Comment = r.comments
+		if opts.ShowComments == nil || *opts.ShowComments {
+			o.Comments = r.comments
 		}
 		if opts.ShowData == nil || *opts.ShowData {
 			o.Data = m

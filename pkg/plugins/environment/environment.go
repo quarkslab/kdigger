@@ -1,6 +1,7 @@
 package environment
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -26,9 +27,9 @@ func (n EnvironmentBucket) Run() (bucket.Results, error) {
 		res.AddContent([]interface{}{name, value})
 	}
 	if IsTypicalKubernetesEnv() {
-		res.SetComment("Typical Kubernetes API service env var was found, we might be running inside a pod.")
+		res.AddComment(fmt.Sprintf("Typical Kubernetes API service env var %s was found, we might be running inside a pod.", KubernetesHostEnv))
 	} else {
-		res.SetComment("Typical Kubernetes API service env var was not found, we might not be running inside a pod.")
+		res.AddComment(fmt.Sprintf("Typical Kubernetes API service env var %s was not found, we might not be running inside a pod.", KubernetesHostEnv))
 	}
 	return *res, nil
 }

@@ -33,13 +33,12 @@ func (n ProcessesBucket) Run() (bucket.Results, error) {
 		res.AddContent([]interface{}{proc.Pid(), proc.PPid(), proc.Executable()})
 	}
 
-	comment := fmt.Sprintf("%d processes running", len(processes))
+	res.AddComment(fmt.Sprintf("%d processes running.", len(processes)))
 	if isSystemdFirst {
-		comment += ", systemd is the first process"
+		res.AddComment("systemd is the first process.")
 	} else {
-		comment += ", systemd not found as the first process"
+		res.AddComment("systemd not found as the first process.")
 	}
-	res.SetComment(comment)
 
 	return *res, nil
 }

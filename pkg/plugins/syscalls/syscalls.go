@@ -1,7 +1,11 @@
 package syscalls
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"syscall"
 	"time"
 
@@ -13,6 +17,27 @@ const (
 	bucketName        = "syscalls"
 	bucketDescription = "Syscalls scans most of the syscalls to detect which are blocked and allowed."
 )
+
+type SeccompMode uint8
+
+const (
+	SeccompModeDisabled SeccompMode = iota
+	SeccompModeStrict
+	SeccompModeFilter
+)
+
+func (s SeccompMode) String() string {
+	switch s {
+	case SeccompModeDisabled:
+		return "SECCOMP_MODE_DISABLED"
+	case SeccompModeStrict:
+		return "SECCOMP_MODE_STRICT"
+	case SeccompModeFilter:
+		return "SECCOMP_MODE_FILTER"
+	default:
+		return "SECCOMP_MODE_UNKNOWN"
+	}
+}
 
 var bucketAliases = []string{"syscall", "sys"}
 
@@ -40,7 +65,15 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	for _, s := range skippedSyscalls {
 		skippedNames = append(skippedNames, syscallName(s))
 	}
-	res.SetComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or for obvious reasons.")
+	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program, etc.")
+
+	seccompFlag, err := readSeccompFlag()
+	if err != nil {
+		// this is an additional feature, do not "error" on this
+		res.AddComment(fmt.Sprintf("error reading the Seccomp flag: %s", err.Error()))
+	} else {
+		res.AddComment(fmt.Sprintf("Seccomp flag to %s.", seccompFlag))
+	}
 
 	return *res, nil
 }
@@ -54,6 +87,39 @@ func Register(b *bucket.Buckets) {
 
 func NewSyscallsBucket(config bucket.Config) (*SyscallsBucket, error) {
 	return &SyscallsBucket{}, nil
+}
+
+func readSeccompFlag() (SeccompMode, error) {
+	file, err := os.Open("/proc/self/status")
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "Seccomp") {
+			line := strings.Split(scanner.Text(), ":")
+			if len(line) < 2 {
+				return 0, errors.New("error in /proc/self/status format, missing colons")
+			}
+			switch strings.TrimSpace(line[1]) {
+			case "0":
+				return SeccompModeDisabled, nil
+			case "1":
+				return SeccompModeStrict, nil
+			case "2":
+				return SeccompModeFilter, nil
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	return 0, errors.New("flag Seccomp was not found in /proc/self/status")
 }
 
 type scanResult struct {

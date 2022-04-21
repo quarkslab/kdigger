@@ -34,7 +34,7 @@ func (n CgroupsBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if len(cgroups) <= 1 {
 		// https://stackoverflow.com/a/69005753
-		res.SetComment("This kernel might use cgroups v2, thus explaning the lack of information.")
+		res.AddComment("This kernel might use cgroups v2, thus explaning the lack of information.")
 	}
 	res.SetHeaders([]string{"hierarchyID", "controllerList", "cgroupPath"})
 	for _, cgroup := range cgroups {

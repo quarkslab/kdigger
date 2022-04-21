@@ -19,7 +19,7 @@ type RuntimeBucket struct{}
 func (n RuntimeBucket) Run() (bucket.Results, error) {
 	runtime := proc.GetContainerRuntime(0, 0)
 	res := bucket.NewResults(bucketName)
-	res.SetComment(fmt.Sprintf("Container runtime %q", runtime))
+	res.AddComment(fmt.Sprintf("Container runtime %q", runtime))
 	return *res, nil
 }
 
