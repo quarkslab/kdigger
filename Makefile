@@ -6,6 +6,9 @@ ARCH=$$(uname -m)
 
 OUTPUTNAME=kdigger
 
+RELEASE_NAME=kdigger-linux-amd64
+RELEASE_FOLDER=release
+
 # building for linux/amd64, if you want to build for arm64 you will have to
 # adapt the syscall part that doesn't compile out of the box right now
 GOOS=linux
@@ -32,6 +35,13 @@ fast-build:
 .PHONY: lint
 lint:
 	golangci-lint run
+
+release: build
+	mkdir $(RELEASE_FOLDER)
+	mv kdigger $(RELEASE_FOLDER)/$(RELEASE_NAME)
+	cd $(RELEASE_FOLDER) \
+		&& sha256sum $(RELEASE_NAME) > $(RELEASE_NAME).sha256 \
+		&& tar cvf - $(RELEASE_NAME) | gzip -9 - > $(RELEASE_NAME).tar.gz
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
