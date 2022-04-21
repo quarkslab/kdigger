@@ -371,6 +371,13 @@ This bucket might be especially useful to spot critical capabilities that can
 help you to escalate your privileges. This can be a good hint on whether you
 are running inside a privileged container or not.
 
+This bucket also checks for the `NoNewPrivs` flag in `/proc/self/status` that
+will be set to 1 if `allowPrivilegeEscalation` is set to false in the
+`SecurityContext` of the Pod. Note that `allowPrivilegeEscalation` is always
+true when the container:
+- is run as privileged, or
+- has `CAP_SYS_ADMIN`
+
 ### Cgroups
 
 Cgroups reads the /proc/self/cgroup files that can leak information under
@@ -495,6 +502,9 @@ can hang the program forever.
 
 This is one really nice way to see if you are in a privileged container with a
 lot of capabilities quickly: the list of blocked syscall might be almost empty.
+
+This bucket also checks the `Seccomp` flag in `/proc/self/status`, it will
+display if Seccomp is disabled, running in strict or in filter mode.
 
 ### Token
 
