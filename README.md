@@ -72,7 +72,7 @@ $ sudo install kdigger /usr/local/bin
 ### Via Go
 
 ```bash
-$ go get github.com/quarkslab/kdigger
+$ go install github.com/quarkslab/kdigger@master
 ```
 
 ## Usage
