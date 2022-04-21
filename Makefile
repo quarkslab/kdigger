@@ -26,13 +26,16 @@ LDFLAGS="-s -w                               \
 build: lint
 	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
+fast-build:
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+
 .PHONY: lint
 lint:
 	golangci-lint run
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
-run:
+run: fast-build
 	echo "FROM mtardy/koolbox\nCOPY kdigger /usr/local/bin/kdigger" | docker build -t $(DEV_IMAGE_TAG) -f- .
 	kind load docker-image $(DEV_IMAGE_TAG)
 	kubectl run kdigger-dev-tmp --rm -i --tty --image $(DEV_IMAGE_TAG) --image-pull-policy Never -- bash

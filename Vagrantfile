@@ -2,10 +2,9 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/bullseye64"
+  config.vm.box = "generic/ubuntu2004"
   config.vm.hostname = "kdigger"
   config.vm.define "kdigger"
-  config.vagrant.plugins = ['vagrant-vbguest']
 
   config.vm.network "private_network", type: "dhcp"
 
@@ -21,9 +20,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y build-essential curl vim zsh git
+    apt-get install -y build-essential curl neovim zsh git
 
-    GO_VERSION=1.17.3
+    GO_VERSION=1.18.1
     echo "Install Go $GO_VERSION"
     curl -OL https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz
     rm -rf /usr/local/go && tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz
