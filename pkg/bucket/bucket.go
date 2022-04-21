@@ -336,10 +336,11 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	type jsonOutput struct {
 		Bucket   string                   `json:"bucket"`
 		Comments []string                 `json:"comments,omitempty"`
-		Data     []map[string]interface{} `json:"data"`
+		Results  []map[string]interface{} `json:"results,omitempty"`
+		Result   map[string]interface{}   `json:"result,omitempty"`
 	}
 
-	m := make([]map[string]interface{}, 0)
+	dataMap := make([]map[string]interface{}, 0)
 
 	if len(r.data) != 0 && len(r.headers) != 0 {
 		for _, row := range r.data {
@@ -347,7 +348,7 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 			for headerNr, header := range r.headers {
 				rowMap[header] = row[headerNr]
 			}
-			m = append(m, rowMap)
+			dataMap = append(dataMap, rowMap)
 		}
 	}
 
@@ -355,7 +356,12 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 	var err error
 	// if hide name and comments, directly output an array of results
 	if (opts.ShowName != nil && !*opts.ShowName) && (opts.ShowComments != nil && !*opts.ShowComments) {
-		b, err = json.Marshal(m)
+		if len(dataMap) == 1 {
+			// flatten it, the result is not iterable
+			b, err = json.Marshal(dataMap[0])
+		} else {
+			b, err = json.Marshal(dataMap)
+		}
 	} else {
 		o := jsonOutput{}
 		// TODO maybe add omitempty
@@ -366,7 +372,12 @@ func (r Results) JSON(opts ResultsOpts) (string, error) {
 			o.Comments = r.comments
 		}
 		if opts.ShowData == nil || *opts.ShowData {
-			o.Data = m
+			if len(dataMap) == 1 {
+				// flatten it, the result is not iterable
+				o.Result = dataMap[0]
+			} else {
+				o.Results = dataMap
+			}
 		}
 
 		b, err = json.Marshal(o)
