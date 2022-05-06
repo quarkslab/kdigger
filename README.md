@@ -5,7 +5,7 @@ Kubernetes penetration testing. This tool is a compilation of various plugins
 called buckets to facilitate pentesting Kubernetes from inside a pod.
 
 Please note that this is not an ultimate pentest tool on Kubernetes. Some
-plugins perform really simple actions, that could be performed manually by
+plugins perform really simple actions that could be performed manually by
 calling the `mount` command or listing all devices present in dev with `ls
 /dev` for example. But some others automate scanning processes, such as the
 admission controller scanner. In the end, this tool aims to humbly speed up the
@@ -221,7 +221,7 @@ that you can somehow perform manually with a basic installation and a shell.
 
 In addition to all the available features, this tool was built with a plugin
 design so that it can be easily extended by anyone that wants to bring some
-expertises.
+expertise.
 
 For example, you are a security researcher on Kubernetes, and when you are
 doing CTFs or pentesting real infrastructure, you are often performing specific
@@ -233,11 +233,11 @@ function with the actual logic.
 
 ### Areas for improvement
 
-The expertize proposed by the tool could be refined and more precise. For now
+The expertise proposed by the tool could be refined and more precise. For now
 it's mostly dumping raw data for most of the buckets and rely on the user to
 understand what it implies.
 
-Generally the output format is not the best and could be reworked. The human
+Generally, the output format is not the best and could be reworked. The human
 format via array lines does not fit all the use cases. The tool also proposes a
 JSON output format, it has the advantage to exist but is really quirky and uses
 arrays so extracting information might be a bit unpredictable.
@@ -318,7 +318,7 @@ find what is prevented or not. The idea behind this bucket is to check, after
 you learned that you have `create pods` ability, if no admission controller
 like a PodSecurityPolicy or another is blocking you to create node privilege
 escalation pods. Like mounting the host filesystem, or the host PID namespace,
-or just a privileged container for example.
+or just a privileged container, for example.
 
 This bucket currently automatically tries to create:
 - a privileged pod
@@ -382,7 +382,7 @@ true when the container:
 
 Cgroups reads the /proc/self/cgroup files that can leak information under
 cgroups v1. The CgroupPath can leak many information, for example, you can see
-these kind of paths:
+these kinds of paths:
 
 ```text
 /docker/744ba5524431986481406cfd13382cbeb7e59a4739dec5ff8b458bc821969662/kubelet/kubepods/besteffort/pod3716cd27-4591-40fc-9dae-3851142b1d51/e06769b086acea415152f733574033db4dc5e81c9a8f6563648fd5f3b60227af
@@ -401,7 +401,7 @@ filesystem. This is for example useful when exploiting hooks that will be called
 in the context of the host, and thus escape the container, see these [kinds of
 escapes](http://blog.bofh.it/debian/id_413) for more information.
 
-For kernels using cgroups v2, `/proc/self/mountinfo` can stil leak information
+For kernels using cgroups v2, `/proc/self/mountinfo` can still leak information
 about the container ID. See [this Stackoverflow
 thread](https://stackoverflow.com/a/69005753) and its related threads for more
 information.
@@ -441,10 +441,10 @@ details about it.
 
 ### PIDNamespace
 
-PIDNamespace analyses the PID namespace of the container in the context of
+PIDNamespace analyzes the PID namespace of the container in the context of
 Kubernetes. Detecting the PID namespace is almost impossible so the idea of
 this bucket is to scan the `/proc` folder to search for specific processes
-like:
+such as:
 * `pause`: it might signify that you are sharing the PID namespace between all
   the containers composing the pod.
 * `kubelet`: it might signify that you are sharing the PID namespace with the
@@ -458,7 +458,7 @@ approach.
 
 ### Processes
 
-Processes analyses the running processes in your PID namespace. It is similar
+Processes analyzes the running processes in your PID namespace. It is similar
 to any `ps` command that list all processes like `ps -e` or `ps -A`. It gives
 you the information of the number of running processes and if the first one is
 systemd.
@@ -469,17 +469,17 @@ Runtime finds clues to identify which container runtime is running the
 container. This one is calling exactly the same code that the one in
 [amicontained](https://github.com/genuinetools/amicontained). It is using a
 package of the [genuinetools/bpfd](https://github.com/genuinetools/bpfd)
-project to spot artefacts about container runtime that could betray their
+project to spot artifacts about container runtime that could betray their
 presence.
 
-Please note that this is a 3 year old part of that code and that it makes no
+Please note that this is a 3-year-old part of that code and that it makes no
 distinction between Docker and containerd.
 
 ### Services
 
-Services uses CoreDNS wildcards feature to discover every service available in
+Services uses CoreDNS wildcard feature to discover every service available in
 the cluster. In fact, it appears that CoreDNS, that is now widely used in
-Kubernetes cluster proposes a wildcards features. You can learn more about it
+Kubernetes cluster proposes a wildcard feature. You can learn more about it
 [~~here in the
 documentation~~](https://github.com/coredns/coredns/blob/master/plugin/kubernetes/README.md#wildcards).
 
@@ -532,7 +532,7 @@ now, user namespace cannot be used with Kubernetes.
 
 ### Version
 
-Version dumps the API server version informations. It access the `/version`
+Version dumps the API server version information. It access the `/version`
 path that is accessible even by unauthenticated users. So even without a
 service account token you can request this information. You can get more
 information on what you can access as an `system:unauthenticated` user with
