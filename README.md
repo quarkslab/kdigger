@@ -565,7 +565,8 @@ and load your plugin into the project
 [here](https://github.com/quarkslab/kdigger/blob/master/commands/root.go#L71).
 I will be happy to see your PR!
 
-If you have any other ideas or advice, consider opening an issue.
+If you have any other ideas or advice, consider opening an issue or directly
+contact me @mtardy_ on twitter or by email.
 
 ## License
 
