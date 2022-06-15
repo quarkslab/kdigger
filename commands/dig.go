@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -21,8 +22,8 @@ var namespace string
 // flag for the color
 var color bool
 
-// flag to activate active buckets
-var active bool
+// flag to activate side effects buckets
+var sideEffects bool
 
 // flag to force admission creation
 var admForce bool
@@ -43,10 +44,7 @@ arguments.`,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		// display help by default
 		if len(args) == 0 {
-			err := cmd.Help()
-			if err != nil {
-				return err
-			}
+			return errors.New("missing argument")
 		}
 
 		// apply default colored human only if the color flag was not set
@@ -54,9 +52,9 @@ arguments.`,
 			color = true
 		}
 
-		// check if any called buckets are active without the -a flag
+		// check if any called buckets have side effects without the flag activated
 		for _, name := range args {
-			if buckets.IsActive(name) && !active {
+			if buckets.HasSideEffects(name) && !sideEffects {
 				// Not a good idea finally!
 				// this little check is just to facilitate that:
 				// "kdigger dig adm -a --adm-force" == "kdigger dig adm --adm-force"
@@ -65,7 +63,7 @@ arguments.`,
 				//     continue
 				// }
 
-				return fmt.Errorf("trying to run %q active bucket without the %q or %q flag", name, "--active", "-a")
+				return fmt.Errorf("trying to run %q bucket with side effects without the %q or %q flag", name, "--side-effects", "-s")
 			}
 		}
 
@@ -78,31 +76,25 @@ arguments.`,
 			OutputWidth: outputWidth,
 			AdmForce:    admForce,
 		}
-		// PreRun guarantee that len(args) != 0 but ...
+
+		// handles the "all" or "a" and erase the args with the bucket list
+		// PreRun should guarantee that len(args) != 0 but in case
 		if len(args) != 0 {
-			// if "all" or "a" just erase all the args with the bucket list
 			switch strings.ToLower(args[0]) {
-			case "all":
-				fallthrough
 			case "a":
-				if active {
+				fallthrough
+			case "all":
+				if sideEffects {
 					args = buckets.Registered()
 				} else {
 					args = buckets.RegisteredPassive()
 				}
 			}
+		} else {
+			return errors.New("missing argument")
 		}
 
-		// remove duplicates in the args
-		alreadyAskBuckets := make(map[string]bool)
-		argsWithoutDupl := []string{}
-		for _, item := range args {
-			if _, found := alreadyAskBuckets[item]; !found {
-				alreadyAskBuckets[item] = true
-				argsWithoutDupl = append(argsWithoutDupl, item)
-			}
-		}
-		args = argsWithoutDupl
+		args = removeDuplicates(args)
 
 		// iterate through all the specified buckets
 		for _, name := range args {
@@ -150,6 +142,18 @@ arguments.`,
 	},
 }
 
+func removeDuplicates(list []string) []string {
+	set := make(map[string]bool)
+	out := []string{}
+	for _, item := range list {
+		if _, found := set[item]; !found {
+			set[item] = true
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
 // loadContext loads the kubernetes client and the current namespace into the
 // config
 func loadContext(config *bucket.Config) error {
@@ -189,6 +193,6 @@ func init() {
 
 	digCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace to use. (default to the namespace in the context)")
 	digCmd.Flags().BoolVarP(&color, "color", "c", false, "Enable color in output. (default true if output is human)")
-	digCmd.Flags().BoolVarP(&active, "active", "a", false, "Enable all buckets that might have side effect on environment.")
+	digCmd.Flags().BoolVarP(&sideEffects, "side-effects", "s", false, "Enable all buckets that might have side effect on environment.")
 	digCmd.Flags().BoolVarP(&admForce, "admission-force", "", false, "Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)")
 }

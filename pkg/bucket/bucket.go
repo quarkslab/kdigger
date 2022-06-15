@@ -40,7 +40,7 @@ type entry struct {
 	aliases     []string
 	factory     Factory
 	// True if the bucket has side-effects on its environment and False if it's a readonly bucket
-	active bool
+	sideEffects bool
 }
 
 type Buckets struct {
@@ -55,7 +55,8 @@ type Config struct {
 	Namespace   string
 	Color       bool
 	OutputWidth int
-	// This options is specific to the admission plugin, is it to force creation even if we can't cleanup the mess with delete
+	// This options is specific to the admission plugin, is it to force creation
+	// even if we can't cleanup the mess with delete
 	AdmForce bool
 }
 
@@ -85,7 +86,7 @@ func (bs *Buckets) RegisteredPassive() []string {
 	defer bs.lock.RUnlock()
 	keys := []string{}
 	for k, b := range bs.registry {
-		if !b.active {
+		if !b.sideEffects {
 			keys = append(keys, k)
 		}
 	}
@@ -93,9 +94,11 @@ func (bs *Buckets) RegisteredPassive() []string {
 	return keys
 }
 
-// Register registers a plugin Factory by name. This is expected to happen
-// during app startup.
-func (bs *Buckets) Register(name string, aliases []string, description string, active bool, factory Factory) {
+// Register registers a plugin Factory by name.
+// This is expected to happen during app startup.
+// TODO: I might switch to a struct because it starts to look weird and it's
+// eventually converted to a struct
+func (bs *Buckets) Register(name string, aliases []string, description string, sideEffects bool, factory Factory) {
 	bs.lock.Lock()
 	defer bs.lock.Unlock()
 
@@ -113,7 +116,7 @@ func (bs *Buckets) Register(name string, aliases []string, description string, a
 		description: description,
 		aliases:     aliases,
 		factory:     factory,
-		active:      active,
+		sideEffects: sideEffects,
 	}
 
 	if bs.aliases == nil {
@@ -197,12 +200,12 @@ func (bs *Buckets) Aliases(name string) []string {
 	return e.aliases
 }
 
-func (bs *Buckets) IsActive(name string) bool {
+func (bs *Buckets) HasSideEffects(name string) bool {
 	e, found := bs.findEntryFromAlias(name)
 	if !found {
 		return false
 	}
-	return e.active
+	return e.sideEffects
 }
 
 type Results struct {
