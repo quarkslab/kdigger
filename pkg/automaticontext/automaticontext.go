@@ -44,6 +44,9 @@ func Client(kubeconfigPath string) (kubernetes.Interface, error) {
 	return kubernetes.NewForConfig(config)
 }
 
+// CurrentNamespace tries to retrieve the current namespace first in the
+// /secrets/kubernetes.io/serviceaccount/namespace file, then in the kubeconfig
+// file, and default to "default" if neither are set
 func CurrentNamespace() (string, error) {
 	if isInCluster() {
 		b, err := os.ReadFile("/run/secrets/kubernetes.io/serviceaccount/namespace")
@@ -59,7 +62,13 @@ func CurrentNamespace() (string, error) {
 	if clientCfg.CurrentContext == "" {
 		return "", errors.New("seems to be out cluster and no current context selected, use \"kubectl config use-context <context>\" to select one")
 	}
-	return clientCfg.Contexts[clientCfg.CurrentContext].Namespace, nil
+
+	nsFromKubeconfig := clientCfg.Contexts[clientCfg.CurrentContext].Namespace
+	if nsFromKubeconfig != "" {
+		return nsFromKubeconfig, nil
+	}
+
+	return "default", nil
 }
 
 // Since 1.13 you can disable service environment variables [1] thanks to the
