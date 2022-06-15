@@ -30,6 +30,7 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
     * [How can I experience with this tool?](#how-can-i-experience-with-this-tool)
 * [Buckets](#buckets)
     * [Admission](#admission)
+    * [API Resources](#api-resources)
     * [Authorization](#authorization)
     * [Capabilities](#capabilities)
     * [Cgroups](#cgroups)
@@ -96,6 +97,7 @@ Usage:
   kdigger [command]
 
 Available Commands:
+  completion  Generate the autocompletion script for the specified shell
   dig         Use all buckets or specific ones
   help        Help about any command
   ls          List available buckets or describe specific ones
@@ -113,7 +115,7 @@ Make sure to check out the help on the ``dig`` command to see all the available
 flags:
 
 ```console
-$ kdigger dig
+$ kdigger help dig
 This command runs buckets, special keyword "all" or "a" runs all registered
 buckets. You can find information about all buckets with the list command. To
 run one or more specific buckets, just input their names or aliases as
@@ -126,12 +128,12 @@ Aliases:
   dig, d
 
 Flags:
-  -a, --active              Enable all buckets that might have side effect on environment.
       --admission-force     Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)
   -c, --color               Enable color in output. (default true if output is human)
   -h, --help                help for dig
-      --kubeconfig string   (optional) absolute path to the kubeconfig file (default "/home/mahe/.kube/config")
+      --kubeconfig string   (optional) absolute path to the kubeconfig file (default "/home/vagrant/.kube/config")
   -n, --namespace string    Kubernetes namespace to use. (default to the namespace in the context)
+  -s, --side-effects        Enable all buckets that might have side effect on environment.
 
 Global Flags:
   -o, --output string   Output format. One of: human|json. (default "human")
@@ -142,10 +144,10 @@ Global Flags:
 
 ### Usage warning
 
-Be careful when running this tool, some checks have side effects, like
-scanning your available syscalls or trying to create pods to scan the
-admission control. By default these checks will **not** run without the
-`--active` or `-a` flag.
+Be careful when running this tool, some checks have side effects, like scanning
+your available syscalls or trying to create pods to scan the admission control.
+By default these checks will **not** run without adding the `--side-effects` or
+`-s` flag.
 
 For example, syscalls scans may succeed to perform some syscalls with
 empty arguments, and it can alter your environment or configuration. For
@@ -238,9 +240,9 @@ it's mostly dumping raw data for most of the buckets and rely on the user to
 understand what it implies.
 
 Generally, the output format is not the best and could be reworked. The human
-format via array lines does not fit all the use cases. The tool also proposes a
-JSON output format, it has the advantage to exist but is really quirky and uses
-arrays so extracting information might be a bit unpredictable.
+format via array lines does not fit all the use cases perfectly but is simple to
+generalize without having each plugin to implement their format. The tool also
+proposes a JSON output format.
 
 ### How can I experience with this tool?
 
@@ -254,61 +256,63 @@ You can list and describe the available buckets (or plugins) with `kdigger
 list` or `kdigger ls`:
 ```console
 $ kdigger ls
-+---------------+----------------------------+---------------------------------+--------+
-|      NAME     |           ALIASES          |           DESCRIPTION           | ACTIVE |
-+---------------+----------------------------+---------------------------------+--------+
-| admission     | [admissions adm]           | Admission scans the admission   | true   |
-|               |                            | controller chain by creating    |        |
-|               |                            | specific pods to find what is   |        |
-|               |                            | prevented or not.               |        |
-| authorization | [authorizations auth]      | Authorization checks your API   | false  |
-|               |                            | permissions with the current    |        |
-|               |                            | context or the available token. |        |
-| capabilities  | [capability cap]           | Capabilities list all           | false  |
-|               |                            | capabilities in all sets and    |        |
-|               |                            | displays dangerous capabilities |        |
-|               |                            | in red.                         |        |
-| cgroups       | [cgroup cg]                | Cgroups reads the               | false  |
-|               |                            | /proc/self/cgroup files that    |        |
-|               |                            | can leak information under      |        |
-|               |                            | cgroups v1.                     |        |
-| devices       | [device dev]               | Devices shows the list of       | false  |
-|               |                            | devices available in the        |        |
-|               |                            | container.                      |        |
-| environment   | [environments environ env] | Environment checks the presence | false  |
-|               |                            | of kubernetes related           |        |
-|               |                            | environment variables and shows |        |
-|               |                            | them.                           |        |
-| mount         | [mounts mn]                | Mount shows all mounted devices | false  |
-|               |                            | in the container.               |        |
-| node          | [nodes n]                  | Node retrieves various          | false  |
-|               |                            | information in /proc about the  |        |
-|               |                            | current host.                   |        |
-| pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID   | false  |
-|               |                            | namespace of the container in   |        |
-|               |                            | the context of Kubernetes.      |        |
-| processes     | [process ps]               | Processes analyses the running  | false  |
-|               |                            | processes in your PID namespace |        |
-| runtime       | [runtimes rt]              | Runtime finds clues to identify | false  |
-|               |                            | which container runtime is      |        |
-|               |                            | running the container.          |        |
-| services      | [service svc]              | Services uses CoreDNS wildcards | false  |
-|               |                            | feature to discover every       |        |
-|               |                            | service available in the        |        |
-|               |                            | cluster.                        |        |
-| syscalls      | [syscall sys]              | Syscalls scans most of the      | true   |
-|               |                            | syscalls to detect which are    |        |
-|               |                            | blocked and allowed.            |        |
-| token         | [tokens tk]                | Token checks for the presence   | false  |
-|               |                            | of a service account token in   |        |
-|               |                            | the filesystem.                 |        |
-| userid        | [userids id]               | UserID retrieves UID, GID and   | false  |
-|               |                            | their corresponding names.      |        |
-| usernamespace | [usernamespaces userns]    | UserNamespace analyses the user | false  |
-|               |                            | namespace configuration.        |        |
-| version       | [versions v]               | Version dumps the API server    | false  |
-|               |                            | version informations.           |        |
-+---------------+----------------------------+---------------------------------+--------+
++---------------+----------------------------+---------------------------------+-------------+
+|      NAME     |           ALIASES          |           DESCRIPTION           | SIDEEFFECTS |
++---------------+----------------------------+---------------------------------+-------------+
+| admission     | [admissions adm]           | Admission scans the admission   | true        |
+|               |                            | controller chain by creating    |             |
+|               |                            | specific pods to find what is   |             |
+|               |                            | prevented or not.               |             |
+| apiresources  | [api apiresource]          | APIResources discovers the      | false       |
+|               |                            | available APIs of the cluster.  |             |
+| authorization | [authorizations auth]      | Authorization checks your API   | false       |
+|               |                            | permissions with the current    |             |
+|               |                            | context or the available token. |             |
+| capabilities  | [capability cap]           | Capabilities lists all          | false       |
+|               |                            | capabilities in all sets and    |             |
+|               |                            | displays dangerous capabilities |             |
+|               |                            | in red.                         |             |
+| cgroups       | [cgroup cg]                | Cgroups reads the               | false       |
+|               |                            | /proc/self/cgroup files that    |             |
+|               |                            | can leak information under      |             |
+|               |                            | cgroups v1.                     |             |
+| devices       | [device dev]               | Devices shows the list of       | false       |
+|               |                            | devices available in the        |             |
+|               |                            | container.                      |             |
+| environment   | [environments environ env] | Environment checks the presence | false       |
+|               |                            | of kubernetes related           |             |
+|               |                            | environment variables and shows |             |
+|               |                            | them.                           |             |
+| mount         | [mounts mn]                | Mount shows all mounted devices | false       |
+|               |                            | in the container.               |             |
+| node          | [nodes n]                  | Node retrieves various          | false       |
+|               |                            | information in /proc about the  |             |
+|               |                            | current host.                   |             |
+| pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID   | false       |
+|               |                            | namespace of the container in   |             |
+|               |                            | the context of Kubernetes.      |             |
+| processes     | [process ps]               | Processes analyses the running  | false       |
+|               |                            | processes in your PID namespace |             |
+| runtime       | [runtimes rt]              | Runtime finds clues to identify | false       |
+|               |                            | which container runtime is      |             |
+|               |                            | running the container.          |             |
+| services      | [service svc]              | Services uses CoreDNS wildcards | false       |
+|               |                            | feature to discover every       |             |
+|               |                            | service available in the        |             |
+|               |                            | cluster.                        |             |
+| syscalls      | [syscall sys]              | Syscalls scans most of the      | true        |
+|               |                            | syscalls to detect which are    |             |
+|               |                            | blocked and allowed.            |             |
+| token         | [tokens tk]                | Token checks for the presence   | false       |
+|               |                            | of a service account token in   |             |
+|               |                            | the filesystem.                 |             |
+| userid        | [userids id]               | UserID retrieves UID, GID and   | false       |
+|               |                            | their corresponding names.      |             |
+| usernamespace | [usernamespaces userns]    | UserNamespace analyses the user | false       |
+|               |                            | namespace configuration.        |             |
+| version       | [versions v]               | Version dumps the API server    | false       |
+|               |                            | version informations.           |             |
++---------------+----------------------------+---------------------------------+-------------+
 ```
 
 ### Admission
@@ -330,6 +334,28 @@ This bucket currently automatically tries to create:
 
 So, if you are granted rights to `create pods`, you can check the presence of
 any admission controller that might restrict you.
+
+### API Resources
+
+APIResources discovers the available APIs of the cluster. This endpoints is
+interesting because it only requires authentication and can leak some sensitive
+information. Indeed, you can learn about CRDs installed in the cluster, leaking
+for example the presence of Prometheus using Prometheus Operator, or the
+installation of the Falco, etc. Generally, it can inform you on the stack used
+in the cluster if the components are installed using CRDs.
+
+This is equivalent of running `kubectl api-resources`, the output is just
+abbreviated.
+
+Prior v1.14, [the endpoints used required not
+authentication](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#discovery-roles).
+Now the API discovery (and version, health, ready) endpoints are grouped in the
+`system:discovery` ClusterRole (visible with `kubectl get clusterrole
+system:discovery -o yaml`). The rest is in `system:basic-user` for the self
+authorization review with SelfSubjectAccessReviews and SelfSubjectSulesSeviews
+and `system:public-info-viewer`. The only part remaining for unauthenticated
+user is version, health, ready, live endpoints (see with `kubectl get
+clusterrolebinding system:public-info-viewer -o yaml`).
 
 ### Authorization
 
