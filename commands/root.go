@@ -9,6 +9,7 @@ import (
 
 	"github.com/quarkslab/kdigger/pkg/bucket"
 	"github.com/quarkslab/kdigger/pkg/plugins/admission"
+	"github.com/quarkslab/kdigger/pkg/plugins/apiresources"
 	"github.com/quarkslab/kdigger/pkg/plugins/authorization"
 	"github.com/quarkslab/kdigger/pkg/plugins/capabilities"
 	"github.com/quarkslab/kdigger/pkg/plugins/cgroups"
@@ -90,6 +91,7 @@ func registerBuckets() {
 	processes.Register(buckets)
 	cgroups.Register(buckets)
 	node.Register(buckets)
+	apiresources.Register(buckets)
 }
 
 // printResults prints results with the output format selected by the flags
