@@ -337,7 +337,7 @@ any admission controller that might restrict you.
 
 ### API Resources
 
-APIResources discovers the available APIs of the cluster. This endpoints is
+APIResources discovers the available APIs of the cluster. These endpoints are
 interesting because it only requires authentication and can leak some sensitive
 information. Indeed, you can learn about CRDs installed in the cluster, leaking
 for example the presence of Prometheus using Prometheus Operator, or the
@@ -554,7 +554,7 @@ command directly.
 UserNamespace analyses the user namespace configuration. The user namespace is
 transparent and can be easily detected. It is even possible to read the mapping
 between the current user namespace and the outer namespace. Unfortunately for
-now, user namespace cannot be used with Kubernetes.
+now, user namespaces cannot be used with Kubernetes.
 
 ### Version
 
