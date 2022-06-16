@@ -52,8 +52,15 @@ func (n NodeBucket) Run() (bucket.Results, error) {
 }
 
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
-		return NewNodeBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewNodeBucket(config)
+		},
+		SideEffects:   false,
+		RequireClient: false,
 	})
 }
 

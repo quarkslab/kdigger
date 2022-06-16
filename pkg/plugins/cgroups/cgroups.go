@@ -43,10 +43,16 @@ func (n CgroupsBucket) Run() (bucket.Results, error) {
 	return *res, nil
 }
 
-// Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
-		return NewCgroupsBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewCgroupsBucket(config)
+		},
+		SideEffects:   false,
+		RequireClient: false,
 	})
 }
 

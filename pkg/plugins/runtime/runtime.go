@@ -12,7 +12,7 @@ const (
 	bucketDescription = "Runtime finds clues to identify which container runtime is running the container."
 )
 
-var runtimeAliases = []string{"runtimes", "rt"}
+var bucketAliases = []string{"runtimes", "rt"}
 
 type RuntimeBucket struct{}
 
@@ -23,10 +23,16 @@ func (n RuntimeBucket) Run() (bucket.Results, error) {
 	return *res, nil
 }
 
-// Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, runtimeAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
-		return NewRuntimeBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewRuntimeBucket(config)
+		},
+		SideEffects:   false,
+		RequireClient: false,
 	})
 }
 

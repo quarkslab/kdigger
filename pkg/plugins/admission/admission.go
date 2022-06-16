@@ -39,10 +39,16 @@ type admissionResult struct {
 	err     error
 }
 
-// Register registers a bucket
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, true, func(config bucket.Config) (bucket.Interface, error) {
-		return NewAdmissionBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewAdmissionBucket(config)
+		},
+		SideEffects:   true,
+		RequireClient: true,
 	})
 }
 

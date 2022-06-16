@@ -78,10 +78,16 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	return *res, nil
 }
 
-// Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, true, func(config bucket.Config) (bucket.Interface, error) {
-		return NewSyscallsBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewSyscallsBucket(config)
+		},
+		SideEffects:   true,
+		RequireClient: false,
 	})
 }
 

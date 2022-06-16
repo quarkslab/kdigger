@@ -101,26 +101,22 @@ arguments.`,
 			// all this retry machinery is done to lazy load the client and the
 			// checks are in case the plugin return ErrMissingClient forever
 			// and we are stuck in an infinite loop. Not the best design...
-			retryAttempt := 0
-		retryInit:
-			if retryAttempt > 1 {
-				panic("plugin returns ErrMissingClient after lazy loading the client into the config")
-			}
-			// intialize the bucket
-			b, err := buckets.InitBucket(name, *config)
-			if err != nil {
-				// config was incomplete for requested bucket
-				if err == bucket.ErrMissingClient {
-					// lazy load the client, that might seems overkill but it
-					// is also really strange to load kubeconfig for buckets
-					// that do not need it
-					err = loadContext(config)
+
+			// initialize the bucket
+			if buckets.RequiresClient(name) {
+				err := loadContext(config)
+				if err != nil {
+					// loading the context failed and is required so skip this
+					// execution after printing the error with the name
+					err := printError(fmt.Errorf("failed loading context to initialize client: %s", err.Error()), name)
 					if err != nil {
 						return err
 					}
-					retryAttempt++
-					goto retryInit
+					continue
 				}
+			}
+			b, err := buckets.InitBucket(name, *config)
+			if err != nil {
 				return err
 			}
 

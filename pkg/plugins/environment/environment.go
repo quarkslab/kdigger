@@ -2,7 +2,6 @@ package environment
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -34,10 +33,16 @@ func (n EnvironmentBucket) Run() (bucket.Results, error) {
 	return *res, nil
 }
 
-// Register registers a plugin
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
-		return NewEnvironmentBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewEnvironmentBucket(config)
+		},
+		SideEffects:   false,
+		RequireClient: false,
 	})
 }
 
@@ -50,7 +55,7 @@ func environ() map[string]string {
 	for _, env := range os.Environ() {
 		e := strings.SplitN(env, "=", 2)
 		if len(e) < 2 {
-			log.Panicln("environ strings should be in the form \"key=value\"")
+			panic("environ strings should be in the form \"key=value\"")
 		}
 		envs[e[0]] = e[1]
 	}

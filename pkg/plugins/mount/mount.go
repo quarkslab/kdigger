@@ -35,10 +35,16 @@ func (m MountBucket) Run() (bucket.Results, error) {
 	return *res, nil
 }
 
-// Register registers a bucket
 func Register(b *bucket.Buckets) {
-	b.Register(bucketName, bucketAliases, bucketDescription, false, func(config bucket.Config) (bucket.Interface, error) {
-		return NewMountBucket(config)
+	b.Register(bucket.Bucket{
+		Name:        bucketName,
+		Description: bucketDescription,
+		Aliases:     bucketAliases,
+		Factory: func(config bucket.Config) (bucket.Interface, error) {
+			return NewMountBucket(config)
+		},
+		SideEffects:   false,
+		RequireClient: false,
 	})
 }
 

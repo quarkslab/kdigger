@@ -1,16 +1,11 @@
 package bucket
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"sort"
-	"strings"
 	"sync"
 
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -34,18 +29,20 @@ type Interface interface {
 
 type Factory func(config Config) (Interface, error)
 
-type entry struct {
-	name        string
-	description string
-	aliases     []string
-	factory     Factory
-	// True if the bucket has side-effects on its environment and False if it's a readonly bucket
-	sideEffects bool
+type Bucket struct {
+	Name        string
+	Description string
+	Aliases     []string
+	Factory     Factory
+	// has side-effects on its environment or is just readonly
+	SideEffects bool
+	// requires a client to communicate with the API server
+	RequireClient bool
 }
 
 type Buckets struct {
 	lock     sync.RWMutex
-	registry map[string]entry
+	registry map[string]Bucket
 	// this is a "compilation" of all aliases and names pointing to names
 	aliases map[string]string
 }
@@ -86,7 +83,7 @@ func (bs *Buckets) RegisteredPassive() []string {
 	defer bs.lock.RUnlock()
 	keys := []string{}
 	for k, b := range bs.registry {
-		if !b.sideEffects {
+		if !b.SideEffects {
 			keys = append(keys, k)
 		}
 	}
@@ -96,49 +93,55 @@ func (bs *Buckets) RegisteredPassive() []string {
 
 // Register registers a plugin Factory by name.
 // This is expected to happen during app startup.
-// TODO: I might switch to a struct because it starts to look weird and it's
-// eventually converted to a struct
-func (bs *Buckets) Register(name string, aliases []string, description string, sideEffects bool, factory Factory) {
+// Register does not return an error but panic
+func (bs *Buckets) Register(b Bucket) {
+	// verify the inputs, aliases can be nil
+	if b.Name == "" {
+		panic("register: bucket name must be non empty")
+	}
+	if b.Description == "" {
+		panic("register: bucket description must be non empty")
+	}
+	if b.Factory == nil {
+		panic("register: bucket factory must be non nil")
+	}
+
 	bs.lock.Lock()
 	defer bs.lock.Unlock()
 
+	// check if the plugin wasn't already registered
 	if bs.registry != nil {
-		_, found := bs.registry[name]
+		_, found := bs.registry[b.Name]
 		if found {
-			log.Fatalf("bucket %q was registered twice", name)
+			panic(fmt.Sprintf("bucket %q was registered twice", b.Name))
 		}
 	} else {
-		bs.registry = map[string]entry{}
+		bs.registry = map[string]Bucket{}
 	}
 
-	bs.registry[name] = entry{
-		name:        name,
-		description: description,
-		aliases:     aliases,
-		factory:     factory,
-		sideEffects: sideEffects,
-	}
+	// register the plugin
+	bs.registry[b.Name] = b
 
+	// register the aliases of the plugin
 	if bs.aliases == nil {
 		bs.aliases = map[string]string{}
 	}
-
 	// name unicity was already checked
-	bs.aliases[name] = name
-	for _, alias := range aliases {
+	bs.aliases[b.Name] = b.Name
+	for _, alias := range b.Aliases {
 		if _, found := bs.aliases[alias]; found {
-			log.Fatalf("bucket registration: aliases %q conflict for bucket %q", alias, name)
+			panic(fmt.Sprintf("bucket registration: aliases %q conflict for bucket %q", alias, b.Name))
 		}
-		bs.aliases[alias] = name
+		bs.aliases[alias] = b.Name
 	}
 }
 
 func (bs *Buckets) ResolveAlias(alias string) (string, bool) {
 	e, found := bs.findEntryFromAlias(alias)
-	return e.name, found
+	return e.Name, found
 }
 
-func (bs *Buckets) findEntryFromAlias(alias string) (entry, bool) {
+func (bs *Buckets) findEntryFromAlias(alias string) (Bucket, bool) {
 	bs.lock.RLock()
 	defer bs.lock.RUnlock()
 	// golang force us to write that
@@ -156,15 +159,14 @@ func (bs *Buckets) getBucket(name string, config Config) (Interface, bool, error
 		return nil, false, nil
 	}
 
-	ret, err := f.factory(config)
+	ret, err := f.Factory(config)
 	return ret, true, err
 }
 
 // InitBucket creates an instance of the named interface.
 func (bs *Buckets) InitBucket(name string, config Config) (Interface, error) {
 	if name == "" {
-		log.Println("No bucket specified.")
-		return nil, nil
+		return nil, errors.New("no bucket specified in initialization")
 	}
 
 	bucket, found, err := bs.getBucket(name, config)
@@ -189,7 +191,7 @@ func (bs *Buckets) Describe(name string) string {
 	if !found {
 		return ""
 	}
-	return e.description
+	return e.Description
 }
 
 func (bs *Buckets) Aliases(name string) []string {
@@ -197,7 +199,7 @@ func (bs *Buckets) Aliases(name string) []string {
 	if !found {
 		return []string{""}
 	}
-	return e.aliases
+	return e.Aliases
 }
 
 func (bs *Buckets) HasSideEffects(name string) bool {
@@ -205,7 +207,15 @@ func (bs *Buckets) HasSideEffects(name string) bool {
 	if !found {
 		return false
 	}
-	return e.sideEffects
+	return e.SideEffects
+}
+
+func (bs *Buckets) RequiresClient(name string) bool {
+	e, found := bs.findEntryFromAlias(name)
+	if !found {
+		return false
+	}
+	return e.RequireClient
 }
 
 type Results struct {
@@ -242,152 +252,4 @@ func (r *Results) AddComment(comment string) {
 
 func (r *Results) AddContent(content []interface{}) {
 	r.data = append(r.data, content)
-}
-
-// checkWidthsCoherence checks if headers and data are both sets, that the
-// width is consistant between them.
-func (r Results) checkWidthsCoherence() bool {
-	headerWidth := len(r.headers)
-
-	// check if every width in data is the same
-	var dataWidth int
-	for _, d := range r.data {
-		if len(r.data[0]) != len(d) {
-			return false
-		}
-	}
-	if len(r.data) > 0 {
-		dataWidth = len(r.data[0])
-	}
-
-	// one is not set
-	if headerWidth == 0 || dataWidth == 0 {
-		return true
-	} else {
-		return headerWidth == dataWidth
-	}
-
-}
-
-func nrColumnsToMaxWidth(termWidth int, n int) int {
-	return (termWidth - 4 - ((n - 1) * 3)) / n
-}
-
-func (r Results) formatTable(outputWidth int) string {
-	if len(r.data) == 0 || len(r.headers) == 0 {
-		return ""
-	}
-
-	t := table.NewWriter()
-	// Unfortunately this library does not propose to enfore a width on the
-	// global table and I haven't found if you can specify of a tunning for
-	// every column so I'm overshooting here.
-	maxWidth := nrColumnsToMaxWidth(outputWidth, len(r.headers))
-	t.SetColumnConfigs([]table.ColumnConfig{
-		{Number: 1, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-		{Number: 2, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-		{Number: 3, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-		{Number: 4, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-		{Number: 5, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-		{Number: 6, AlignHeader: text.AlignCenter, WidthMaxEnforcer: text.WrapSoft, WidthMax: maxWidth},
-	})
-	headers := make(table.Row, len(r.headers))
-	for i := range r.headers {
-		headers[i] = r.headers[i]
-	}
-	t.AppendHeader(headers)
-	for _, content := range r.data {
-		row := make(table.Row, len(content))
-		copy(row, content)
-		t.AppendRow(row)
-	}
-
-	return t.Render()
-}
-
-func (r Results) Human(opts ResultsOpts) string {
-	var output strings.Builder
-
-	if opts.ShowName == nil || *opts.ShowName {
-		output.WriteString(fmt.Sprintf("### %s ###\n", strings.ToUpper(r.bucketName)))
-	}
-	if len(r.comments) != 0 {
-		if opts.ShowComments == nil || *opts.ShowComments {
-			output.WriteString("Comments:\n")
-			for _, comment := range r.comments {
-				output.WriteString(fmt.Sprintf("- %s\n", comment))
-			}
-		}
-	}
-	if opts.ShowData == nil || *opts.ShowData {
-		// the table will be written only if the headers and the data has been
-		// filled
-		table := r.formatTable(opts.OutputWidth)
-		if table != "" {
-			output.WriteString(table)
-			output.WriteString("\n")
-		}
-	}
-	return output.String()
-}
-
-func (r Results) JSON(opts ResultsOpts) (string, error) {
-	if !r.checkWidthsCoherence() {
-		return "", fmt.Errorf("cannot output JSON for bucket %q, inconsistence between width of headers and data", r.bucketName)
-	}
-
-	type jsonOutput struct {
-		Bucket   string                   `json:"bucket"`
-		Comments []string                 `json:"comments,omitempty"`
-		Results  []map[string]interface{} `json:"results,omitempty"`
-		Result   map[string]interface{}   `json:"result,omitempty"`
-	}
-
-	dataMap := make([]map[string]interface{}, 0)
-
-	if len(r.data) != 0 && len(r.headers) != 0 {
-		for _, row := range r.data {
-			rowMap := make(map[string]interface{})
-			for headerNr, header := range r.headers {
-				rowMap[header] = row[headerNr]
-			}
-			dataMap = append(dataMap, rowMap)
-		}
-	}
-
-	var b []byte
-	var err error
-	// if hide name and comments, directly output an array of results
-	if (opts.ShowName != nil && !*opts.ShowName) && (opts.ShowComments != nil && !*opts.ShowComments) {
-		if len(dataMap) == 1 {
-			// flatten it, the result is not iterable
-			b, err = json.Marshal(dataMap[0])
-		} else {
-			b, err = json.Marshal(dataMap)
-		}
-	} else {
-		o := jsonOutput{}
-		// TODO maybe add omitempty
-		if opts.ShowName == nil || *opts.ShowName {
-			o.Bucket = r.bucketName
-		}
-		if opts.ShowComments == nil || *opts.ShowComments {
-			o.Comments = r.comments
-		}
-		if opts.ShowData == nil || *opts.ShowData {
-			if len(dataMap) == 1 {
-				// flatten it, the result is not iterable
-				o.Result = dataMap[0]
-			} else {
-				o.Results = dataMap
-			}
-		}
-
-		b, err = json.Marshal(o)
-	}
-	if err != nil {
-		panic(err)
-	}
-
-	return string(b), nil
 }
