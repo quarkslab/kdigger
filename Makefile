@@ -1,8 +1,7 @@
 CMDPACKAGE=github.com/quarkslab/kdigger/commands
 VERSION=$$(git describe --tags 2>/dev/null || echo dev)
 GITCOMMIT=$$(git rev-parse HEAD)
-GOVERSION=$$(go version | awk '{print $$3}')
-ARCH=$$(uname -m)
+BUILDERARCH=$$(uname -m)
 
 OUTPUTNAME=kdigger
 
@@ -20,8 +19,7 @@ GOARCH=amd64
 LDFLAGS="-s -w                               \
 	-X $(CMDPACKAGE).VERSION=$(VERSION)      \
 	-X $(CMDPACKAGE).GITCOMMIT=$(GITCOMMIT)  \
-	-X $(CMDPACKAGE).GOVERSION=$(GOVERSION)  \
-	-X $(CMDPACKAGE).ARCH=$(ARCH)"
+	-X $(CMDPACKAGE).BUILDERARCH=$(BUILDERARCH)"
 
 # if CGO_ENABLED=1, the binary will be dynamically linked, and surprisingly,
 # bigger! It seems that it is because of the net package that Go is dynamically
