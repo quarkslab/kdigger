@@ -22,6 +22,7 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
     * [Via Go](#via-go)
 * [Usage](#usage)
 * [Details](#details)
+    * [Updates](#updates)
     * [Usage warning](#usage-warning)
     * [Results warning](#results-warning)
     * [Why another tool?](#why-another-tool)
@@ -141,6 +142,12 @@ Global Flags:
 ```
 
 ## Details
+
+### Updates
+
+I updates this tool from time to time, when I have new ideas after reading a
+book or doing CTF challenges, you can find information in the
+[changelog](https://github.com/quarkslab/kdigger/blob/master/CHANGELOG.md).
 
 ### Usage warning
 
