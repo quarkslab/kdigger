@@ -5,14 +5,6 @@ BUILDERARCH=$$(uname -m)
 
 OUTPUTNAME=kdigger
 
-RELEASE_NAME=kdigger-linux-amd64
-RELEASE_FOLDER=release
-
-# building for linux/amd64, if you want to build for arm64 you will have to
-# adapt the syscall part that doesn't compile out of the box right now
-GOOS=linux
-GOARCH=amd64
-
 # -w disable DWARF generation
 # -s disable symbol table
 # just to save some space in the binary
@@ -24,22 +16,39 @@ LDFLAGS="-s -w                               \
 # if CGO_ENABLED=1, the binary will be dynamically linked, and surprisingly,
 # bigger! It seems that it is because of the net package that Go is dynamically
 # linking the libraries.
+.PHONY: build
 build: lint
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
+
+.PHONY: fast-build
 fast-build:
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
 .PHONY: lint
 lint:
 	golangci-lint run
 
-release: build
-	mkdir $(RELEASE_FOLDER)
-	mv kdigger $(RELEASE_FOLDER)/$(RELEASE_NAME)
-	cd $(RELEASE_FOLDER) \
-		&& sha256sum $(RELEASE_NAME) > $(RELEASE_NAME).sha256 \
-		&& tar cvf - $(RELEASE_NAME) | gzip -9 - > $(RELEASE_NAME).tar.gz
+.PHONY: build-all
+build-all: lint
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)-linux-amd64
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)-darwin-amd64
+
+RELEASE_FOLDER=release
+RELEASE_LINUX=$(OUTPUTNAME)-linux-amd64
+RELEASE_DARWIN=$(OUTPUTNAME)-darwin-amd64
+
+.PHONY: release
+release: build-all
+	mkdir -p $(RELEASE_FOLDER)
+	mv $(RELEASE_LINUX) $(RELEASE_FOLDER)
+	mv $(RELEASE_DARWIN) $(RELEASE_FOLDER)
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_LINUX) > $(RELEASE_LINUX).sha256 && \
+	tar cvf - $(RELEASE_LINUX) | gzip -9 - > $(RELEASE_LINUX).tar.gz
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_DARWIN) > $(RELEASE_DARWIN).sha256 && \
+	tar cvf - $(RELEASE_DARWIN) | gzip -9 - > $(RELEASE_DARWIN).tar.gz
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
