@@ -1,3 +1,5 @@
+//go:build amd64 && linux
+
 package syscalls
 
 import (
