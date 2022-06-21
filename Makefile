@@ -5,14 +5,6 @@ BUILDERARCH=$$(uname -m)
 
 OUTPUTNAME=kdigger
 
-RELEASE_NAME=kdigger-linux-amd64
-RELEASE_FOLDER=release
-
-# building for linux/amd64, if you want to build for arm64 you will have to
-# adapt the syscall part that doesn't compile out of the box right now
-GOOS=linux
-GOARCH=amd64
-
 # -w disable DWARF generation
 # -s disable symbol table
 # just to save some space in the binary
@@ -24,22 +16,49 @@ LDFLAGS="-s -w                               \
 # if CGO_ENABLED=1, the binary will be dynamically linked, and surprisingly,
 # bigger! It seems that it is because of the net package that Go is dynamically
 # linking the libraries.
+.PHONY: build
 build: lint
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
+
+.PHONY: fast-build
 fast-build:
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
+	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
 .PHONY: lint
 lint:
 	golangci-lint run
 
-release: build
-	mkdir $(RELEASE_FOLDER)
-	mv kdigger $(RELEASE_FOLDER)/$(RELEASE_NAME)
-	cd $(RELEASE_FOLDER) \
-		&& sha256sum $(RELEASE_NAME) > $(RELEASE_NAME).sha256 \
-		&& tar cvf - $(RELEASE_NAME) | gzip -9 - > $(RELEASE_NAME).tar.gz
+# Releasing stuff
+RELEASE_FOLDER=release
+RELEASE_LINUX_AMD64=$(OUTPUTNAME)-linux-amd64
+RELEASE_LINUX_ARM64=$(OUTPUTNAME)-linux-arm64
+RELEASE_DARWIN=$(OUTPUTNAME)-darwin-amd64
+
+.PHONY: build-all
+build-all: lint
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(RELEASE_LINUX_AMD64)
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags $(LDFLAGS) -o $(RELEASE_LINUX_ARM64)
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(RELEASE_DARWIN)
+
+.PHONY: release
+release: build-all
+	mkdir -p $(RELEASE_FOLDER)
+	# linux amd64
+	mv $(RELEASE_LINUX_AMD64) $(RELEASE_FOLDER) && \
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_LINUX_AMD64) > $(RELEASE_LINUX_AMD64).sha256 && \
+	tar cvf - $(RELEASE_LINUX_AMD64) | gzip -9 - > $(RELEASE_LINUX_AMD64).tar.gz
+	# linux arm64
+	mv $(RELEASE_LINUX_ARM64) $(RELEASE_FOLDER) && \
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_LINUX_ARM64) > $(RELEASE_LINUX_ARM64).sha256 && \
+	tar cvf - $(RELEASE_LINUX_ARM64) | gzip -9 - > $(RELEASE_LINUX_ARM64).tar.gz
+	# darwin adm64
+	mv $(RELEASE_DARWIN) $(RELEASE_FOLDER) && \
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_DARWIN) > $(RELEASE_DARWIN).sha256 && \
+	tar cvf - $(RELEASE_DARWIN) | gzip -9 - > $(RELEASE_DARWIN).tar.gz
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
@@ -47,6 +66,10 @@ run: fast-build
 	echo "FROM mtardy/koolbox\nCOPY kdigger /usr/local/bin/kdigger" | docker build -t $(DEV_IMAGE_TAG) -f- .
 	kind load docker-image $(DEV_IMAGE_TAG)
 	kubectl run kdigger-dev-tmp --rm -i --tty --image $(DEV_IMAGE_TAG) --image-pull-policy Never -- bash
+
+.PHONY: install-linter
+install-linter:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.2
 
 .PHONY: clean-docker
 clean-docker:

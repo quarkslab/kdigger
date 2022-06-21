@@ -24,7 +24,7 @@ type MountBucket struct{}
 func (m MountBucket) Run() (bucket.Results, error) {
 	values, err := mounts()
 	if err != nil {
-		panic(err)
+		return bucket.Results{}, err
 	}
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"device", "path", "filesystem", "flags"})
