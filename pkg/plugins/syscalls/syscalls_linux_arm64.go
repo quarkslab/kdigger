@@ -65,7 +65,7 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	for _, s := range skippedSyscalls {
 		skippedNames = append(skippedNames, syscallIDToName(s))
 	}
-	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program, etc.")
+	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program.")
 
 	// output seccomp status
 	seccompFlag, err := readSeccompFlag()
@@ -112,23 +112,6 @@ func readSeccompFlag() (SeccompMode, error) {
 	return 0, errors.New("flag Seccomp was not found in /proc/self/status")
 }
 
-// syscallScan is modified copy of the amicontained code that you can find here:
-// https://github.com/genuinetools/amicontained/blob/568b0d35e60cb2bfc228ecade8b0ba62c49a906a/main.go#L181
-func syscallScan() []SyscallScanResult {
-	var results []SyscallScanResult
-
-	c := make(chan SyscallScanResult, unix.SYS_RSEQ-len(skippedSyscalls))
-	for id := 0; id <= unix.SYS_RSEQ; id++ {
-		go scanSyscall(id, c)
-	}
-
-	for i := 0; i < cap(c); i++ {
-		results = append(results, <-c)
-	}
-
-	return results
-}
-
 var skippedSyscalls = []int{
 	unix.SYS_RT_SIGRETURN,
 	unix.SYS_PSELECT6,
@@ -141,6 +124,46 @@ var skippedSyscalls = []int{
 	unix.SYS_SECCOMP,
 	unix.SYS_PTRACE,
 	unix.SYS_VHANGUP,
+}
+
+// there are multiple gaps in syscalls numbers, see doc of skipSyscall for more info
+// we could compute it via a function but it's not a big deal I guess
+var emptyGapsNumber = (259 - 245 + 1) + (423 - 295 + 1)
+
+func skipSyscall(id int) bool {
+	// in arm64, there is an empty gap between syscall 244 and 260
+	if id > 244 && id < 260 {
+		return true
+	}
+	// there is also a gap between 294 and 424 apparently to sync numbers across archs
+	// http://git.musl-libc.org/cgit/musl/commit/?id=f3f96f2daa4d00f0e38489fb465cd0244b531abe
+	if id > 294 && id < 424 {
+		return true
+	}
+	return false
+}
+
+// syscallScan is modified copy of the amicontained code that you can find here:
+// https://github.com/genuinetools/amicontained/blob/568b0d35e60cb2bfc228ecade8b0ba62c49a906a/main.go#L181
+func syscallScan() []SyscallScanResult {
+	var results []SyscallScanResult
+
+	c := make(chan SyscallScanResult, unix.SYS_SET_MEMPOLICY_HOME_NODE-len(skippedSyscalls)-emptyGapsNumber)
+	for id := 0; id <= unix.SYS_SET_MEMPOLICY_HOME_NODE; id++ {
+		if skipSyscall(id) {
+			continue
+		}
+		go scanSyscall(id, c)
+	}
+
+	for i := 0; i < cap(c); i++ {
+		if skipSyscall(i) {
+			continue
+		}
+		results = append(results, <-c)
+	}
+
+	return results
 }
 
 func scanSyscall(id int, c chan (SyscallScanResult)) {

@@ -65,7 +65,7 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	for _, s := range skippedSyscalls {
 		skippedNames = append(skippedNames, syscallIDToName(s))
 	}
-	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program, etc.")
+	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program.")
 
 	// output seccomp status
 	seccompFlag, err := readSeccompFlag()
