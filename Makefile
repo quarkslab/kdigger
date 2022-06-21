@@ -44,15 +44,18 @@ build-all: lint
 .PHONY: release
 release: build-all
 	mkdir -p $(RELEASE_FOLDER)
-	mv $(RELEASE_LINUX_AMD64) $(RELEASE_FOLDER)
-	mv $(RELEASE_LINUX_ARM64) $(RELEASE_FOLDER)
-	mv $(RELEASE_DARWIN) $(RELEASE_FOLDER)
+	# linux amd64
+	mv $(RELEASE_LINUX_AMD64) $(RELEASE_FOLDER) && \
 	cd $(RELEASE_FOLDER) && \
 	sha256sum $(RELEASE_LINUX_AMD64) > $(RELEASE_LINUX_AMD64).sha256 && \
 	tar cvf - $(RELEASE_LINUX_AMD64) | gzip -9 - > $(RELEASE_LINUX_AMD64).tar.gz
+	# linux arm64
+	mv $(RELEASE_LINUX_ARM64) $(RELEASE_FOLDER) && \
 	cd $(RELEASE_FOLDER) && \
 	sha256sum $(RELEASE_LINUX_ARM64) > $(RELEASE_LINUX_ARM64).sha256 && \
 	tar cvf - $(RELEASE_LINUX_ARM64) | gzip -9 - > $(RELEASE_LINUX_ARM64).tar.gz
+	# darwin adm64
+	mv $(RELEASE_DARWIN) $(RELEASE_FOLDER) && \
 	cd $(RELEASE_FOLDER) && \
 	sha256sum $(RELEASE_DARWIN) > $(RELEASE_DARWIN).sha256 && \
 	tar cvf - $(RELEASE_DARWIN) | gzip -9 - > $(RELEASE_DARWIN).tar.gz
