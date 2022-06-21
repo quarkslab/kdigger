@@ -12,6 +12,9 @@
   @06kellyjac, see the [PR on kdigger repo](https://github.com/quarkslab/kdigger/pull/2)
   and [in nixpkgs](https://github.com/NixOS/nixpkgs/pull/177868).
 
+### Changed
+- Fixed minor bugs discovered along running on a different arch.
+
 ## `1.2.0` - 2022-06-16
 ### Added
 - A new plugin, apiresources to retrieve all information that can be leaked by
