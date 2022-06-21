@@ -53,28 +53,47 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 
 ## Installation
 
+`kdigger` is available on Linux amd64, arm64 and macOS amd64.
+
+**Please note that `kdigger` should be mostly run inside of pods on not on your
+host machine.**
+
 ### Via releases
 
-For installation instructions from binaries please visit the [Releases
-Page](https://github.com/quarkslab/kdigger/releases).
+For installation instructions from binaries please visit the [releases
+page](https://github.com/quarkslab/kdigger/releases).
 
 ### Build from source
 
+You need [`golangci-lint`](https://github.com/golangci/golangci-lint) to use
+the `build` default target that will try to build for your architecture. You
+can use `make install-linter` to install `golangci-lint` on the host. Or you
+can use `make fast-build` to avoid linting.
 ```bash
-$ git clone https://github.com/quarkslab/kdigger
-$ make
+git clone https://github.com/quarkslab/kdigger
+make
 ```
 
 Then you can move the binary somewhere included in your PATH, for example:
 
 ```bash
-$ sudo install kdigger /usr/local/bin
+sudo install kdigger /usr/local/bin
+```
+
+### With Nix
+
+You can use Nix with a new shell environments thanks to [a contributor
+PR](https://github.com/quarkslab/kdigger/pull/2) that [added kdigger to
+nixpkgs](https://github.com/NixOS/nixpkgs/pull/177868).
+
+```bash
+nix-shell -p kdigger
 ```
 
 ### Via Go
 
 ```bash
-$ go install github.com/quarkslab/kdigger@master
+go install github.com/quarkslab/kdigger@master
 ```
 
 ## Usage
@@ -82,7 +101,7 @@ $ go install github.com/quarkslab/kdigger@master
 What you generally want to do is running all the buckets with `dig all` or just
 `d a`:
 ```bash
-$ kdigger dig all
+kdigger dig all
 ```
 
 Help is provided by the CLI itself, just type `kdigger` to see the options:

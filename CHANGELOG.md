@@ -1,5 +1,17 @@
 # Changelog
 
+## `1.2.1` - 2022-06-21
+
+### Added
+- New builds for macOS amd64 and Linux arm64. the macOS build is not really
+  useful since kdigger is supposed to be run inside of pods, inside nodes, but
+  it can be used to scan the admission control for example, or any remote
+  plugins. However, Linux arm64 can be quite useful in case of arm64 node
+  pools.
+- You can now install kdigger via Nix! Thanks to generous contributor
+  @06kellyjac, see the [PR on kdigger repo](https://github.com/quarkslab/kdigger/pull/2)
+  and [in nixpkgs](https://github.com/NixOS/nixpkgs/pull/177868).
+
 ## `1.2.0` - 2022-06-16
 ### Added
 - A new plugin, apiresources to retrieve all information that can be leaked by
