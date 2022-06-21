@@ -64,6 +64,10 @@ run: fast-build
 	kind load docker-image $(DEV_IMAGE_TAG)
 	kubectl run kdigger-dev-tmp --rm -i --tty --image $(DEV_IMAGE_TAG) --image-pull-policy Never -- bash
 
+.PHONY: install-linter
+install-linter:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.2
+
 .PHONY: clean-docker
 clean-docker:
 	docker image rm $(DEV_IMAGE_TAG)
