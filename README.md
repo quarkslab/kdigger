@@ -120,6 +120,7 @@ Usage:
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   dig         Use all buckets or specific ones
+  gen         Generate template for pod with security features disabled
   help        Help about any command
   ls          List available buckets or describe specific ones
   version     Print the version information
@@ -130,6 +131,7 @@ Flags:
   -w, --width int       Width for the human output (default 140)
 
 Use "kdigger [command] --help" for more information about a command.
+
 ```
 
 Make sure to check out the help on the ``dig`` command to see all the available
@@ -155,6 +157,50 @@ Flags:
       --kubeconfig string   (optional) absolute path to the kubeconfig file (default "/home/vagrant/.kube/config")
   -n, --namespace string    Kubernetes namespace to use. (default to the namespace in the context)
   -s, --side-effects        Enable all buckets that might have side effect on environment.
+
+Global Flags:
+  -o, --output string   Output format. One of: human|json. (default "human")
+  -w, --width int       Width for the human output (default 140)
+```
+
+You can also generate useful templates for pods with security features disabled
+to escalate privileges when you can create such a pod. See the help for this
+specific command for more information.
+
+```console
+$ kdigger help gen
+This command generates templates for pod with security features disabled.
+You can customize the pods with some of the string flags and activate
+boolean flags to disabled security features. Examples:
+
+  # Generate a very simple template in json
+  kdigger gen -o json
+
+  # Create a very simple pod
+  kdigger gen | kubectl apply -f -
+
+  # Create a pod named mypod with most security features disabled
+  kdigger gen -all mypod | kubectl apply -f -
+
+  # Create a custom privileged pod
+  kdigger gen --privileged --image bash --command watch --command date | kubectl apply -f -
+
+Usage:
+  kdigger gen [name] [flags]
+
+Aliases:
+  gen, generate
+
+Flags:
+      --all                   Enable everything
+      --command stringArray   Container command used (default [sleep,infinitely])
+  -h, --help                  help for gen
+      --hostnetwork           Add the hostNetwork flag on the whole pod
+      --hostpath              Add a hostPath volume to the container
+      --hostpid               Add the hostPid flag on the whole pod
+      --image string          Container image used (default "busybox")
+      --privileged            Add the security flag to the security context of the pod
+      --tolerations           Add tolerations to be schedulable on most nodes
 
 Global Flags:
   -o, --output string   Output format. One of: human|json. (default "human")
