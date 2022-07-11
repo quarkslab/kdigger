@@ -36,6 +36,7 @@ canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
     * [Authorization](#authorization)
     * [Capabilities](#capabilities)
     * [Cgroups](#cgroups)
+    * [CloudMetadata](#cloudmetadata)
     * [Devices](#devices)
     * [Environment](#environment)
     * [Mount](#mount)
@@ -347,6 +348,8 @@ $ kdigger ls
 | cgroups       | [cgroup cg]                | Cgroups reads the /proc/self/cgroup  | false       | false         |
 |               |                            | files that can leak information      |             |               |
 |               |                            | under cgroups v1.                    |             |               |
+| cloudmetadata | [cloud meta]               | Cloudmetadata scans the usual        | false       | false         |
+|               |                            | metadata endpoints in public clouds. |             |               |
 | devices       | [device dev]               | Devices shows the list of devices    | false       | false         |
 |               |                            | available in the container.          |             |               |
 | environment   | [environments environ env] | Environment checks the presence of   | false       | false         |
@@ -498,6 +501,21 @@ For kernels using cgroups v2, `/proc/self/mountinfo` can still leak information
 about the container ID. See [this Stackoverflow
 thread](https://stackoverflow.com/a/69005753) and its related threads for more
 information.
+
+### CloudMetadata
+
+Cloudmetadata scans the usual metadata endpoints in public clouds. It is usually
+quite simple to find at which service provider a VM come from, because of many
+leaks in the filesystems, the environment variables, etc. But from a containers
+in a VM, it can be harder, that's why this plugin performs a scan on the network
+via the usual service running at `169.254.169.254` or alike. See the source code
+for endpoints used and links to more endpoints.
+
+This plugin only gives you the information of the availability of the main
+endpoints, which means that you might running in a specific public cloud. If
+that's the case, further research, using available endpoints for that cloud, can
+be conducted. You can potentially retrieve an authentication token or simply
+more metadata to pivot within the cloud account.
 
 ### Devices
 
