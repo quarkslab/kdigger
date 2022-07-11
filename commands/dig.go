@@ -97,11 +97,10 @@ arguments.`,
 		args = removeDuplicates(args)
 
 		// iterate through all the specified buckets
+		// TODO: some plugins might be slow, for example network scanners, so it
+		// might be a good idea in the future to parallelize the launch of these
+		// plugins
 		for _, name := range args {
-			// all this retry machinery is done to lazy load the client and the
-			// checks are in case the plugin return ErrMissingClient forever
-			// and we are stuck in an infinite loop. Not the best design...
-
 			// initialize the bucket
 			if buckets.RequiresClient(name) {
 				err := loadContext(config)
