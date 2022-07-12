@@ -1,5 +1,18 @@
 # Changelog
 
+## `1.3.0` - 2022-07-12
+
+### Added
+
+- New level one command to generate template of pods with major security features
+  disabled. It's mostly something that I needed while doing CTFs to not have some
+  canonical YAML in a file somewhere to use, but being able to generate quickly
+  those templates with random names, etc.
+- New plugin to scan the metadata endpoints in public cloud. I got this idea
+  thanks to someone contributing to the [security
+  checklist](https://github.com/kubernetes/website/pull/33992) on the Kubernetes
+  documentation. It's basically public cloud fingerprinting via network.
+
 ## `1.2.1` - 2022-06-21
 
 ### Added
