@@ -95,7 +95,7 @@ nix-shell -p kdigger
 ### Via Go
 
 ```bash
-go install github.com/quarkslab/kdigger@master
+go install github.com/quarkslab/kdigger@main
 ```
 
 ## Usage
