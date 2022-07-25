@@ -17,12 +17,7 @@ LDFLAGS="-s -w                               \
 # bigger! It seems that it is because of the net package that Go is dynamically
 # linking the libraries.
 .PHONY: build
-build: lint
-	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
-
-
-.PHONY: fast-build
-fast-build:
+build:
 	CGO_ENABLED=0 go build -ldflags $(LDFLAGS) -o $(OUTPUTNAME)
 
 .PHONY: lint
@@ -62,7 +57,7 @@ release: build-all
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
-run: fast-build
+run: build
 	echo "FROM mtardy/koolbox\nCOPY kdigger /usr/local/bin/kdigger" | docker build -t $(DEV_IMAGE_TAG) -f- .
 	kind load docker-image $(DEV_IMAGE_TAG)
 	kubectl run kdigger-dev-tmp --rm -i --tty --image $(DEV_IMAGE_TAG) --image-pull-policy Never -- bash
