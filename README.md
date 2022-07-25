@@ -92,6 +92,13 @@ nixpkgs](https://github.com/NixOS/nixpkgs/pull/177868).
 nix-shell -p kdigger
 ```
 
+You can also create docker images with `kdigger` and other tools easily
+with [nixery.dev](https://nixery.dev/):
+
+```bash
+docker run -it nixery.dev/kubectl/kdigger/bash /bin/bash
+```
+
 ### Via Go
 
 ```bash
