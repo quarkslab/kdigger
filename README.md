@@ -4,15 +4,20 @@
 Kubernetes penetration testing. This tool is a compilation of various plugins
 called buckets to facilitate pentesting Kubernetes from inside a pod.
 
+Here is a demo showing `kdigger v1.3.0` in action, using only four buckets.
+Please note that around twenty plugins exist and you can read more about all
+the features in the following documentation.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/11256051/183686558-0dd9dbaa-ac3d-4ea0-9bcf-81344b91ba3e.gif" alt="Demonstration of kdigger v1.3.0 features"/>
+</p>
+
 Please note that this is not an ultimate pentest tool on Kubernetes. Some
 plugins perform really simple actions that could be performed manually by
 calling the `mount` command or listing all devices present in dev with `ls
 /dev` for example. But some others automate scanning processes, such as the
 admission controller scanner. In the end, this tool aims to humbly speed up the
 pentesting process.
-
-![A small digger trying to move the evergreen stuck cruise ship in the suez
-canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 
 ## Table of content
 
@@ -685,6 +690,9 @@ I will be happy to see your PR!
 
 If you have any other ideas or advice, consider opening an issue or directly
 contact me @mtardy_ on twitter or by email.
+
+![A small digger trying to move the evergreen stuck cruise ship in the suez
+canal](https://i.servimg.com/u/f41/11/93/81/35/digger10.jpg)
 
 ## License
 
