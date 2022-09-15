@@ -72,10 +72,8 @@ page](https://github.com/quarkslab/kdigger/releases).
 
 ### Build from source
 
-You need [`golangci-lint`](https://github.com/golangci/golangci-lint) to use
-the `build` default target that will try to build for your architecture. You
-can use `make install-linter` to install `golangci-lint` on the host. Or you
-can use `make fast-build` to avoid linting.
+Just type `make` to build with the 
+[default build target](https://github.com/quarkslab/kdigger/blob/main/Makefile#L20).
 ```bash
 git clone https://github.com/quarkslab/kdigger
 make
@@ -86,6 +84,10 @@ Then you can move the binary somewhere included in your PATH, for example:
 ```bash
 sudo install kdigger /usr/local/bin
 ```
+
+Note that you will need [`golangci-lint`](https://github.com/golangci/golangci-lint)
+to use the `release` target that will build for the supported architectures.
+You can use `make install-linter` to install `golangci-lint` on the host.
 
 ### With Nix
 
