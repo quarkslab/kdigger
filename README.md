@@ -612,10 +612,12 @@ This bucket is extremely useful to perform discovery really fast in a
 Kubernetes cluster. The DNS will kindly give you every service domain present
 in the cluster.
 
-EDIT: [This feature was removed](https://github.com/coredns/coredns/pull/5019)
+Note: [This feature was removed](https://github.com/coredns/coredns/pull/5019)
 starting as of CoreDNS v1.9.0 because it was mostly used by bad actors (like
 this tool). See the associated discussion on [the corresponding Github
-issue](https://github.com/coredns/coredns/issues/4984).
+issue](https://github.com/coredns/coredns/issues/4984). Kubernetes v1.24 was 
+still using CoreDNS v1.8.6, but the v1.25 version updated CoreDNS to v1.9.3.
+That's why this plugin no longer works on v1.25 and above.
 
 ### Syscalls
 
