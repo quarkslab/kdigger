@@ -2,7 +2,6 @@ package devices
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -27,7 +26,12 @@ func (n DevicesBucket) Run() (bucket.Results, error) {
 
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"mode", "isDir", "modTime", "name"})
-	for _, dev := range devs {
+	for _, devDir := range devs {
+		dev, err := devDir.Info()
+		if err != nil {
+			// file was removed or renamed, ignore this edge case
+			continue
+		}
 		res.AddContent([]interface{}{dev.Mode().String(), dev.IsDir(), dev.ModTime().Format(time.RFC3339), dev.Name()})
 	}
 	res.AddComment(fmt.Sprintf("%d devices are available.", len(devs)))
@@ -51,8 +55,8 @@ func NewDevicesBucket(config bucket.Config) (*DevicesBucket, error) {
 	return &DevicesBucket{}, nil
 }
 
-func readDev() ([]os.FileInfo, error) {
-	files, err := ioutil.ReadDir("/dev")
+func readDev() ([]os.DirEntry, error) {
+	files, err := os.ReadDir("/dev")
 	if err != nil {
 		return nil, err
 	}

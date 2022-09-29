@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -75,7 +74,7 @@ type KernelVersion struct {
 
 func readKernelVersion() (*KernelVersion, error) {
 	// this file is a oneliner
-	version, err := ioutil.ReadFile("/proc/version")
+	version, err := os.ReadFile("/proc/version")
 	if err != nil {
 		return nil, err
 	}
