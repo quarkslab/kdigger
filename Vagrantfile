@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "private_network", type: "dhcp"
 
-  config.vm.synced_folder "./", "/home/vagrant/project"
+  config.vm.synced_folder "./", "/home/vagrant/kdigger"
 
   config.vm.provider "virtualbox" do |vb|
     vb.cpus = 6
@@ -20,27 +20,27 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y build-essential curl neovim zsh git
+    apt-get install -y build-essential curl neovim git
 
-    GO_VERSION=1.18.1
+    GO_VERSION=1.19.1
     echo "Install Go $GO_VERSION"
     curl -OL https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.gz
     rm -rf /usr/local/go && tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz
     rm -f go$GO_VERSION.linux-amd64.tar.gz
+    echo 'PATH=$PATH:/usr/local/go/bin' >> /home/vagrant/.bashrc
+    echo 'PATH=$PATH:/home/vagrant/go/bin' >> /home/vagrant/.bashrc
 
     echo "Install arkade"
     curl -sLS https://get.arkade.dev | sudo sh
+    echo 'PATH=$PATH:$HOME/.arkade/bin/' >> /home/vagrant/.bashrc
 
-    echo "Get my dotfiles"
-    runuser -l vagrant -c 'sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply mtardy'
-    mv /home/vagrant/bin/chezmoi /usr/local/bin
-    rm -rf /home/vagrant/bin
-    rm -rf /home/vagrant/.vimrc
+  SHELL
 
-    # echo 'PATH=$PATH:/usr/local/go/bin' >> /home/vagrant/.zshrc
-    echo 'PATH=$PATH:$HOME/.arkade/bin/' >> /home/vagrant/.zshrc
-
-    chsh --shell /bin/zsh vagrant
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    echo "Install golangci-lint"
+    GOLANGCI_LINT_VERSION=1.49.0
+    export PATH=$PATH:/usr/local/go/bin
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v$GOLANGCI_LINT_VERSION
   SHELL
 end
 
