@@ -41,6 +41,11 @@ Vagrant.configure("2") do |config|
     GOLANGCI_LINT_VERSION=1.49.0
     export PATH=$PATH:/usr/local/go/bin
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v$GOLANGCI_LINT_VERSION
+
+    echo "Install kind"
+    arkade get kind
+    echo "Install kubectl"
+    arkade get kubectl
   SHELL
 end
 
