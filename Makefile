@@ -3,6 +3,8 @@ VERSION=$$(git describe --tags 2>/dev/null || echo dev)
 GITCOMMIT=$$(git rev-parse HEAD)
 BUILDERARCH=$$(uname -m)
 
+GOLANGCI_VERSION=1.49.0
+
 OUTPUTNAME=kdigger
 
 # -w disable DWARF generation
@@ -64,7 +66,7 @@ run: build
 
 .PHONY: install-linter
 install-linter:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.2
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v$(GOLANGCI_VERSION)
 
 .PHONY: clean-docker
 clean-docker:
