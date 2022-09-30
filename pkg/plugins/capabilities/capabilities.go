@@ -33,9 +33,9 @@ var dangerousCap = []capability.Cap{
 	capability.CAP_SETFCAP,
 }
 
-type CapabilitiesBucket struct{}
+type Bucket struct{}
 
-func (n CapabilitiesBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	capabilities, err := getCapabilities(0)
 
 	if err != nil {
@@ -88,11 +88,11 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewCapabilitiesBucket(config bucket.Config) (*CapabilitiesBucket, error) {
+func NewCapabilitiesBucket(config bucket.Config) (*Bucket, error) {
 	if !config.Color {
 		text.DisableColors()
 	}
-	return &CapabilitiesBucket{}, nil
+	return &Bucket{}, nil
 }
 
 func isDangerousCap(cap capability.Cap) bool {

@@ -14,9 +14,9 @@ const (
 
 var bucketAliases = []string{"pidnamespaces", "pidns"}
 
-type PIDNamespaceBucket struct{}
+type Bucket struct{}
 
-func (n PIDNamespaceBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	deviceNumber, kubeletFound, pauseFound, err := getPIDNamespaceInfo()
 	if err != nil {
 		return bucket.Results{}, err
@@ -49,8 +49,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewPIDNamespaceBucket(config bucket.Config) (*PIDNamespaceBucket, error) {
-	return &PIDNamespaceBucket{}, nil
+func NewPIDNamespaceBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 func getPIDNamespaceInfo() (deviceNumber int, kubeletFound bool, pauseFound bool, err error) {

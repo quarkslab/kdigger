@@ -11,7 +11,7 @@ const (
 
 var bucketAliases = []string{"syscall", "sys"}
 
-type SyscallsBucket struct{}
+type Bucket struct{}
 
 func Register(b *bucket.Buckets) {
 	b.Register(bucket.Bucket{
@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewSyscallsBucket(config bucket.Config) (*SyscallsBucket, error) {
-	return &SyscallsBucket{}, nil
+func NewSyscallsBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

@@ -22,8 +22,8 @@ var bucketAliases = []string{"admissions", "adm"}
 
 var currentNamespace string
 
-// AdmissionBucket implements Bucket
-type AdmissionBucket struct {
+// Bucket implements Bucket
+type Bucket struct {
 	client kubernetes.Interface
 
 	podFactoryChain []podFactory
@@ -53,7 +53,7 @@ func Register(b *bucket.Buckets) {
 }
 
 // Run runs the admission test.
-func (a *AdmissionBucket) Run() (bucket.Results, error) {
+func (a *Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if !a.config.AdmForce && !a.CanIDelete() {
 		return *res, errors.New("cannot delete pod, will not be able to clean the scan artifacts, force creation --admission-force")
@@ -62,7 +62,7 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	c := make(chan admissionResult, len(a.podFactoryChain))
 
 	for _, f := range a.podFactoryChain {
-		go func(a *AdmissionBucket, f podFactory, c chan admissionResult) {
+		go func(a *Bucket, f podFactory, c chan admissionResult) {
 			err := a.use(f)
 			if err != nil {
 				// if kerrors.IsForbidden(err) {
@@ -99,26 +99,24 @@ func (a *AdmissionBucket) Run() (bucket.Results, error) {
 	err := a.Cleanup()
 	if a.config.AdmForce {
 		return *res, nil
-	} else {
-		return *res, err
 	}
+	return *res, err
 }
 
-func (a *AdmissionBucket) use(f podFactory) error {
+func (a *Bucket) use(f podFactory) error {
 	pod := f.NewPod()
 	pod, err := a.client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
 	if err != nil {
 		return err
-	} else {
-		a.cleaningLock.Lock()
-		a.podsToClean = append(a.podsToClean, pod)
-		a.cleaningLock.Unlock()
 	}
+	a.cleaningLock.Lock()
+	a.podsToClean = append(a.podsToClean, pod)
+	a.cleaningLock.Unlock()
 	return nil
 }
 
 // initialize initiliazes the pod factory chain to use during the scan.
-func (a *AdmissionBucket) initialize() {
+func (a *Bucket) initialize() {
 	a.podFactoryChain = []podFactory{
 		privilegedPod{},
 		hostPathPod{},
@@ -129,14 +127,14 @@ func (a *AdmissionBucket) initialize() {
 	}
 }
 
-func (a AdmissionBucket) CanIDelete() bool {
+func (a Bucket) CanIDelete() bool {
 	err := a.client.CoreV1().Pods(currentNamespace).Delete(context.TODO(), "delete-test", metav1.DeleteOptions{})
 	return !kerrors.IsForbidden(err)
 }
 
-// Cleanup deletes side effects pods that were successfuly created during the scan.
+// Cleanup deletes side effects pods that were successfully created during the scan.
 // TODO parallelize maybe?
-func (a AdmissionBucket) Cleanup() error {
+func (a Bucket) Cleanup() error {
 	for _, p := range a.podsToClean {
 		err := a.client.CoreV1().Pods(p.Namespace).Delete(context.TODO(), p.Name, metav1.DeleteOptions{})
 		if err != nil {
@@ -147,12 +145,12 @@ func (a AdmissionBucket) Cleanup() error {
 }
 
 // NewAdmissionBucket creates a new admission bucket with the kubernetes client.
-func NewAdmissionBucket(cf bucket.Config) (*AdmissionBucket, error) {
+func NewAdmissionBucket(cf bucket.Config) (*Bucket, error) {
 	if cf.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
 	currentNamespace = cf.Namespace
-	return &AdmissionBucket{
+	return &Bucket{
 		client:       cf.Client,
 		cleaningLock: &sync.Mutex{},
 		config:       cf,

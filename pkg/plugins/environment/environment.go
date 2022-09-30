@@ -17,9 +17,9 @@ const (
 
 var bucketAliases = []string{"environments", "environ", "env"}
 
-type EnvironmentBucket struct{}
+type Bucket struct{}
 
-func (n EnvironmentBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	res.SetHeaders([]string{"name", "value"})
 	for name, value := range kubeEnviron() {
@@ -46,8 +46,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewEnvironmentBucket(config bucket.Config) (*EnvironmentBucket, error) {
-	return &EnvironmentBucket{}, nil
+func NewEnvironmentBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 func environ() map[string]string {

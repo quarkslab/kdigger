@@ -23,11 +23,11 @@ var bucketAliases = []string{"cloud", "meta"}
 // be more robust to have multiples, with the ones that needs headers to be
 // added (a security mesure)
 //
-// type CloudEndpoint struct {
-// 	URLs    []string
-// 	Headers map[string]string
-// }
-var endpoints map[string]string = map[string]string{
+//	type CloudEndpoint struct {
+//		URLs    []string
+//		Headers map[string]string
+//	}
+var endpoints = map[string]string{
 	"DigitalOcean": "http://169.254.169.254/metadata/v1.json",
 	"AWS":          "http://169.254.169.254/latest",
 	"OracleCloud":  "http://192.0.0.192/latest/",
@@ -38,13 +38,13 @@ var endpoints map[string]string = map[string]string{
 	"OpenStack":    "http://169.254.169.254/openstack",
 }
 
-type CloudMetadataBucket struct{}
+type Bucket struct{}
 
 // wait for 100ms maximum, request should be quick
 const networkTimeout = 100 * time.Millisecond
 
 // This plugin is "slow" because it has a network timeout on scan
-func (n CloudMetadataBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 
 	scanResult := scanEndpoints(endpoints)
@@ -143,6 +143,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewCloudMetadataBucket(config bucket.Config) (*CloudMetadataBucket, error) {
-	return &CloudMetadataBucket{}, nil
+func NewCloudMetadataBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

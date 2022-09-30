@@ -28,6 +28,10 @@ var sideEffects bool
 // flag to force admission creation
 var admForce bool
 
+// output formats
+const outputHuman = "human"
+const outputJSON = "json"
+
 // digCmd represents the dig command
 var digCmd = &cobra.Command{
 	Use:     "dig [buckets]",
@@ -48,7 +52,7 @@ arguments.`,
 		}
 
 		// apply default colored human only if the color flag was not set
-		if !cmd.Flags().Changed("color") && output == "human" {
+		if !cmd.Flags().Changed("color") && output == outputHuman {
 			color = true
 		}
 
@@ -107,7 +111,7 @@ arguments.`,
 				if err != nil {
 					// loading the context failed and is required so skip this
 					// execution after printing the error with the name
-					err := printError(fmt.Errorf("failed loading context to initialize client: %s", err.Error()), name)
+					err := printError(fmt.Errorf("failed loading context to initialize client: %w", err), name)
 					if err != nil {
 						return err
 					}

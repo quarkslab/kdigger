@@ -16,7 +16,7 @@ const (
 
 var bucketAliases = []string{"cgroup", "cg"}
 
-type CgroupsBucket struct{}
+type Bucket struct{}
 
 type Cgroup struct {
 	HierarchyID    string
@@ -24,7 +24,7 @@ type Cgroup struct {
 	CgroupPath     string
 }
 
-func (n CgroupsBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	// executes here the code of your plugin
 	cgroups, err := readCgroupFile()
 	if err != nil {
@@ -34,7 +34,7 @@ func (n CgroupsBucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if len(cgroups) <= 1 {
 		// https://stackoverflow.com/a/69005753
-		res.AddComment("This kernel might use cgroups v2, thus explaning the lack of information.")
+		res.AddComment("This kernel might use cgroups v2, thus explaining the lack of information.")
 	}
 	res.SetHeaders([]string{"hierarchyID", "controllerList", "cgroupPath"})
 	for _, cgroup := range cgroups {
@@ -56,8 +56,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewCgroupsBucket(config bucket.Config) (*CgroupsBucket, error) {
-	return &CgroupsBucket{}, nil
+func NewCgroupsBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 func readCgroupFile() ([]Cgroup, error) {

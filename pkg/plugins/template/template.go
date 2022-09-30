@@ -11,9 +11,9 @@ const (
 
 var bucketAliases = []string{"templ", "tp"}
 
-type TemplateBucket struct{}
+type Bucket struct{}
 
-func (n TemplateBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	// executes here the code of your plugin
 	res := bucket.NewResults(bucketName)
 	return *res, nil
@@ -33,6 +33,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewTemplateBucket(config bucket.Config) (*TemplateBucket, error) {
-	return &TemplateBucket{}, nil
+func NewTemplateBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

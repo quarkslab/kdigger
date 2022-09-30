@@ -14,13 +14,13 @@ const (
 
 var bucketAliases = []string{"service", "svc"}
 
-type ServicesBucket struct{}
+type Bucket struct{}
 
-func (n ServicesBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	_, hosts, err := net.LookupSRV("", "", "any.any.svc.cluster.local")
 	if err != nil {
-		return *res, fmt.Errorf("error when requesting coreDNS: %s", err.Error())
+		return *res, fmt.Errorf("error when requesting coreDNS: %w", err)
 	}
 	res.SetHeaders([]string{"service", "port"})
 	for _, svc := range hosts {
@@ -42,6 +42,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewServicesBucket(config bucket.Config) (*ServicesBucket, error) {
-	return &ServicesBucket{}, nil
+func NewServicesBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

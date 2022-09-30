@@ -41,7 +41,7 @@ func (s SeccompMode) String() string {
 	}
 }
 
-func (n SyscallsBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 
 	// scan the syscalls
@@ -61,9 +61,9 @@ func (n SyscallsBucket) Run() (bucket.Results, error) {
 	res.AddContent([]interface{}{blocked, allowed})
 
 	// output the skipped syscalls
-	var skippedNames []string
-	for _, s := range skippedSyscalls {
-		skippedNames = append(skippedNames, syscallIDToName(s))
+	var skippedNames [len(skippedSyscalls)]string
+	for i := range skippedSyscalls {
+		skippedNames[i] = syscallIDToName(skippedSyscalls[i])
 	}
 	res.AddComment(fmt.Sprint(skippedNames) + " were not scanned because they cause hang or will exit the program.")
 
@@ -112,7 +112,7 @@ func readSeccompFlag() (SeccompMode, error) {
 	return 0, errors.New("flag Seccomp was not found in /proc/self/status")
 }
 
-var skippedSyscalls = []int{
+var skippedSyscalls = [...]int{
 	unix.SYS_RT_SIGRETURN,
 	unix.SYS_PSELECT6,
 	unix.SYS_PPOLL,
@@ -213,9 +213,9 @@ func scanSyscall(id int, c chan (SyscallScanResult)) {
 	}
 	// fmt.Println(err.Error())
 
-	if err == syscall.EPERM || err == syscall.EACCES {
+	if errors.Is(err, syscall.EPERM) || errors.Is(err, syscall.EACCES) || errors.Is(err, syscall.EOPNOTSUPP) {
 		c <- SyscallScanResult{ID: id, Allowed: false}
-	} else if err != syscall.EOPNOTSUPP {
+	} else {
 		c <- SyscallScanResult{ID: id, Allowed: true}
 	}
 }

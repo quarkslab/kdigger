@@ -11,7 +11,7 @@ const (
 
 var bucketAliases = []string{"runtimes", "rt"}
 
-type RuntimeBucket struct{}
+type Bucket struct{}
 
 func Register(b *bucket.Buckets) {
 	b.Register(bucket.Bucket{
@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewRuntimeBucket(config bucket.Config) (*RuntimeBucket, error) {
-	return &RuntimeBucket{}, nil
+func NewRuntimeBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

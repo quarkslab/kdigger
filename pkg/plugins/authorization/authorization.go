@@ -20,11 +20,11 @@ const (
 
 var bucketAliases = []string{"authorizations", "auth"}
 
-type AuthorizationBucket struct {
+type Bucket struct {
 	config bucket.Config
 }
 
-func (n AuthorizationBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 
 	// create the self subject rules review object
@@ -80,11 +80,11 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewAuthorizationBucket(c bucket.Config) (*AuthorizationBucket, error) {
+func NewAuthorizationBucket(c bucket.Config) (*Bucket, error) {
 	if c.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
-	return &AuthorizationBucket{
+	return &Bucket{
 		config: c,
 	}, nil
 }

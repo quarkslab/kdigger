@@ -47,7 +47,7 @@ boolean flags to disabled security features. Examples:
 		pod := kgen.Generate(opts)
 
 		var p printers.ResourcePrinter
-		if output == "json" {
+		if output == outputJSON {
 			p = &printers.JSONPrinter{}
 		} else {
 			p = &printers.YAMLPrinter{}

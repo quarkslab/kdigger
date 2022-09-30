@@ -15,9 +15,9 @@ const (
 
 var bucketAliases = []string{"device", "dev"}
 
-type DevicesBucket struct{}
+type Bucket struct{}
 
-func (n DevicesBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	// executes here the code of your plugin
 	devs, err := readDev()
 	if err != nil {
@@ -51,8 +51,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewDevicesBucket(config bucket.Config) (*DevicesBucket, error) {
-	return &DevicesBucket{}, nil
+func NewDevicesBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 func readDev() ([]os.DirEntry, error) {

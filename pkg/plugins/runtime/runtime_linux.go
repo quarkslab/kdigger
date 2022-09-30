@@ -7,7 +7,7 @@ import (
 	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
-func (n RuntimeBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	runtime := proc.GetContainerRuntime(0, 0)
 	res := bucket.NewResults(bucketName)
 	res.AddComment(fmt.Sprintf("The container runtime seems to be %s.", runtime))

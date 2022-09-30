@@ -13,9 +13,9 @@ const (
 
 var bucketAliases = []string{"userids", "id"}
 
-type UserIDBucket struct{}
+type Bucket struct{}
 
-func (n UserIDBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	usr, err := user.Current()
 	if err != nil {
 		return bucket.Results{}, err
@@ -54,6 +54,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewUserIDBucket(config bucket.Config) (*UserIDBucket, error) {
-	return &UserIDBucket{}, nil
+func NewUserIDBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

@@ -11,11 +11,11 @@ const (
 
 var bucketAliases = []string{"api", "apiresource"}
 
-type APIResourcesBucket struct {
+type Bucket struct {
 	config bucket.Config
 }
 
-func (n APIResourcesBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	// executes here the code of your plugin
 	res := bucket.NewResults(bucketName)
 
@@ -51,11 +51,11 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewAPIResourcesBucket(config bucket.Config) (*APIResourcesBucket, error) {
+func NewAPIResourcesBucket(config bucket.Config) (*Bucket, error) {
 	if config.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
-	return &APIResourcesBucket{
+	return &Bucket{
 		config: config,
 	}, nil
 }

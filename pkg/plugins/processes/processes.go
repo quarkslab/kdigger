@@ -14,9 +14,9 @@ const (
 
 var bucketAliases = []string{"process", "ps"}
 
-type ProcessesBucket struct{}
+type Bucket struct{}
 
-func (n ProcessesBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 
 	processes, err := ps.Processes()
@@ -56,6 +56,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewProcessesBucket(config bucket.Config) (*ProcessesBucket, error) {
-	return &ProcessesBucket{}, nil
+func NewProcessesBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

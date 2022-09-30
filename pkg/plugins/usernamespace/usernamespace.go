@@ -11,7 +11,7 @@ const (
 
 var bucketAliases = []string{"usernamespaces", "userns"}
 
-type UserNamespaceBucket struct{}
+type Bucket struct{}
 
 func Register(b *bucket.Buckets) {
 	b.Register(bucket.Bucket{
@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewUserNamespaceBucket(config bucket.Config) (*UserNamespaceBucket, error) {
-	return &UserNamespaceBucket{}, nil
+func NewUserNamespaceBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }

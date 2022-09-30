@@ -10,7 +10,7 @@ import (
 )
 
 // checkWidthsCoherence checks if headers and data are both sets, that the
-// width is consistant between them.
+// width is consistent between them.
 func (r Results) checkWidthsCoherence() bool {
 	headerWidth := len(r.headers)
 
@@ -28,10 +28,8 @@ func (r Results) checkWidthsCoherence() bool {
 	// one is not set
 	if headerWidth == 0 || dataWidth == 0 {
 		return true
-	} else {
-		return headerWidth == dataWidth
 	}
-
+	return headerWidth == dataWidth
 }
 
 func nrColumnsToMaxWidth(termWidth int, n int) int {

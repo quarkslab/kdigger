@@ -5,7 +5,7 @@ import (
 	"github.com/quarkslab/kdigger/pkg/bucket"
 )
 
-func (n UserNamespaceBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	userNS, userMapping := proc.GetUserNamespaceInfo(0)
 
 	res := bucket.NewResults(bucketName)

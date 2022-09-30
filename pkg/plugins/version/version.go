@@ -11,11 +11,11 @@ const (
 
 var bucketAliases = []string{"versions", "v"}
 
-type VersionBucket struct {
+type Bucket struct {
 	config bucket.Config
 }
 
-func (n VersionBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	v, err := n.config.Client.Discovery().ServerVersion()
 	if err != nil {
@@ -39,11 +39,11 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewVersionBucket(config bucket.Config) (*VersionBucket, error) {
+func NewVersionBucket(config bucket.Config) (*Bucket, error) {
 	if config.Client == nil {
 		return nil, bucket.ErrMissingClient
 	}
-	return &VersionBucket{
+	return &Bucket{
 		config: config,
 	}, nil
 }

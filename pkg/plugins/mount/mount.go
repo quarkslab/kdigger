@@ -19,9 +19,9 @@ const (
 
 var bucketAliases = []string{"mounts", "mn"}
 
-type MountBucket struct{}
+type Bucket struct{}
 
-func (m MountBucket) Run() (bucket.Results, error) {
+func (m Bucket) Run() (bucket.Results, error) {
 	values, err := mounts()
 	if err != nil {
 		return bucket.Results{}, err
@@ -48,8 +48,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewMountBucket(config bucket.Config) (*MountBucket, error) {
-	return &MountBucket{}, nil
+func NewMountBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 type Mount struct {

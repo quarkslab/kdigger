@@ -18,9 +18,9 @@ const (
 
 var bucketAliases = []string{"nodes", "n"}
 
-type NodeBucket struct{}
+type Bucket struct{}
 
-func (n NodeBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	cpuinfo, err := readCPUInfo()
 	if err != nil {
 		return bucket.Results{}, err
@@ -63,8 +63,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewNodeBucket(config bucket.Config) (*NodeBucket, error) {
-	return &NodeBucket{}, nil
+func NewNodeBucket(config bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 type KernelVersion struct {
@@ -78,16 +78,16 @@ func readKernelVersion() (*KernelVersion, error) {
 	if err != nil {
 		return nil, err
 	}
-	kVersion := &KernelVersion{}
+	kernelVersion := &KernelVersion{}
 
 	sVersion := strings.SplitN(string(version), " ", 4)
 	if len(sVersion) < 4 {
 		return nil, errors.New("error in /proc/version format, missing entries")
 	}
-	kVersion.Version = sVersion[2]
-	kVersion.Details = strings.TrimSpace(sVersion[3])
+	kernelVersion.Version = sVersion[2]
+	kernelVersion.Details = strings.TrimSpace(sVersion[3])
 
-	return kVersion, nil
+	return kernelVersion, nil
 }
 
 // toHuman converts a value in kB from a uint64 to the most appropriate value
@@ -101,9 +101,8 @@ func toHuman(i uint64) string {
 	}
 	if f > 10 {
 		return fmt.Sprintf("%.0f", f) + units[division]
-	} else {
-		return fmt.Sprintf("%.1f", f) + units[division]
 	}
+	return fmt.Sprintf("%.1f", f) + units[division]
 }
 
 type Meminfo struct {

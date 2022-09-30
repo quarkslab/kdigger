@@ -15,9 +15,9 @@ const (
 
 var bucketAliases = []string{"tokens", "tk"}
 
-type TokenBucket struct{}
+type Bucket struct{}
 
-func (n TokenBucket) Run() (bucket.Results, error) {
+func (n Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
 	if tokenFolderExist() {
 		res.AddComment("A service account token is mounted.")
@@ -57,8 +57,8 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewTokenBucket(c bucket.Config) (*TokenBucket, error) {
-	return &TokenBucket{}, nil
+func NewTokenBucket(c bucket.Config) (*Bucket, error) {
+	return &Bucket{}, nil
 }
 
 func tokenFolderExist() bool {

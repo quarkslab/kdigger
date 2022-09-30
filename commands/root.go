@@ -48,8 +48,8 @@ cluster. For that you can use multiples buckets. Buckets are plugins that can
 scan specific aspects of a cluster or bring expertise to automate the Kubernetes
 pentest process.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if output != "human" && output != "json" {
-			return fmt.Errorf("ouput flag must be one of human|json, got %q", output)
+		if output != outputHuman && output != outputJSON {
+			return fmt.Errorf("output flag must be one of %s|%s, got %q", outputHuman, outputJSON, output)
 		}
 		return nil
 	},
@@ -58,8 +58,8 @@ pentest process.`,
 func init() {
 	cobra.OnInitialize(registerBuckets)
 
-	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", "human", "Output format. One of: human|json.")
-	rootCmd.PersistentFlags().IntVarP(&outputWidth, "width", "w", 140, "Width for the human output")
+	rootCmd.PersistentFlags().StringVarP(&output, "output", "o", outputHuman, fmt.Sprintf("Output format. One of: %s|%s.", outputHuman, outputJSON))
+	rootCmd.PersistentFlags().IntVarP(&outputWidth, "width", "w", 140, fmt.Sprintf("Width for the %s output", outputHuman))
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -99,9 +99,9 @@ func registerBuckets() {
 // printResults prints results with the output format selected by the flags
 func printResults(r bucket.Results, opts bucket.ResultsOpts) error {
 	switch output {
-	case "human":
+	case outputHuman:
 		fmt.Print(r.Human(opts))
-	case "json":
+	case outputJSON:
 		p, err := r.JSON(opts)
 		if err != nil {
 			return err
@@ -117,10 +117,10 @@ func printResults(r bucket.Results, opts bucket.ResultsOpts) error {
 // struct that can contains the error directly?
 func printError(err error, name string) error {
 	switch output {
-	case "human":
+	case outputHuman:
 		fmt.Printf("### %s ###\n", strings.ToUpper(name))
 		fmt.Printf("Error: %s\n", err.Error())
-	case "json":
+	case outputJSON:
 		jsonErr := struct {
 			Bucket string `json:"bucket"`
 			Error  string `json:"error"`

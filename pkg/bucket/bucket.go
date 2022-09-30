@@ -11,11 +11,11 @@ import (
 
 var ErrMissingClient = errors.New("buckets need a kubernetes client for initialization")
 
-type ErrUnknownBucket struct {
+type UnknownBucketError struct {
 	name string
 }
 
-func (e ErrUnknownBucket) Error() string {
+func (e UnknownBucketError) Error() string {
 	return fmt.Sprintf("unknown bucket %q", e.name)
 }
 
@@ -170,14 +170,14 @@ func (bs *Buckets) InitBucket(name string, config Config) (Interface, error) {
 	}
 
 	bucket, found, err := bs.getBucket(name, config)
-	if err == ErrMissingClient {
+	if errors.Is(err, ErrMissingClient) {
 		return nil, err
 	}
 	if err != nil {
-		return nil, fmt.Errorf("couldn't init bucket %q: %v", name, err)
+		return nil, fmt.Errorf("couldn't init bucket %q: %w", name, err)
 	}
 	if !found {
-		err := ErrUnknownBucket{
+		err := UnknownBucketError{
 			name: name,
 		}
 		return nil, err
