@@ -1,0 +1,26 @@
+name: golangci-lint
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.49.0
+          # Optional: show only new issues if it's a pull request. The default value is `false`.
+          only-new-issues: true

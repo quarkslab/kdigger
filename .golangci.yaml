@@ -1,0 +1,28 @@
+run:
+  go: '1.19'
+
+linters:
+  disable-all: true
+  # Enable specific linter
+  enable:
+    # default linters as of v1.49.0
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    # specific linters
+    - dupl
+    - whitespace
+    - revive
+    - misspell
+    - asciicheck
+    - bidichk
+    - errname
+    - errorlint
+    - exhaustive
+    - goconst
+    - gofmt
+    - prealloc
