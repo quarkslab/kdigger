@@ -14,6 +14,7 @@ import (
 	"github.com/quarkslab/kdigger/pkg/plugins/capabilities"
 	"github.com/quarkslab/kdigger/pkg/plugins/cgroups"
 	"github.com/quarkslab/kdigger/pkg/plugins/cloudmetadata"
+	"github.com/quarkslab/kdigger/pkg/plugins/containerdetect"
 	"github.com/quarkslab/kdigger/pkg/plugins/devices"
 	"github.com/quarkslab/kdigger/pkg/plugins/environment"
 	"github.com/quarkslab/kdigger/pkg/plugins/mount"
@@ -94,6 +95,7 @@ func registerBuckets() {
 	node.Register(buckets)
 	apiresources.Register(buckets)
 	cloudmetadata.Register(buckets)
+	containerdetect.Register(buckets)
 }
 
 // printResults prints results with the output format selected by the flags

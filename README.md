@@ -34,7 +34,7 @@ pentesting process.
     * [Why another tool?](#why-another-tool)
     * [How is this tool built?](#how-is-this-tool-built)
     * [Areas for improvement](#areas-for-improvement)
-    * [How can I experience with this tool?](#how-can-i-experience-with-this-tool)
+    * [How to experiment with this tool?](#how-to-experiment-with-this-tool)
 * [Buckets](#buckets)
     * [Admission](#admission)
     * [API Resources](#api-resources)
@@ -42,6 +42,7 @@ pentesting process.
     * [Capabilities](#capabilities)
     * [Cgroups](#cgroups)
     * [CloudMetadata](#cloudmetadata)
+    * [ContainerDetect](#containerdetect)
     * [Devices](#devices)
     * [Environment](#environment)
     * [Mount](#mount)
@@ -72,7 +73,7 @@ page](https://github.com/quarkslab/kdigger/releases).
 
 ### Build from source
 
-Just type `make` to build with the 
+Just type `make` to build with the
 [default build target](https://github.com/quarkslab/kdigger/blob/main/Makefile#L20).
 ```bash
 git clone https://github.com/quarkslab/kdigger
@@ -332,11 +333,11 @@ format via array lines does not fit all the use cases perfectly but is simple to
 generalize without having each plugin to implement their format. The tool also
 proposes a JSON output format.
 
-### How can I experience with this tool?
+### How to experiment with this tool?
 
-Good news! We created a mini Kubernetes CTF with basic steps to experience with
-the tool and resolve quick challenges. For more information go to the
-[minik8s-ctf repository](https://github.com/quarkslab/minik8s-ctf).
+Good news! We created a mini Kubernetes CTF with basic steps to try the tool
+and resolve quick challenges. For more information go to the [minik8s-ctf
+repository](https://github.com/quarkslab/minik8s-ctf).
 
 ## Buckets
 
@@ -531,6 +532,20 @@ that's the case, further research, using available endpoints for that cloud, can
 be conducted. You can potentially retrieve an authentication token or simply
 more metadata to pivot within the cloud account.
 
+### ContainerDetect
+
+ContainerDetect retrieves hints that the process is running inside a typical
+container. This bucket follows a discussion on Twitter about detection technics
+https://twitter.com/g3rzi/status/1564594977220562945.
+
+For now, it's composed of six hints:
+- systemd is not PID 1
+- kthreadd is not PID 2
+- inode number of root is not 2
+- root is an overlay fs
+- /etc/fstab is empty
+- /boot is empty
+
 ### Devices
 
 Devices show the list of devices available in the container. This one is
@@ -615,7 +630,7 @@ in the cluster.
 Note: [This feature was removed](https://github.com/coredns/coredns/pull/5019)
 starting as of CoreDNS v1.9.0 because it was mostly used by bad actors (like
 this tool). See the associated discussion on [the corresponding Github
-issue](https://github.com/coredns/coredns/issues/4984). Kubernetes v1.24 was 
+issue](https://github.com/coredns/coredns/issues/4984). Kubernetes v1.24 was
 still using CoreDNS v1.8.6, but the v1.25 version updated CoreDNS to v1.9.3.
 That's why this plugin no longer works on v1.25 and above.
 

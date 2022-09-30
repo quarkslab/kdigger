@@ -22,7 +22,7 @@ var bucketAliases = []string{"mounts", "mn"}
 type Bucket struct{}
 
 func (m Bucket) Run() (bucket.Results, error) {
-	values, err := mounts()
+	values, err := Mounts()
 	if err != nil {
 		return bucket.Results{}, err
 	}
@@ -59,7 +59,7 @@ type Mount struct {
 	Flags      string
 }
 
-func mounts() ([]Mount, error) {
+func Mounts() ([]Mount, error) {
 	file, err := os.Open(mountPath)
 	if err != nil {
 		return nil, err
