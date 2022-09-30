@@ -1,5 +1,28 @@
 # Changelog
 
+## `1.4.0` - 2022-09-30
+
+### Added
+
+- New plugin for basic container detection, result of [this
+  discussion](https://twitter.com/g3rzi/status/1564594977220562945) on Twitter.
+- Add a linting configuration and linting in CI on GitHub.
+- Add the nixery.dev docker image build instructions in README.
+- Add a demo GIF in the README.
+
+### Changed
+
+- Makefile is up to date with some new targets to setup dev env and the
+  default build target runs without the linter.
+- Simplify and update the Vagrantfile.
+- Updated all dependencies and especially the Go client k8s to `v0.25.2`.
+- Made a lot of style modifications and minor fixes thanks to linting.
+
+### Fixes
+
+- Fix the import of all auth providers for k8s Go client thanks to [this user's
+  PR](https://github.com/quarkslab/kdigger/pull/7).
+
 ## `1.3.0` - 2022-07-12
 
 ### Added
