@@ -10,6 +10,7 @@ import (
 type GenerateOpts struct {
 	Name        string
 	Image       string
+	Namespace 	string
 	Command     []string
 	Privileged  bool
 	HostPath    bool
@@ -24,7 +25,9 @@ func Generate(opts GenerateOpts) *v1.Pod {
 			Kind:       "Pod",
 			APIVersion: "v1",
 		},
-		ObjectMeta: metav1.ObjectMeta{},
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: "default"
+		},
 		Spec: v1.PodSpec{
 			Containers: []v1.Container{
 				{
@@ -34,6 +37,13 @@ func Generate(opts GenerateOpts) *v1.Pod {
 				},
 			},
 		},
+	}
+
+	if opts.Namespace == "" {
+		pod.ObjectMeta.Namespace = opts.Namespace
+	}
+	if len(opts.Namespace) != 0 {
+		pod.ObjectMeta.Namespace = opts.Namespace
 	}
 
 	if opts.Name == "" {
