@@ -39,12 +39,7 @@ func Generate(opts GenerateOpts) *v1.Pod {
 		},
 	}
 
-	if opts.Namespace == "" {
-		pod.ObjectMeta.Namespace = opts.Namespace
-	}
-	if len(opts.Namespace) != 0 {
-		pod.ObjectMeta.Namespace = opts.Namespace
-	}
+	pod.ObjectMeta.Namespace = opts.Namespace
 
 	if opts.Name == "" {
 		pod.ObjectMeta.Name = "digger-" + rand.String(5)
