@@ -25,9 +25,7 @@ func Generate(opts GenerateOpts) *v1.Pod {
 			Kind:       "Pod",
 			APIVersion: "v1",
 		},
-		ObjectMeta: metav1.ObjectMeta{
-			Namespace: "default",
-		},
+		ObjectMeta: metav1.ObjectMeta{},
 		Spec: v1.PodSpec{
 			Containers: []v1.Container{
 				{
