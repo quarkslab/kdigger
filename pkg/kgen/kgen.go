@@ -10,7 +10,7 @@ import (
 type GenerateOpts struct {
 	Name        string
 	Image       string
-	Namespace 	string
+	Namespace   string
 	Command     []string
 	Privileged  bool
 	HostPath    bool
@@ -26,7 +26,7 @@ func Generate(opts GenerateOpts) *v1.Pod {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace: "default"
+			Namespace: "default",
 		},
 		Spec: v1.PodSpec{
 			Containers: []v1.Container{
