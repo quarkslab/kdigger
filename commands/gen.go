@@ -63,7 +63,7 @@ boolean flags to disabled security features. Examples:
 
 func init() {
 	rootCmd.AddCommand(genCmd)
-
+	genCmd.Flags().StringVarP(&opts.Namespace, "namespace", "n", "", "Kubernetes namespace to use")
 	genCmd.Flags().StringVar(&opts.Image, "image", "busybox", "Container image used")
 	genCmd.Flags().StringArrayVar(&opts.Command, "command", []string{"sleep", "infinitely"}, "Container command used")
 

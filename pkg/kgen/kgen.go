@@ -10,6 +10,7 @@ import (
 type GenerateOpts struct {
 	Name        string
 	Image       string
+	Namespace   string
 	Command     []string
 	Privileged  bool
 	HostPath    bool
@@ -35,6 +36,8 @@ func Generate(opts GenerateOpts) *v1.Pod {
 			},
 		},
 	}
+
+	pod.ObjectMeta.Namespace = opts.Namespace
 
 	if opts.Name == "" {
 		pod.ObjectMeta.Name = "digger-" + rand.String(5)
