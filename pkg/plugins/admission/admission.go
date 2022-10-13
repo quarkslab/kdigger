@@ -15,7 +15,7 @@ import (
 
 const (
 	bucketName        = "admission"
-	bucketDescription = "Admission scans the admission controller chain by creating specific pods to find what is prevented or not."
+	bucketDescription = "Admission scans the admission controller chain by creating (by default with dry run) specific pods to find what is prevented or not."
 )
 
 var bucketAliases = []string{"admissions", "adm"}
@@ -55,8 +55,8 @@ func Register(b *bucket.Buckets) {
 // Run runs the admission test.
 func (a *Bucket) Run() (bucket.Results, error) {
 	res := bucket.NewResults(bucketName)
-	if !a.config.AdmForce && !a.CanIDelete() {
-		return *res, errors.New("cannot delete pod, will not be able to clean the scan artifacts, force creation --admission-force")
+	if a.config.AdmCreate && !a.config.AdmForce && !a.CanIDelete() {
+		return *res, errors.New("cannot delete pod, will not be able to clean the scan artifacts, force creation with --admission-force")
 	}
 	a.initialize()
 	c := make(chan admissionResult, len(a.podFactoryChain))
@@ -105,13 +105,26 @@ func (a *Bucket) Run() (bucket.Results, error) {
 
 func (a *Bucket) use(f podFactory) error {
 	pod := f.NewPod()
-	pod, err := a.client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
+
+	// activate server dry run by default
+	var createOptions metav1.CreateOptions
+	if !a.config.AdmCreate {
+		createOptions = metav1.CreateOptions{
+			DryRun: []string{"All"},
+		}
+	}
+
+	pod, err := a.client.CoreV1().Pods(pod.Namespace).Create(context.TODO(), pod, createOptions)
 	if err != nil {
 		return err
 	}
-	a.cleaningLock.Lock()
-	a.podsToClean = append(a.podsToClean, pod)
-	a.cleaningLock.Unlock()
+
+	// clean only if we actually created the pod
+	if a.config.AdmCreate {
+		a.cleaningLock.Lock()
+		a.podsToClean = append(a.podsToClean, pod)
+		a.cleaningLock.Unlock()
+	}
 	return nil
 }
 

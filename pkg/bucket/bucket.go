@@ -55,6 +55,9 @@ type Config struct {
 	// This options is specific to the admission plugin, is it to force creation
 	// even if we can't cleanup the mess with delete
 	AdmForce bool
+	// This options is specific to the admission plugin, is it to actually create
+	// pod instead of use the dry run
+	AdmCreate bool
 }
 
 func NewBuckets() *Buckets {

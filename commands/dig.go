@@ -19,18 +19,15 @@ var kubeconfig string
 // flag for the namespace
 var namespace string
 
-// flag for the color
-var color bool
-
 // flag to activate side effects buckets
 var sideEffects bool
-
-// flag to force admission creation
-var admForce bool
 
 // output formats
 const outputHuman = "human"
 const outputJSON = "json"
+
+// config that will carry parameters and client for plugin init
+var pluginConfig bucket.Config
 
 // digCmd represents the dig command
 var digCmd = &cobra.Command{
@@ -53,7 +50,7 @@ arguments.`,
 
 		// apply default colored human only if the color flag was not set
 		if !cmd.Flags().Changed("color") && output == outputHuman {
-			color = true
+			pluginConfig.Color = true
 		}
 
 		// check if any called buckets have side effects without the flag activated
@@ -74,13 +71,6 @@ arguments.`,
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// create the config that will be passed to every plugins
-		config := &bucket.Config{
-			Color:       color,
-			OutputWidth: outputWidth,
-			AdmForce:    admForce,
-		}
-
 		// handles the "all" or "a" and erase the args with the bucket list
 		// PreRun should guarantee that len(args) != 0 but in case
 		if len(args) != 0 {
@@ -107,7 +97,7 @@ arguments.`,
 		for _, name := range args {
 			// initialize the bucket
 			if buckets.RequiresClient(name) {
-				err := loadContext(config)
+				err := loadContext(&pluginConfig)
 				if err != nil {
 					// loading the context failed and is required so skip this
 					// execution after printing the error with the name
@@ -118,7 +108,7 @@ arguments.`,
 					continue
 				}
 			}
-			b, err := buckets.InitBucket(name, *config)
+			b, err := buckets.InitBucket(name, pluginConfig)
 			if err != nil {
 				return err
 			}
@@ -191,7 +181,11 @@ func init() {
 	}
 
 	digCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Kubernetes namespace to use. (default to the namespace in the context)")
-	digCmd.Flags().BoolVarP(&color, "color", "c", false, "Enable color in output. (default true if output is human)")
 	digCmd.Flags().BoolVarP(&sideEffects, "side-effects", "s", false, "Enable all buckets that might have side effect on environment.")
-	digCmd.Flags().BoolVarP(&admForce, "admission-force", "", false, "Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)")
+
+	digCmd.Flags().BoolVarP(&pluginConfig.Color, "color", "c", false, "Enable color in output. (default true if output is human)")
+	digCmd.Flags().BoolVarP(&pluginConfig.AdmForce, "admission-force", "", false, "Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)")
+	digCmd.Flags().BoolVarP(&pluginConfig.AdmCreate, "admission-create", "", false, "Actually create pods to scan admission instead of using server dry run. (this flag is specific to the admission bucket)")
+	// this one is retrieved from the root cmd because applicable to many cmds
+	pluginConfig.OutputWidth = outputWidth
 }

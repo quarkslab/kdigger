@@ -167,6 +167,7 @@ Aliases:
   dig, d
 
 Flags:
+      --admission-create    Actually create pods to scan admission instead of using server dry run. (this flag is specific to the admission bucket)
       --admission-force     Force creation of pods to scan admission even without cleaning rights. (this flag is specific to the admission bucket)
   -c, --color               Enable color in output. (default true if output is human)
   -h, --help                help for dig
@@ -243,6 +244,9 @@ empty arguments, and it can alter your environment or configuration. For
 instance, if the `hostname` syscall is successful, it will replace the
 hostname with the empty string. So please, **NEVER** run with
 sufficient permissions (as root for example) directly on your machine.
+
+The admission scan will by default run as server dry-run but will generate API
+server logs.
 
 ### Results warning
 
@@ -345,69 +349,71 @@ You can list and describe the available buckets (or plugins) with `kdigger
 list` or `kdigger ls`:
 ```console
 $ kdigger ls
-+---------------+----------------------------+--------------------------------------+-------------+---------------+
-|      NAME     |           ALIASES          |              DESCRIPTION             | SIDEEFFECTS | REQUIRECLIENT |
-+---------------+----------------------------+--------------------------------------+-------------+---------------+
-| admission     | [admissions adm]           | Admission scans the admission        | true        | true          |
-|               |                            | controller chain by creating         |             |               |
-|               |                            | specific pods to find what is        |             |               |
-|               |                            | prevented or not.                    |             |               |
-| apiresources  | [api apiresource]          | APIResources discovers the available | false       | true          |
-|               |                            | APIs of the cluster.                 |             |               |
-| authorization | [authorizations auth]      | Authorization checks your API        | false       | true          |
-|               |                            | permissions with the current context |             |               |
-|               |                            | or the available token.              |             |               |
-| capabilities  | [capability cap]           | Capabilities lists all capabilities  | false       | false         |
-|               |                            | in all sets and displays dangerous   |             |               |
-|               |                            | capabilities in red.                 |             |               |
-| cgroups       | [cgroup cg]                | Cgroups reads the /proc/self/cgroup  | false       | false         |
-|               |                            | files that can leak information      |             |               |
-|               |                            | under cgroups v1.                    |             |               |
-| cloudmetadata | [cloud meta]               | Cloudmetadata scans the usual        | false       | false         |
-|               |                            | metadata endpoints in public clouds. |             |               |
-| devices       | [device dev]               | Devices shows the list of devices    | false       | false         |
-|               |                            | available in the container.          |             |               |
-| environment   | [environments environ env] | Environment checks the presence of   | false       | false         |
-|               |                            | kubernetes related environment       |             |               |
-|               |                            | variables and shows them.            |             |               |
-| mount         | [mounts mn]                | Mount shows all mounted devices in   | false       | false         |
-|               |                            | the container.                       |             |               |
-| node          | [nodes n]                  | Node retrieves various information   | false       | false         |
-|               |                            | in /proc about the current host.     |             |               |
-| pidnamespace  | [pidnamespaces pidns]      | PIDnamespace analyses the PID        | false       | false         |
-|               |                            | namespace of the container in the    |             |               |
-|               |                            | context of Kubernetes.               |             |               |
-| processes     | [process ps]               | Processes analyses the running       | false       | false         |
-|               |                            | processes in your PID namespace      |             |               |
-| runtime       | [runtimes rt]              | Runtime finds clues to identify      | false       | false         |
-|               |                            | which container runtime is running   |             |               |
-|               |                            | the container.                       |             |               |
-| services      | [service svc]              | Services uses CoreDNS wildcards      | false       | false         |
-|               |                            | feature to discover every service    |             |               |
-|               |                            | available in the cluster.            |             |               |
-| syscalls      | [syscall sys]              | Syscalls scans most of the syscalls  | true        | false         |
-|               |                            | to detect which are blocked and      |             |               |
-|               |                            | allowed.                             |             |               |
-| token         | [tokens tk]                | Token checks for the presence of a   | false       | false         |
-|               |                            | service account token in the         |             |               |
-|               |                            | filesystem.                          |             |               |
-| userid        | [userids id]               | UserID retrieves UID, GID and their  | false       | false         |
-|               |                            | corresponding names.                 |             |               |
-| usernamespace | [usernamespaces userns]    | UserNamespace analyses the user      | false       | false         |
-|               |                            | namespace configuration.             |             |               |
-| version       | [versions v]               | Version dumps the API server version | false       | true          |
-|               |                            | informations.                        |             |               |
-+---------------+----------------------------+--------------------------------------+-------------+---------------+
++-----------------+----------------------------+----------------------------------------+-------------+---------------+
+|       NAME      |           ALIASES          |               DESCRIPTION              | SIDEEFFECTS | REQUIRECLIENT |
++-----------------+----------------------------+----------------------------------------+-------------+---------------+
+| admission       | [admissions adm]           | Admission scans the admission          | true        | true          |
+|                 |                            | controller chain by creating (by       |             |               |
+|                 |                            | default with dry run) specific pods to |             |               |
+|                 |                            | find what is prevented or not.         |             |               |
+| apiresources    | [api apiresource]          | APIResources discovers the available   | false       | true          |
+|                 |                            | APIs of the cluster.                   |             |               |
+| authorization   | [authorizations auth]      | Authorization checks your API          | false       | true          |
+|                 |                            | permissions with the current context   |             |               |
+|                 |                            | or the available token.                |             |               |
+| capabilities    | [capability cap]           | Capabilities lists all capabilities in | false       | false         |
+|                 |                            | all sets and displays dangerous        |             |               |
+|                 |                            | capabilities in red.                   |             |               |
+| cgroups         | [cgroup cg]                | Cgroups reads the /proc/self/cgroup    | false       | false         |
+|                 |                            | files that can leak information under  |             |               |
+|                 |                            | cgroups v1.                            |             |               |
+| cloudmetadata   | [cloud meta]               | Cloudmetadata scans the usual metadata | false       | false         |
+|                 |                            | endpoints in public clouds.            |             |               |
+| containerdetect | [container cdetect]        | ContainerDetect retrieves hints that   | false       | false         |
+|                 |                            | the process is running inside a        |             |               |
+|                 |                            | typical container.                     |             |               |
+| devices         | [device dev]               | Devices shows the list of devices      | false       | false         |
+|                 |                            | available in the container.            |             |               |
+| environment     | [environments environ env] | Environment checks the presence of     | false       | false         |
+|                 |                            | kubernetes related environment         |             |               |
+|                 |                            | variables and shows them.              |             |               |
+| mount           | [mounts mn]                | Mount shows all mounted devices in the | false       | false         |
+|                 |                            | container.                             |             |               |
+| node            | [nodes n]                  | Node retrieves various information in  | false       | false         |
+|                 |                            | /proc about the current host.          |             |               |
+| pidnamespace    | [pidnamespaces pidns]      | PIDnamespace analyses the PID          | false       | false         |
+|                 |                            | namespace of the container in the      |             |               |
+|                 |                            | context of Kubernetes.                 |             |               |
+| processes       | [process ps]               | Processes analyses the running         | false       | false         |
+|                 |                            | processes in your PID namespace        |             |               |
+| runtime         | [runtimes rt]              | Runtime finds clues to identify which  | false       | false         |
+|                 |                            | container runtime is running the       |             |               |
+|                 |                            | container.                             |             |               |
+| services        | [service svc]              | Services uses CoreDNS wildcards        | false       | false         |
+|                 |                            | feature to discover every service      |             |               |
+|                 |                            | available in the cluster.              |             |               |
+| syscalls        | [syscall sys]              | Syscalls scans most of the syscalls to | true        | false         |
+|                 |                            | detect which are blocked and allowed.  |             |               |
+| token           | [tokens tk]                | Token checks for the presence of a     | false       | false         |
+|                 |                            | service account token in the           |             |               |
+|                 |                            | filesystem.                            |             |               |
+| userid          | [userids id]               | UserID retrieves UID, GID and their    | false       | false         |
+|                 |                            | corresponding names.                   |             |               |
+| usernamespace   | [usernamespaces userns]    | UserNamespace analyses the user        | false       | false         |
+|                 |                            | namespace configuration.               |             |               |
+| version         | [versions v]               | Version dumps the API server version   | false       | true          |
+|                 |                            | informations.                          |             |               |
++-----------------+----------------------------+----------------------------------------+-------------+---------------+
 ```
 
 ### Admission
 
-Admission scans the admission controller chain by creating specific pods to
-find what is prevented or not. The idea behind this bucket is to check, after
-you learned that you have `create pods` ability, if no admission controller
-like a PodSecurityPolicy or another is blocking you to create node privilege
-escalation pods. Like mounting the host filesystem, or the host PID namespace,
-or just a privileged container, for example.
+Admission scans the admission controller chain by creating (by default with dry
+run) specific pods to find what is prevented or not. The idea behind this bucket
+is to check, after you learned that you have `create pods` ability, if no
+admission controller like a PodSecurityPolicy or another is blocking you to
+create node privilege escalation pods. Like mounting the host filesystem, or the
+host PID namespace, or just a privileged container, for example.
 
 This bucket currently automatically tries to create:
 - a privileged pod
@@ -419,6 +425,9 @@ This bucket currently automatically tries to create:
 
 So, if you are granted rights to `create pods`, you can check the presence of
 any admission controller that might restrict you.
+
+Note that it uses `--dry-run=server` by default but you can really create the
+pods with the `--admission-create` admission plugin specific flag.
 
 ### API Resources
 
