@@ -12,6 +12,12 @@ var opts kgen.GenerateOpts
 
 var genAll bool
 
+var (
+	fuzzPod       bool
+	fuzzContainer bool
+	fuzzInit      bool
+)
+
 var genCmd = &cobra.Command{
 	Use:     "gen [name] [flags]",
 	Aliases: []string{"generate"},
@@ -30,7 +36,10 @@ boolean flags to disabled security features. Examples:
   kdigger gen -all mypod | kubectl apply -f -
   
   # Create a custom privileged pod
-  kdigger gen --privileged --image bash --command watch --command date | kubectl apply -f -`,
+  kdigger gen --privileged --image bash --command watch --command date | kubectl apply -f -
+
+  # Fuzz the API server admission
+  kdigger gen --fuzz-pod --fuzz-init --fuzz-container | kubectl apply --dry-run=server -f -`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// all puts all the boolean flags to true
 		if genAll {
@@ -45,6 +54,17 @@ boolean flags to disabled security features. Examples:
 		}
 
 		pod := kgen.Generate(opts)
+
+		// optional fuzzing steps
+		if fuzzPod {
+			kgen.FuzzPodSecurityContext(&pod.Spec.SecurityContext)
+		}
+		if fuzzContainer {
+			kgen.FuzzContainerSecurityContext(&pod.Spec.Containers[0].SecurityContext)
+		}
+		if fuzzInit {
+			kgen.CopyToInitAndFuzz(&pod.Spec)
+		}
 
 		var p printers.ResourcePrinter
 		if output == outputJSON {
@@ -74,4 +94,8 @@ func init() {
 	genCmd.Flags().BoolVar(&opts.HostNetwork, "hostnetwork", false, "Add the hostNetwork flag on the whole pod")
 
 	genCmd.Flags().BoolVar(&genAll, "all", false, "Enable everything")
+
+	genCmd.Flags().BoolVar(&fuzzPod, "fuzz-pod", false, "Generate a random pod security context.")
+	genCmd.Flags().BoolVar(&fuzzContainer, "fuzz-container", false, "Generate a random container security context. (will override other options)")
+	genCmd.Flags().BoolVar(&fuzzInit, "fuzz-init", false, "Generate a random init container security context.")
 }

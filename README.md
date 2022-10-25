@@ -27,6 +27,9 @@ pentesting process.
     * [With Nix](#with-nix)
     * [Via Go](#via-go)
 * [Usage](#usage)
+    * [Digging](#digging)
+    * [Generating](#generating)
+    * [Fuzzing](#fuzzing)
 * [Details](#details)
     * [Updates](#updates)
     * [Usage warning](#usage-warning)
@@ -115,6 +118,8 @@ go install github.com/quarkslab/kdigger@main
 
 ## Usage
 
+### Digging
+
 What you generally want to do is running all the buckets with `dig all` or just
 `d a`:
 ```bash
@@ -180,6 +185,8 @@ Global Flags:
   -w, --width int       Width for the human output (default 140)
 ```
 
+### Generating
+
 You can also generate useful templates for pods with security features disabled
 to escalate privileges when you can create such a pod. See the help for this
 specific command for more information.
@@ -202,6 +209,9 @@ boolean flags to disabled security features. Examples:
   # Create a custom privileged pod
   kdigger gen --privileged --image bash --command watch --command date | kubectl apply -f -
 
+  # Fuzz the API server admission
+  kdigger gen --fuzz-pod --fuzz-init --fuzz-container | kubectl apply --dry-run=server -f -
+
 Usage:
   kdigger gen [name] [flags]
 
@@ -211,17 +221,43 @@ Aliases:
 Flags:
       --all                   Enable everything
       --command stringArray   Container command used (default [sleep,infinitely])
+      --fuzz-container        Generate a random container security context. (will override other options)
+      --fuzz-init             Generate a random init container security context.
+      --fuzz-pod              Generate a random pod security context.
   -h, --help                  help for gen
       --hostnetwork           Add the hostNetwork flag on the whole pod
       --hostpath              Add a hostPath volume to the container
       --hostpid               Add the hostPid flag on the whole pod
       --image string          Container image used (default "busybox")
+  -n, --namespace string      Kubernetes namespace to use
       --privileged            Add the security flag to the security context of the pod
       --tolerations           Add tolerations to be schedulable on most nodes
 
 Global Flags:
   -o, --output string   Output format. One of: human|json. (default "human")
   -w, --width int       Width for the human output (default 140)
+```
+
+### Fuzzing
+
+You can try to fuzz your API admission with `kdigger`, find
+[some information in this PR](https://github.com/quarkslab/kdigger/pull/11).
+It can be interesting to see if your sets of custom policies are resistant
+against randomly generated pod manifest.
+
+See how `kdigger` can generate random container securityContext:
+```console
+./kdigger gen --fuzz-container -o json | jq '.spec.containers[].securityContext'
+```
+
+Or generate a dozen:
+```bash
+for _ in {1..12}; do ./kdigger gen --fuzz-container -o json | jq '.spec.containers[].securityContext'; done
+```
+
+Fuzz your admission API with simple commands similar to:
+```bash
+while true; do ./kdigger gen --fuzz-pod --fuzz-init --fuzz-container | kubectl apply --dry-run=server -f -; done
 ```
 
 ## Details
