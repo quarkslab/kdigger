@@ -72,7 +72,10 @@ host machine.**
 ### Via releases
 
 For installation instructions from binaries please visit the [releases
-page](https://github.com/quarkslab/kdigger/releases).
+page](https://github.com/quarkslab/kdigger/releases). 
+
+Please note that these are statically linked binaries (which is often
+**not** the case in Go on Linux by default, contrary to what one might think!).
 
 ### Build from source
 
