@@ -1,5 +1,24 @@
 # Changelog
 
+## `1.5.0` - 2022-10-25
+
+### Added
+
+- Added a structured fuzzing feature to fuzz the admission control of the k8s
+  API. The idea came from [issue
+  10](https://github.com/quarkslab/kdigger/issues/10). And was implemented in
+  [PR 11](https://github.com/quarkslab/kdigger/pull/11) thanks to
+  google/gofuzz.
+- It is now possible to add a `--namespace` flag to `kdigger gen` command
+  thanks to @kranurag7.
+
+### Changed
+
+- Use server side dry run by default on admission control scan. Added a flag
+  `--admission-create` to replicate the old behavior but the scan now by
+  default run with `--dry-run=server` so no cleaning is needed. Shoutout to
+  @smarticu5 for the idea at KubeHuddle 2022!
+
 ## `1.4.0` - 2022-09-30
 
 ### Added
