@@ -1,5 +1,16 @@
 # Changelog
 
+## `1.5.1` - 2024-06-18
+
+### Added
+
+- Release darwin arm64 builds as requested per [issue
+  13](https://github.com/quarkslab/kdigger/issues/13).
+
+### Changed
+
+- Updates all deps and linters (bumped to k8s v1.30).
+
 ## `1.5.0` - 2022-10-25
 
 ### Added
