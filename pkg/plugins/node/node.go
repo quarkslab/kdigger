@@ -63,7 +63,7 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewNodeBucket(config bucket.Config) (*Bucket, error) {
+func NewNodeBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }
 

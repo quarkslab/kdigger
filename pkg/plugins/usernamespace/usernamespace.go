@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewUserNamespaceBucket(config bucket.Config) (*Bucket, error) {
+func NewUserNamespaceBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

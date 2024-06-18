@@ -70,7 +70,7 @@ arguments.`,
 
 		return nil
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		// handles the "all" or "a" and erase the args with the bucket list
 		// PreRun should guarantee that len(args) != 0 but in case
 		if len(args) != 0 {

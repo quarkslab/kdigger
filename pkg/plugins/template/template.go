@@ -33,6 +33,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewTemplateBucket(config bucket.Config) (*Bucket, error) {
+func NewTemplateBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

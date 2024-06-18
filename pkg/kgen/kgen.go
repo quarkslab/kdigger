@@ -84,7 +84,7 @@ func FuzzPodSecurityContext(sc **v1.PodSecurityContext) {
 			}
 		},
 		// let's ignore Windows for now
-		func(e *v1.WindowsSecurityContextOptions, c fuzz.Continue) {
+		func(e *v1.WindowsSecurityContextOptions, _ fuzz.Continue) {
 			*e = v1.WindowsSecurityContextOptions{}
 		},
 		// for supplementalGroups, runAsUser and runAsGroup value that must be between 0 and 2147483647, inclusive
@@ -103,7 +103,7 @@ func FuzzPodSecurityContext(sc **v1.PodSecurityContext) {
 func FuzzContainerSecurityContext(sc **v1.SecurityContext) {
 	// add .NilChange(0) to disable nil pointers generation, by default is 0.2
 	f := fuzz.New().NilChance(fuzzNilChances).Funcs(
-		func(e *v1.WindowsSecurityContextOptions, c fuzz.Continue) {
+		func(e *v1.WindowsSecurityContextOptions, _ fuzz.Continue) {
 			*e = v1.WindowsSecurityContextOptions{}
 		},
 		func(e *v1.Capability, c fuzz.Continue) {
@@ -119,9 +119,9 @@ func FuzzContainerSecurityContext(sc **v1.SecurityContext) {
 			} else {
 				length := c.Intn(fuzzCapabilityRandomMaxLen)
 				for i := 0; i < length; i++ {
-					var cap v1.Capability
-					c.Fuzz(&cap)
-					*e = append(*e, cap)
+					var capa v1.Capability
+					c.Fuzz(&capa)
+					*e = append(*e, capa)
 				}
 			}
 		},

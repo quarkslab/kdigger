@@ -54,6 +54,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewUserIDBucket(config bucket.Config) (*Bucket, error) {
+func NewUserIDBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewSyscallsBucket(config bucket.Config) (*Bucket, error) {
+func NewSyscallsBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

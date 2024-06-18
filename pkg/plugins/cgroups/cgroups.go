@@ -56,7 +56,7 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewCgroupsBucket(config bucket.Config) (*Bucket, error) {
+func NewCgroupsBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }
 
