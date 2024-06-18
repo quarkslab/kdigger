@@ -30,13 +30,15 @@ lint:
 RELEASE_FOLDER=release
 RELEASE_LINUX_AMD64=$(OUTPUTNAME)-linux-amd64
 RELEASE_LINUX_ARM64=$(OUTPUTNAME)-linux-arm64
-RELEASE_DARWIN=$(OUTPUTNAME)-darwin-amd64
+RELEASE_DARWIN_AMD64=$(OUTPUTNAME)-darwin-amd64
+RELEASE_DARWIN_ARM64=$(OUTPUTNAME)-darwin-arm64
 
 .PHONY: build-all
 build-all: lint
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(RELEASE_LINUX_AMD64)
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags $(LDFLAGS) -o $(RELEASE_LINUX_ARM64)
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(RELEASE_DARWIN)
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags $(LDFLAGS) -o $(RELEASE_DARWIN_AMD64)
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags $(LDFLAGS) -o $(RELEASE_DARWIN_ARM64)
 
 .PHONY: release
 release: build-all
@@ -52,10 +54,15 @@ release: build-all
 	sha256sum $(RELEASE_LINUX_ARM64) > $(RELEASE_LINUX_ARM64).sha256 && \
 	tar cvf - $(RELEASE_LINUX_ARM64) | gzip -9 - > $(RELEASE_LINUX_ARM64).tar.gz
 	# darwin adm64
-	mv $(RELEASE_DARWIN) $(RELEASE_FOLDER) && \
+	mv $(RELEASE_DARWIN_AMD64) $(RELEASE_FOLDER) && \
 	cd $(RELEASE_FOLDER) && \
-	sha256sum $(RELEASE_DARWIN) > $(RELEASE_DARWIN).sha256 && \
-	tar cvf - $(RELEASE_DARWIN) | gzip -9 - > $(RELEASE_DARWIN).tar.gz
+	sha256sum $(RELEASE_DARWIN_AMD64) > $(RELEASE_DARWIN_AMD64).sha256 && \
+	tar cvf - $(RELEASE_DARWIN_AMD64) | gzip -9 - > $(RELEASE_DARWIN_AMD64).tar.gz
+	# darwin arm64
+	mv $(RELEASE_DARWIN_ARM64) $(RELEASE_FOLDER) && \
+	cd $(RELEASE_FOLDER) && \
+	sha256sum $(RELEASE_DARWIN_ARM64) > $(RELEASE_DARWIN_ARM64).sha256 && \
+	tar cvf - $(RELEASE_DARWIN_ARM64) | gzip -9 - > $(RELEASE_DARWIN_ARM64).tar.gz
 
 DEV_IMAGE_TAG=mtardy/kdigger-dev
 .PHONY: run
