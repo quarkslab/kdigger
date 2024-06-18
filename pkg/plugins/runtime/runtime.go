@@ -26,6 +26,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewRuntimeBucket(config bucket.Config) (*Bucket, error) {
+func NewRuntimeBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

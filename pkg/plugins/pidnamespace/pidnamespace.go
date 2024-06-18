@@ -49,7 +49,7 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewPIDNamespaceBucket(config bucket.Config) (*Bucket, error) {
+func NewPIDNamespaceBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }
 

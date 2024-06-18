@@ -129,6 +129,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewContainerDetectBucket(config bucket.Config) (*Bucket, error) {
+func NewContainerDetectBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

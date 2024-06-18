@@ -48,7 +48,7 @@ var rootCmd = &cobra.Command{
 cluster. For that you can use multiples buckets. Buckets are plugins that can
 scan specific aspects of a cluster or bring expertise to automate the Kubernetes
 pentest process.`,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
 		if output != outputHuman && output != outputJSON {
 			return fmt.Errorf("output flag must be one of %s|%s, got %q", outputHuman, outputJSON, output)
 		}

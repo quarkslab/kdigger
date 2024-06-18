@@ -143,6 +143,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewCloudMetadataBucket(config bucket.Config) (*Bucket, error) {
+func NewCloudMetadataBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

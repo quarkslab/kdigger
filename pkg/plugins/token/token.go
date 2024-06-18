@@ -57,7 +57,7 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewTokenBucket(c bucket.Config) (*Bucket, error) {
+func NewTokenBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }
 

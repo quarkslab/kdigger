@@ -46,7 +46,7 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewEnvironmentBucket(config bucket.Config) (*Bucket, error) {
+func NewEnvironmentBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }
 

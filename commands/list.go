@@ -12,7 +12,7 @@ var listCmd = &cobra.Command{
 	Short:   "List available buckets or describe specific ones",
 	Long: `This command lists the available buckets in the binary. It show their names, aliases
 and descriptions. You can pass specific buckets as arguments to have their information.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 
 		var bucketList []string
 		if len(args) == 0 {

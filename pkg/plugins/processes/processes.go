@@ -56,6 +56,6 @@ func Register(b *bucket.Buckets) {
 	})
 }
 
-func NewProcessesBucket(config bucket.Config) (*Bucket, error) {
+func NewProcessesBucket(_ bucket.Config) (*Bucket, error) {
 	return &Bucket{}, nil
 }

@@ -40,7 +40,7 @@ boolean flags to disabled security features. Examples:
 
   # Fuzz the API server admission
   kdigger gen --fuzz-pod --fuzz-init --fuzz-container | kubectl apply --dry-run=server -f -`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		// all puts all the boolean flags to true
 		if genAll {
 			opts.HostNetwork = true

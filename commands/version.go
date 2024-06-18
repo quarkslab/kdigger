@@ -22,7 +22,7 @@ var versionCmd = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Print the version information",
 	Long:    `Print the version tag and git commit hash.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		// leveraging bucket results to print even if it's not a plugin
 		res := bucket.NewResults("Version")
 		res.SetHeaders([]string{"tag", "gitCommit", "goVersion", "builderArch"})
