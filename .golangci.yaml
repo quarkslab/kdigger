@@ -1,20 +1,19 @@
 run:
-  go: '1.19'
   timeout: 5m
 
 linters:
   disable-all: true
   # Enable specific linter
   enable:
-    # default linters as of v1.49.0
+    # default linters as of v1.59.0
     - errcheck
     - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - typecheck
     - unused
     # specific linters
+    - typecheck
     - dupl
     - whitespace
     - revive
@@ -27,3 +26,7 @@ linters:
     - goconst
     - gofmt
     - prealloc
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

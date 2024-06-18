@@ -3,7 +3,7 @@ VERSION=$$(git describe --tags 2>/dev/null || echo dev)
 GITCOMMIT=$$(git rev-parse HEAD)
 BUILDERARCH=$$(uname -m)
 
-GOLANGCI_VERSION=1.49.0
+GOLANGCI_VERSION=1.59.0
 
 OUTPUTNAME=kdigger
 
