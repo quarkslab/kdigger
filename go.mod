@@ -1,6 +1,6 @@
 module github.com/quarkslab/kdigger
 
-go 1.22.4
+go 1.23
 
 require (
 	github.com/genuinetools/bpfd v0.0.1
